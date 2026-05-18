@@ -4,6 +4,53 @@ Development log for avos+flix. Entries newest-first.
 
 ---
 
+## 2026-05-18 — v0.2: reach + sharper arguments + polish
+
+Built on top of v0.1 in three batches (D / E / F). All 10 features from the
+ranked roadmap shipped.
+
+### Batch D — reach + sharing
+- **OG / Twitter previews** — `api/og.tsx` Vercel Edge function renders a
+  1200×630 social card via `@vercel/og`. Three stat cards (5.0× / 2.6× / 2.1×),
+  project palette, monospace footer with sources. `index.html` gets the full
+  `og:`/`twitter:` meta-tag set pointing at `/api/og`.
+- **Snapshot export** — `↓ PNG` button in the chart controls. `html-to-image`
+  converts the chart container to a PNG at 2× pixel ratio. Filename includes
+  current mode + base year.
+- **Mobile polish** — ScrollyIntro chart now sticky only at `md+` (in-flow on
+  mobile); scenes are 55vh on mobile vs 80vh desktop; YearRangeBrush handles
+  bumped 9→11px radius for touch; main container padding tightened on mobile.
+
+### Batch E — sharper arguments
+- **Mortgage payment-to-income chart** — new `MortgageChart` component.
+  Computes monthly payment on 90%-LTV, 25-year mortgage at (Bank Rate + 1%),
+  divided by estimated monthly take-home pay (72% of gross). Shows the
+  rate-vs-principal trade-off on one axis with a 30% "affordable" reference
+  line. The sharpest counter to "rates were 15% in the 80s, you had it easy".
+- **Generation comparison view** — `GenerationView` component with a birth-
+  year dropdown. For each milestone (school-leaving, renting peak, average
+  first-time buyer, peak earnings), shows the relevant series values at
+  birthYear+age. Turns abstract years into lived experience.
+- **Regional breakdown** — `landRegistry.ts` refactored to return UK, London,
+  and North East as separate Series in one fetch. ETL updated to handle
+  multi-series source functions (`fetched.flat()`). Total series count: 13 → 15.
+
+### Batch F — polish + trust
+- **Deposit-target chase chart** — embedded inside the avos-toast calculator.
+  Plots cumulative savings vs the deposit target rising at 4% annual house-
+  price growth. At realistic skip-the-toast rates, the lines never cross.
+- **Smoother chart transitions** — AnimatePresence durations bumped, custom
+  cubic-bezier easing (`0.22, 1, 0.36, 1`) for a premium feel. Real path-morph
+  via d3-shape + motion.path deferred — fade transitions are good enough.
+- **About section** — dedicated section at the bottom: project mission, the
+  solid/dashed line rule, the data-honesty stance ("we don't backdate
+  Netflix"), GitHub link.
+- **Onboarding banner** — small dismissible banner above the main chart on
+  first visit. Points at hover/toggle/range-slider/URL-sharing. Persists via
+  localStorage so it doesn't return.
+
+---
+
 ## 2026-05-18 — v0.1 build day
 
 The entire current state of the project, built in one focused session.
