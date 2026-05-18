@@ -6,14 +6,14 @@ import type { Series, YearValue } from "../../src/types/series.ts"
 const SEED = resolve("scripts/seed/ashe-annual.csv")
 
 const META = {
-  id: "median-wage-ashe",
-  name: "Median wage (ASHE)",
-  description: "UK median gross annual pay, full-time employees, from ONS ASHE Table 1. Manually curated — append to scripts/seed/ashe-annual.csv each October.",
+  id: "median-wage",
+  name: "Median wage (full-time, annual)",
+  description: "UK median gross annual pay, full-time employees. NES (1970-1996) spliced to ASHE (1997+). ONS warns the two surveys aren't directly comparable — treat the pre-1997 portion as the best-available back-series.",
   unit: "GBP" as const,
   color: "#60a5fa",
   source: {
-    name: "ONS — Annual Survey of Hours and Earnings, Table 1",
-    url: "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/allemployeesashetable1",
+    name: "ONS — NES (1970-1996) + ASHE Table 1 (1997+)",
+    url: "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022",
   },
   region: "uk",
 }

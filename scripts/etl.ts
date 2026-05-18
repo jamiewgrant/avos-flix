@@ -7,8 +7,30 @@ import { fetchSeries as fetchLandReg } from "./sources/landRegistry.ts"
 import { fetchSeries as fetchNationwide } from "./sources/nationwide.ts"
 import { fetchSeries as fetchAshe } from "./sources/ashe.ts"
 import { fetchSeries as fetchCpih } from "./sources/cpih.ts"
+import { fetchSeries as fetchHouseholdIncome } from "./sources/household-income.ts"
+import { fetchSeries as fetchEnergy } from "./sources/energy.ts"
+import { fetchSeries as fetchRent } from "./sources/rent.ts"
+import { fetchSeries as fetchNetflix } from "./sources/netflix.ts"
+import { fetchSeries as fetchAvocado } from "./sources/avocado.ts"
+import { fetchSeries as fetchBirths } from "./sources/births.ts"
+import { fetchSeries as fetchMigration } from "./sources/migration.ts"
+import { fetchSeries as fetchHouseholdSize } from "./sources/household-size.ts"
 
-const SOURCES = [fetchBoe, fetchLandReg, fetchNationwide, fetchCpih, fetchAshe]
+const SOURCES = [
+  fetchBoe,
+  fetchLandReg,
+  fetchNationwide,
+  fetchCpih,
+  fetchAshe,
+  fetchHouseholdIncome,
+  fetchEnergy,
+  fetchRent,
+  fetchNetflix,
+  fetchAvocado,
+  fetchBirths,
+  fetchMigration,
+  fetchHouseholdSize,
+]
 
 const OUT_DIR = resolve("public", "data")
 const OUT_FILE = resolve(OUT_DIR, "series.json")
