@@ -133,7 +133,8 @@ function App() {
             : "Same series, native units. Pounds with pounds, percent with percent."}
           {realTerms && (
             <span className="block mt-2 text-(--color-accent)">
-              Showing real terms (£ in {refYear} money). Years outside CPIH coverage drop.
+              Inflation stripped — every price-like series divided by CPIH (≈{refYear} money).
+              CPIH itself becomes a flat reference line. Years outside CPIH coverage drop.
             </span>
           )}
         </p>
@@ -224,7 +225,7 @@ function App() {
                 )}
 
                 <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>£ in</span>
+                  <span>Strip inflation</span>
                   <div className="flex gap-1">
                     {(["nominal", "real"] as const).map((v) => (
                       <button
@@ -235,8 +236,13 @@ function App() {
                             ? "bg-(--color-accent) text-black"
                             : "bg-(--color-bg) hover:text-white"
                         }`}
+                        title={
+                          v === "nominal"
+                            ? "Show values as published"
+                            : `Divide every price-like series by CPIH so growth is in real terms (${refYear}=ref)`
+                        }
                       >
-                        {v === "nominal" ? "Nominal" : `${refYear} £`}
+                        {v === "nominal" ? "Off" : "On"}
                       </button>
                     ))}
                   </div>
