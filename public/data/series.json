@@ -1357,6 +1357,7 @@
         "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
       },
       "region": "uk",
+      "verifiedFrom": 1995,
       "points": [
         {
           "year": 1968,
@@ -1913,6 +1914,7 @@
         "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23"
       },
       "region": "uk",
+      "verifiedFrom": 1988,
       "points": [
         {
           "year": 1949,
@@ -2235,6 +2237,7 @@
         "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022"
       },
       "region": "uk",
+      "verifiedFrom": 1984,
       "points": [
         {
           "year": 1968,
@@ -2767,6 +2770,7 @@
         "url": "https://www.ofgem.gov.uk/information-consumers/energy-advice-households/energy-price-cap-explained"
       },
       "region": "uk",
+      "verifiedFrom": 1980,
       "points": [
         {
           "year": 1953,
@@ -2877,6 +2881,7 @@
         "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest"
       },
       "region": "uk",
+      "verifiedFrom": 2005,
       "points": [
         {
           "year": 1953,
@@ -3189,6 +3194,7 @@
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration"
       },
       "region": "uk",
+      "verifiedFrom": 1991,
       "points": [
         {
           "year": 1953,
@@ -3287,6 +3293,7 @@
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/familiesandhouseholdsfamiliesandhouseholds"
       },
       "region": "uk",
+      "verifiedFrom": 1961,
       "points": [
         {
           "year": 1953,
@@ -3332,6 +3339,6 @@
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-18T16:14:09.354Z"
+    "generatedAt": "2026-05-18T16:22:07.023Z"
   }
 }

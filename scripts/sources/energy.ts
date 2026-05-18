@@ -11,6 +11,7 @@ const META = {
     url: "https://www.ofgem.gov.uk/information-consumers/energy-advice-households/energy-price-cap-explained",
   },
   region: "uk",
+  verifiedFrom: 1980,
 }
 
 const POINTS = [

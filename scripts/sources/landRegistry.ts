@@ -18,6 +18,7 @@ const META = {
     url: "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads",
   },
   region: "uk",
+  verifiedFrom: 1995,
 }
 
 export async function fetchSeries(): Promise<Series> {

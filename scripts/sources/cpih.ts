@@ -23,6 +23,7 @@ const META = {
     url: "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23",
   },
   region: "uk",
+  verifiedFrom: 1988,
 }
 
 export async function fetchSeries(): Promise<Series> {

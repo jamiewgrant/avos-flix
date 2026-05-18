@@ -11,6 +11,7 @@ const META = {
     url: "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest",
   },
   region: "uk",
+  verifiedFrom: 2005,
 }
 
 const POINTS = [

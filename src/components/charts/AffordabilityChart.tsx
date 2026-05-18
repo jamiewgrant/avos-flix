@@ -7,6 +7,7 @@ import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
 import type { Series, YearValue } from "../../types/series"
+import { splitAtVerified } from "../../lib/splitAtVerified"
 
 interface Props {
   housePrice: Series
@@ -127,7 +128,7 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
                 tickLabelProps={{ fill: RATE_COLOR, fontSize: 12, dx: 4, dy: 4, textAnchor: "start" }}
               />
 
-              {/* BoE rate underneath (visually backgrounded) */}
+              {/* BoE rate underneath (visually backgrounded — already dashed by design) */}
               <LinePath
                 data={boeInRange}
                 x={(p) => xScale(p.year)}
@@ -139,15 +140,36 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
                 opacity={0.85}
               />
 
-              {/* Affordability ratio on top */}
-              <LinePath
-                data={affordability}
-                x={(p) => xScale(p.year)}
-                y={(p) => yLeft(p.value)}
-                stroke={ACCENT}
-                strokeWidth={2.75}
-                curve={curveMonotoneX}
-              />
+              {/* Affordability ratio on top — split: estimated pre-wage.verifiedFrom */}
+              {(() => {
+                const { estimated, verified } = splitAtVerified(affordability, wage.verifiedFrom)
+                return (
+                  <>
+                    {estimated.length > 1 && (
+                      <LinePath
+                        data={estimated}
+                        x={(p) => xScale(p.year)}
+                        y={(p) => yLeft(p.value)}
+                        stroke={ACCENT}
+                        strokeWidth={2.5}
+                        strokeDasharray="5,4"
+                        opacity={0.55}
+                        curve={curveMonotoneX}
+                      />
+                    )}
+                    {verified.length > 1 && (
+                      <LinePath
+                        data={verified}
+                        x={(p) => xScale(p.year)}
+                        y={(p) => yLeft(p.value)}
+                        stroke={ACCENT}
+                        strokeWidth={2.75}
+                        curve={curveMonotoneX}
+                      />
+                    )}
+                  </>
+                )
+              })()}
 
               {/* End label */}
               {hovered === null && (

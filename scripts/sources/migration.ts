@@ -11,6 +11,7 @@ const META = {
     url: "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration",
   },
   region: "uk",
+  verifiedFrom: 1991,
 }
 
 const POINTS = [

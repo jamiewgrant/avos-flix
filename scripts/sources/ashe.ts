@@ -22,6 +22,7 @@ const META = {
     url: "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022",
   },
   region: "uk",
+  verifiedFrom: 1984,
 }
 
 export async function fetchSeries(): Promise<Series> {

@@ -16,6 +16,9 @@ export interface Series {
   source: Source
   region: string
   points: YearValue[]
+  // Points before this year are modelled estimates / proxies, drawn dashed.
+  // Omit when the entire series is observed data.
+  verifiedFrom?: number
 }
 
 export interface SeriesData {

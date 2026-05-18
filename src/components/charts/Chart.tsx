@@ -9,6 +9,7 @@ import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
 import type { Series, Unit, YearValue } from "../../types/series"
 import { UNIT_LABEL, formatAxisValue, formatValue } from "../../types/series"
+import { splitAtVerified } from "../../lib/splitAtVerified"
 
 export type ChartMode = "indexed" | "raw"
 
@@ -186,24 +187,42 @@ function IndexedView({
               />
 
               <AnimatePresence>
-                {normalized.map((s) => (
-                  <motion.g
-                    key={`${s.meta.id}-${baseYear}`}
-                    initial={{ opacity: 0, pathLength: 0 }}
-                    animate={{ opacity: 1, pathLength: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  >
-                    <LinePath
-                      data={s.points}
-                      x={(p) => xScale(p.year)}
-                      y={(p) => yScale(p.value)}
-                      stroke={s.meta.color}
-                      strokeWidth={hovered === null ? 2.5 : 2}
-                      curve={curveMonotoneX}
-                    />
-                  </motion.g>
-                ))}
+                {normalized.map((s) => {
+                  const sw = hovered === null ? 2.5 : 2
+                  const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                  return (
+                    <motion.g
+                      key={`${s.meta.id}-${baseYear}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
+                    >
+                      {estimated.length > 1 && (
+                        <LinePath
+                          data={estimated}
+                          x={(p) => xScale(p.year)}
+                          y={(p) => yScale(p.value)}
+                          stroke={s.meta.color}
+                          strokeWidth={sw}
+                          strokeDasharray="5,4"
+                          opacity={0.55}
+                          curve={curveMonotoneX}
+                        />
+                      )}
+                      {verified.length > 1 && (
+                        <LinePath
+                          data={verified}
+                          x={(p) => xScale(p.year)}
+                          y={(p) => yScale(p.value)}
+                          stroke={s.meta.color}
+                          strokeWidth={sw}
+                          curve={curveMonotoneX}
+                        />
+                      )}
+                    </motion.g>
+                  )
+                })}
               </AnimatePresence>
 
               {/* Right-hand value labels (only when no hover) */}
@@ -435,24 +454,42 @@ function UnitPanel({
                 />
 
                 <AnimatePresence>
-                  {series.map((s) => (
-                    <motion.g
-                      key={s.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      <LinePath
-                        data={s.points.filter((p) => p.year >= startYear && p.year <= endYear)}
-                        x={(p) => xScale(p.year)}
-                        y={(p) => yScale(p.value)}
-                        stroke={s.color}
-                        strokeWidth={2}
-                        curve={curveMonotoneX}
-                      />
-                    </motion.g>
-                  ))}
+                  {series.map((s) => {
+                    const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
+                    const { estimated, verified } = splitAtVerified(inRange, s.verifiedFrom)
+                    return (
+                      <motion.g
+                        key={s.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35 }}
+                      >
+                        {estimated.length > 1 && (
+                          <LinePath
+                            data={estimated}
+                            x={(p) => xScale(p.year)}
+                            y={(p) => yScale(p.value)}
+                            stroke={s.color}
+                            strokeWidth={2}
+                            strokeDasharray="5,4"
+                            opacity={0.55}
+                            curve={curveMonotoneX}
+                          />
+                        )}
+                        {verified.length > 1 && (
+                          <LinePath
+                            data={verified}
+                            x={(p) => xScale(p.year)}
+                            y={(p) => yScale(p.value)}
+                            stroke={s.color}
+                            strokeWidth={2}
+                            curve={curveMonotoneX}
+                          />
+                        )}
+                      </motion.g>
+                    )
+                  })}
                 </AnimatePresence>
 
                 {/* Trailing dots when not hovered */}

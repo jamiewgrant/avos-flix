@@ -11,6 +11,7 @@ const META = {
     url: "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/familiesandhouseholdsfamiliesandhouseholds",
   },
   region: "uk",
+  verifiedFrom: 1961,
 }
 
 const POINTS = [
