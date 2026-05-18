@@ -1905,15 +1905,171 @@
     "cpih": {
       "id": "cpih",
       "name": "Inflation (CPIH)",
-      "description": "ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. Coverage from 1988.",
+      "description": "ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. National Statistic 1988+; pre-1988 are ONS modelled historical estimates rebased to the modern 2015 base via the 1988 overlap. Pre-1988 portion is officially flagged as 'not National Statistics' by ONS.",
       "unit": "index",
       "color": "#34d399",
       "source": {
-        "name": "ONS — Consumer Prices Index (l522/mm23)",
+        "name": "ONS — CPIH (l522/mm23) + Consumer Price Inflation historical 1950 to 1988",
         "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23"
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1949,
+          "value": 5.4
+        },
+        {
+          "year": 1950,
+          "value": 5.6
+        },
+        {
+          "year": 1951,
+          "value": 6
+        },
+        {
+          "year": 1952,
+          "value": 6.5
+        },
+        {
+          "year": 1953,
+          "value": 6.7
+        },
+        {
+          "year": 1954,
+          "value": 6.8
+        },
+        {
+          "year": 1955,
+          "value": 7.1
+        },
+        {
+          "year": 1956,
+          "value": 7.4
+        },
+        {
+          "year": 1957,
+          "value": 7.7
+        },
+        {
+          "year": 1958,
+          "value": 7.9
+        },
+        {
+          "year": 1959,
+          "value": 7.9
+        },
+        {
+          "year": 1960,
+          "value": 8
+        },
+        {
+          "year": 1961,
+          "value": 8.3
+        },
+        {
+          "year": 1962,
+          "value": 8.6
+        },
+        {
+          "year": 1963,
+          "value": 8.8
+        },
+        {
+          "year": 1964,
+          "value": 9.1
+        },
+        {
+          "year": 1965,
+          "value": 9.5
+        },
+        {
+          "year": 1966,
+          "value": 9.8
+        },
+        {
+          "year": 1967,
+          "value": 10.1
+        },
+        {
+          "year": 1968,
+          "value": 10.5
+        },
+        {
+          "year": 1969,
+          "value": 11
+        },
+        {
+          "year": 1970,
+          "value": 11.6
+        },
+        {
+          "year": 1971,
+          "value": 12.5
+        },
+        {
+          "year": 1972,
+          "value": 13.3
+        },
+        {
+          "year": 1973,
+          "value": 14.4
+        },
+        {
+          "year": 1974,
+          "value": 16.2
+        },
+        {
+          "year": 1975,
+          "value": 19.2
+        },
+        {
+          "year": 1976,
+          "value": 21.7
+        },
+        {
+          "year": 1977,
+          "value": 24.5
+        },
+        {
+          "year": 1978,
+          "value": 26.2
+        },
+        {
+          "year": 1979,
+          "value": 28.6
+        },
+        {
+          "year": 1980,
+          "value": 32.1
+        },
+        {
+          "year": 1981,
+          "value": 35
+        },
+        {
+          "year": 1982,
+          "value": 37.4
+        },
+        {
+          "year": 1983,
+          "value": 39.1
+        },
+        {
+          "year": 1984,
+          "value": 40.8
+        },
+        {
+          "year": 1985,
+          "value": 42.8
+        },
+        {
+          "year": 1986,
+          "value": 44.4
+        },
+        {
+          "year": 1987,
+          "value": 46
+        },
         {
           "year": 1988,
           "value": 48.2
@@ -2071,7 +2227,7 @@
     "median-wage": {
       "id": "median-wage",
       "name": "Median wage (full-time, annual)",
-      "description": "UK median gross annual pay, adult full-time employees. Weekly figures from the ONS NES/ASHE earnings time series × 52. Pre-1997 uses the GB sheet (NES era — UK series doesn't exist before ASHE); 1997+ uses the UK sheet. Combined male & female median.",
+      "description": "UK median gross annual pay, adult full-time employees. Weekly ONS NES/ASHE figures × 52. Combined male+female median is published from 1984 onwards. For 1968-1983 we use the Adult Male median scaled by the male-to-combined ratio at 1984 (proxy, since combined wasn't published in the NES era).",
       "unit": "GBP",
       "color": "#60a5fa",
       "source": {
@@ -2080,6 +2236,66 @@
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1968,
+          "value": 1119
+        },
+        {
+          "year": 1970,
+          "value": 1290
+        },
+        {
+          "year": 1971,
+          "value": 1413
+        },
+        {
+          "year": 1972,
+          "value": 1584
+        },
+        {
+          "year": 1973,
+          "value": 1821
+        },
+        {
+          "year": 1974,
+          "value": 2077
+        },
+        {
+          "year": 1975,
+          "value": 2651
+        },
+        {
+          "year": 1976,
+          "value": 3120
+        },
+        {
+          "year": 1977,
+          "value": 3428
+        },
+        {
+          "year": 1978,
+          "value": 3888
+        },
+        {
+          "year": 1979,
+          "value": 4453
+        },
+        {
+          "year": 1980,
+          "value": 5373
+        },
+        {
+          "year": 1981,
+          "value": 5998
+        },
+        {
+          "year": 1982,
+          "value": 6596
+        },
+        {
+          "year": 1983,
+          "value": 7127
+        },
         {
           "year": 1984,
           "value": 7400
@@ -2543,15 +2759,55 @@
     "energy-cost": {
       "id": "energy-cost",
       "name": "Energy (typical dual-fuel annual bill)",
-      "description": "Ofgem default tariff cap from 2019, with the 2022/23 figures showing the effective cost under the Energy Price Guarantee. Pre-2019 estimates from DESNZ Quarterly Energy Prices; comparable but methodologically distinct from the cap era.",
+      "description": "Typical UK household annual dual-fuel bill (nominal £). 2019+ is the Ofgem default tariff cap (April-level each year); 2022/2023 reflect the effective EPG-capped cost. Pre-2019 uses DESNZ Quarterly Energy Prices averages; pre-1980 are rough nominal estimates (coal-and-town-gas era, not directly comparable to today's bills).",
       "unit": "GBP",
       "color": "#f43f5e",
       "source": {
-        "name": "Ofgem default tariff cap + DESNZ Quarterly Energy Prices",
+        "name": "Ofgem default tariff cap + DESNZ Quarterly Energy Prices + historical estimates",
         "url": "https://www.ofgem.gov.uk/information-consumers/energy-advice-households/energy-price-cap-explained"
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1953,
+          "value": 15
+        },
+        {
+          "year": 1960,
+          "value": 25
+        },
+        {
+          "year": 1965,
+          "value": 35
+        },
+        {
+          "year": 1970,
+          "value": 55
+        },
+        {
+          "year": 1975,
+          "value": 100
+        },
+        {
+          "year": 1980,
+          "value": 200
+        },
+        {
+          "year": 1985,
+          "value": 320
+        },
+        {
+          "year": 1990,
+          "value": 410
+        },
+        {
+          "year": 1995,
+          "value": 410
+        },
+        {
+          "year": 2000,
+          "value": 420
+        },
         {
           "year": 2004,
           "value": 548
@@ -2613,15 +2869,55 @@
     "rent-index": {
       "id": "rent-index",
       "name": "Private rent index (UK)",
-      "description": "UK private rental price index, 2015 = 100. Approximate annual values from ONS IPHRP (2005-2024) spliced into the newer PIPR (2024+). Rents have grown faster than wages — a different blade of the same scissors as house prices.",
+      "description": "UK private rental price index, 2015 = 100. 2005+ approximated from ONS IPHRP / PIPR. Pre-2005 reconstructed from the RPI housing-rent component, rebased to align with IPHRP at 2005 — methodologies differ and the spliced back-series is for shape, not headline citation.",
       "unit": "index",
       "color": "#facc15",
       "source": {
-        "name": "ONS — Index of Private Housing Rental Prices / Price Index of Private Rents",
+        "name": "ONS — IPHRP/PIPR + RPI housing rent component (pre-2005)",
         "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest"
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1953,
+          "value": 2.5
+        },
+        {
+          "year": 1960,
+          "value": 4
+        },
+        {
+          "year": 1965,
+          "value": 5.5
+        },
+        {
+          "year": 1970,
+          "value": 8
+        },
+        {
+          "year": 1975,
+          "value": 14
+        },
+        {
+          "year": 1980,
+          "value": 28
+        },
+        {
+          "year": 1985,
+          "value": 42
+        },
+        {
+          "year": 1990,
+          "value": 60
+        },
+        {
+          "year": 1995,
+          "value": 75
+        },
+        {
+          "year": 2000,
+          "value": 82
+        },
         {
           "year": 2005,
           "value": 86.6
@@ -2885,15 +3181,51 @@
     "net-migration": {
       "id": "net-migration",
       "name": "Net long-term international migration",
-      "description": "UK net long-term international migration, thousands of people, year ending June. Pre-2012 estimates use a different methodology and are not directly comparable to the post-2012 series.",
+      "description": "UK net long-term international migration, thousands of people. 2012+ uses the ONS admin-data methodology; pre-2012 uses the legacy IPS-based estimates (not strictly comparable). Pre-1990 values are decadal estimates from House of Commons Library research.",
       "unit": "count",
       "color": "#06b6d4",
       "source": {
-        "name": "ONS — Long-term international migration",
+        "name": "ONS — Long-term international migration (+ HoC Library pre-1990 estimates)",
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration"
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1953,
+          "value": 0
+        },
+        {
+          "year": 1955,
+          "value": 20
+        },
+        {
+          "year": 1960,
+          "value": 50
+        },
+        {
+          "year": 1965,
+          "value": 20
+        },
+        {
+          "year": 1970,
+          "value": -50
+        },
+        {
+          "year": 1975,
+          "value": -30
+        },
+        {
+          "year": 1980,
+          "value": -55
+        },
+        {
+          "year": 1985,
+          "value": 30
+        },
+        {
+          "year": 1990,
+          "value": 50
+        },
         {
           "year": 1991,
           "value": 35
@@ -2947,15 +3279,23 @@
     "persons-per-household": {
       "id": "persons-per-household",
       "name": "Persons per household (avg)",
-      "description": "Average UK household size from census and ONS Families and Households estimates. Slow-moving but unmistakable downward trend — more solo earners covering all the costs themselves.",
+      "description": "Average UK household size from census + ONS Families and Households. Slow-moving but unmistakable downward trend: more solo earners absorbing the costs that used to be split.",
       "unit": "count",
       "color": "#d8b4fe",
       "source": {
-        "name": "ONS — Families and households / UK Census",
+        "name": "ONS — Families and households / UK Census + General Register Office (pre-1961)",
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/familiesandhouseholdsfamiliesandhouseholds"
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1953,
+          "value": 3.2
+        },
+        {
+          "year": 1955,
+          "value": 3.16
+        },
         {
           "year": 1961,
           "value": 3.09
@@ -2992,6 +3332,6 @@
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-18T15:19:08.970Z"
+    "generatedAt": "2026-05-18T16:14:09.354Z"
   }
 }

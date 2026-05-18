@@ -3,18 +3,29 @@ import type { Series } from "../../src/types/series.ts"
 const META = {
   id: "rent-index",
   name: "Private rent index (UK)",
-  description: "UK private rental price index, 2015 = 100. Approximate annual values from ONS IPHRP (2005-2024) spliced into the newer PIPR (2024+). Rents have grown faster than wages — a different blade of the same scissors as house prices.",
+  description: "UK private rental price index, 2015 = 100. 2005+ approximated from ONS IPHRP / PIPR. Pre-2005 reconstructed from the RPI housing-rent component, rebased to align with IPHRP at 2005 — methodologies differ and the spliced back-series is for shape, not headline citation.",
   unit: "index" as const,
   color: "#facc15",
   source: {
-    name: "ONS — Index of Private Housing Rental Prices / Price Index of Private Rents",
+    name: "ONS — IPHRP/PIPR + RPI housing rent component (pre-2005)",
     url: "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest",
   },
   region: "uk",
 }
 
-// UK annual mean of monthly IPHRP/PIPR, approximate.
 const POINTS = [
+  // Pre-2005 — RPI rent component, rebased to align with IPHRP at 2005
+  { year: 1953, value: 2.5 },
+  { year: 1960, value: 4.0 },
+  { year: 1965, value: 5.5 },
+  { year: 1970, value: 8 },
+  { year: 1975, value: 14 },
+  { year: 1980, value: 28 },
+  { year: 1985, value: 42 },
+  { year: 1990, value: 60 },
+  { year: 1995, value: 75 },
+  { year: 2000, value: 82 },
+  // IPHRP / PIPR era
   { year: 2005, value: 86.6 },
   { year: 2008, value: 89.4 },
   { year: 2010, value: 91.5 },
