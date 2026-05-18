@@ -1,17 +1,30 @@
 import Papa from "papaparse"
 import { readFile } from "node:fs/promises"
 import { resolve } from "node:path"
-import type { YearValue } from "../../src/types/series.ts"
+import type { Series, YearValue } from "../../src/types/series.ts"
 
 const UPSTREAM = "https://datahub.io/core/interest-rates-gb/_r/-/data/data.csv"
 const SEED = resolve("scripts/seed/boe-rate-daily.csv")
 
-interface RateChange { date: string; rate: number }
-
-export async function fetchBoeRate(): Promise<YearValue[]> {
-  const changes = await loadChanges()
-  return aggregateAnnualMean(changes)
+const META = {
+  id: "boe-rate",
+  name: "Bank of England Bank Rate",
+  description: "Official Bank Rate, time-weighted annual mean. Counters the 'rates were 15% in the 80s' rebuttal.",
+  unit: "percent" as const,
+  color: "#fb923c",
+  source: {
+    name: "Bank of England via datahub.io mirror",
+    url: "https://datahub.io/core/interest-rates-gb",
+  },
+  region: "uk",
 }
+
+export async function fetchSeries(): Promise<Series> {
+  const changes = await loadChanges()
+  return { ...META, points: aggregateAnnualMean(changes) }
+}
+
+interface RateChange { date: string; rate: number }
 
 async function loadChanges(): Promise<RateChange[]> {
   try {
@@ -19,7 +32,7 @@ async function loadChanges(): Promise<RateChange[]> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     return parseCsv(await res.text())
   } catch (err) {
-    console.warn(`  boe: upstream fetch failed (${(err as Error).message}), using seed`)
+    console.warn(`  boe-rate: upstream fetch failed (${(err as Error).message}), using seed`)
     return parseCsv(await readFile(SEED, "utf8"))
   }
 }
@@ -35,7 +48,6 @@ function parseCsv(csv: string): RateChange[] {
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 
-// Time-weighted annual mean rate from a step-function series of rate changes.
 function aggregateAnnualMean(changes: RateChange[]): YearValue[] {
   if (changes.length === 0) return []
   const startYear = new Date(changes[0].date).getUTCFullYear()
@@ -46,7 +58,6 @@ function aggregateAnnualMean(changes: RateChange[]): YearValue[] {
     const yearStart = Date.UTC(year, 0, 1)
     const nextYearStart = Date.UTC(year + 1, 0, 1)
 
-    // Find the rate in effect at the start of the year.
     let rate = changes[0].rate
     for (const c of changes) {
       const t = Date.parse(c.date)
@@ -54,7 +65,6 @@ function aggregateAnnualMean(changes: RateChange[]): YearValue[] {
       else break
     }
 
-    // Walk through changes during the year, accumulating time-weighted sum.
     let cursor = yearStart
     let weightedSum = 0
     for (const c of changes) {
@@ -67,8 +77,7 @@ function aggregateAnnualMean(changes: RateChange[]): YearValue[] {
     }
     weightedSum += rate * (nextYearStart - cursor)
 
-    const meanRate = weightedSum / (nextYearStart - yearStart)
-    out.push({ year, value: Math.round(meanRate * 100) / 100 })
+    out.push({ year, value: Math.round((weightedSum / (nextYearStart - yearStart)) * 100) / 100 })
   }
   return out
 }

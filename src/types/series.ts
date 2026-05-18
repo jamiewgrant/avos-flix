@@ -1,19 +1,26 @@
 export type YearValue = { year: number; value: number }
 
-export type Region = "uk" | "london" | "northEast"
+export type Unit = "GBP" | "percent" | "index"
 
-export type SeriesKey =
-  | "medianWage"       // ONS ASHE — gross annual median pay, full-time employees
-  | "housePrice"       // HM Land Registry UK HPI — mean property price
-  | "boeRate"          // Bank of England official Bank Rate (%)
-  | "cpih"             // ONS CPIH index (2015 = 100)
+export interface Source {
+  name: string
+  url: string
+}
 
-export type RegionSeries = Record<SeriesKey, YearValue[]>
+export interface Series {
+  id: string
+  name: string
+  description?: string
+  unit: Unit
+  color: string
+  source: Source
+  region: string
+  points: YearValue[]
+}
 
 export interface SeriesData {
-  regions: Record<Region, RegionSeries>
+  series: Record<string, Series>
   metadata: {
     generatedAt: string
-    sources: Record<SeriesKey, { name: string; url: string; lastFetched: string }>
   }
 }

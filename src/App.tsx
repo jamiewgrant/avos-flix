@@ -1,24 +1,36 @@
+import { useMemo, useState } from "react"
 import { useSeries } from "./data/useSeries"
-import { HousePriceChart } from "./components/charts/HousePriceChart"
+import { LayeredChart } from "./components/charts/LayeredChart"
+import type { Series } from "./types/series"
+
+const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
+const DEFAULT_BASE_YEAR = 1995
 
 function App() {
   const { data, loading, error } = useSeries()
+  const allSeries = useMemo<Series[]>(
+    () => (data ? Object.values(data.series) : []),
+    [data],
+  )
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set(["boe-rate"]))
+  const [baseYear, setBaseYear] = useState<number>(DEFAULT_BASE_YEAR)
 
-  const uk = data?.regions.uk
-  const latestNominal = uk?.housePrice.at(-1)
-  const earliestInRange = uk?.housePrice.find((d) => d.year === 1995)
-  const nominalMultiple =
-    latestNominal && earliestInRange
-      ? (latestNominal.value / earliestInRange.value).toFixed(1)
-      : null
-  const cpihEarliest = uk?.cpih.find((d) => d.year === 1995)?.value
-  const cpihLatest = uk?.cpih.at(-1)?.value
-  const inflationMultiple =
-    cpihEarliest && cpihLatest ? (cpihLatest / cpihEarliest).toFixed(1) : null
+  const visible = allSeries.filter(
+    (s) => !hiddenIds.has(s.id) && s.points.length > 0,
+  )
+
+  function toggle(id: string) {
+    setHiddenIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
-      <header className="text-center mb-20">
+      <header className="text-center mb-16">
         <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
           avos<span className="text-(--color-accent)">+</span>flix
         </h1>
@@ -29,12 +41,12 @@ function App() {
 
       <section>
         <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-          "It's just inflation."
+          Index everything to one year.
         </h2>
         <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
-          A common rebuttal. So we plotted the average UK house price in
-          nominal terms alongside the same prices adjusted into today's
-          money. If the rebuttal held, the lines would converge.
+          Every series rebased so {baseYear} = 100. Lines that climb faster
+          than the others ate more of your paycheque. The gap between them is
+          what doesn't fit on toast.
         </p>
 
         <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
@@ -48,43 +60,85 @@ function App() {
               Failed to load data: {error.message}
             </div>
           )}
-          {uk && (
-            <HousePriceChart
-              housePrice={uk.housePrice}
-              cpih={uk.cpih}
-              fromYear={1995}
-            />
-          )}
-          <div className="mt-5 flex flex-wrap gap-5 text-sm text-(--color-muted) px-1">
-            <div className="flex items-center gap-2">
-              <span className="h-0.5 w-7 bg-white" />
-              <span>Nominal price</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className="h-0 w-7 border-t-2 border-dashed"
-                style={{ borderColor: "#c084fc" }}
+          {data && (
+            <>
+              <LayeredChart
+                series={visible}
+                baseYear={baseYear}
+                fromYear={baseYear}
               />
-              <span>Real price (today's £, CPIH-adjusted)</span>
-            </div>
-          </div>
+
+              <div className="mt-5 flex items-center gap-3 px-1 text-sm text-(--color-muted)">
+                <span>Base year</span>
+                <div className="flex gap-1">
+                  {BASE_YEAR_OPTIONS.map((y) => (
+                    <button
+                      key={y}
+                      onClick={() => setBaseYear(y)}
+                      className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                        baseYear === y
+                          ? "bg-(--color-accent) text-black"
+                          : "bg-(--color-bg) hover:text-white"
+                      }`}
+                    >
+                      {y}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-2 px-1">
+                {allSeries.map((s) => {
+                  const isOn = !hiddenIds.has(s.id)
+                  const hasData = s.points.length > 0
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => toggle(s.id)}
+                      disabled={!hasData}
+                      title={s.description}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition border-(--color-border) ${
+                        isOn && hasData
+                          ? "bg-(--color-bg) text-white"
+                          : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
+                      } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
+                    >
+                      <span
+                        className="size-2.5 rounded-full"
+                        style={{ background: s.color }}
+                      />
+                      {s.name}
+                      {!hasData && <span className="opacity-60">(no data)</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
         </div>
 
-        {nominalMultiple && inflationMultiple && (
-          <p className="mt-6 text-(--color-text) text-lg">
-            Since 1995, UK house prices grew{" "}
-            <span className="font-semibold text-white">{nominalMultiple}×</span>
-            . Over the same period, general prices rose{" "}
-            <span className="font-semibold text-white">{inflationMultiple}×</span>
-            . The gap is what doesn't fit on toast.
-          </p>
-        )}
-
         {data && (
-          <p className="mt-8 text-xs text-(--color-muted) font-mono">
-            Sources: HM Land Registry UK HPI · ONS CPIH (l522/mm23). Built{" "}
-            {new Date(data.metadata.generatedAt).toLocaleDateString("en-GB")}.
-          </p>
+          <details className="mt-6 text-xs text-(--color-muted) font-mono">
+            <summary className="cursor-pointer hover:text-white">Sources</summary>
+            <ul className="mt-3 space-y-1.5">
+              {allSeries.map((s) => (
+                <li key={s.id}>
+                  <span style={{ color: s.color }}>●</span> {s.name} —{" "}
+                  <a
+                    className="underline hover:text-white"
+                    href={s.source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {s.source.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 opacity-60">
+              Built {new Date(data.metadata.generatedAt).toLocaleDateString("en-GB")}.
+            </p>
+          </details>
         )}
       </section>
     </main>

@@ -1,12 +1,29 @@
 import Papa from "papaparse"
 import { readFile } from "node:fs/promises"
 import { resolve } from "node:path"
-import type { YearValue } from "../../src/types/series.ts"
+import type { Series, YearValue } from "../../src/types/series.ts"
 
 const UPSTREAM = "https://www.ons.gov.uk/generator?format=csv&uri=/economy/inflationandpriceindices/timeseries/l522/mm23"
 const SEED = resolve("scripts/seed/cpih-annual.csv")
 
-export async function fetchCpih(): Promise<YearValue[]> {
+const META = {
+  id: "cpih",
+  name: "Inflation (CPIH)",
+  description: "ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. Coverage from 1988.",
+  unit: "index" as const,
+  color: "#34d399",
+  source: {
+    name: "ONS — Consumer Prices Index (l522/mm23)",
+    url: "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23",
+  },
+  region: "uk",
+}
+
+export async function fetchSeries(): Promise<Series> {
+  return { ...META, points: await loadPoints() }
+}
+
+async function loadPoints(): Promise<YearValue[]> {
   try {
     const res = await fetch(UPSTREAM)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -17,9 +34,6 @@ export async function fetchCpih(): Promise<YearValue[]> {
   }
 }
 
-// ONS timeseries CSVs are a header block followed by rows of [period, value].
-// Annual rows have period = a bare 4-digit year. Quarterly/monthly rows include
-// " Q1" or " JAN" etc., which we discard.
 function parseOnsTimeseries(csv: string): YearValue[] {
   const out: YearValue[] = []
   for (const raw of csv.split(/\r?\n/)) {

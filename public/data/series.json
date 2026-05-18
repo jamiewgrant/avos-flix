@@ -1,255 +1,17 @@
 {
-  "regions": {
-    "uk": {
-      "medianWage": [
-        {
-          "year": 2024,
-          "value": 37439
-        },
-        {
-          "year": 2025,
-          "value": 39039
-        }
-      ],
-      "housePrice": [
-        {
-          "year": 1968,
-          "value": 3380
-        },
-        {
-          "year": 1969,
-          "value": 3531
-        },
-        {
-          "year": 1970,
-          "value": 3737
-        },
-        {
-          "year": 1971,
-          "value": 4181
-        },
-        {
-          "year": 1972,
-          "value": 5589
-        },
-        {
-          "year": 1973,
-          "value": 7689
-        },
-        {
-          "year": 1974,
-          "value": 8292
-        },
-        {
-          "year": 1975,
-          "value": 8779
-        },
-        {
-          "year": 1976,
-          "value": 9555
-        },
-        {
-          "year": 1977,
-          "value": 10257
-        },
-        {
-          "year": 1978,
-          "value": 11936
-        },
-        {
-          "year": 1979,
-          "value": 15443
-        },
-        {
-          "year": 1980,
-          "value": 18670
-        },
-        {
-          "year": 1981,
-          "value": 19741
-        },
-        {
-          "year": 1982,
-          "value": 20209
-        },
-        {
-          "year": 1983,
-          "value": 22590
-        },
-        {
-          "year": 1984,
-          "value": 24694
-        },
-        {
-          "year": 1985,
-          "value": 26845
-        },
-        {
-          "year": 1986,
-          "value": 30494
-        },
-        {
-          "year": 1987,
-          "value": 35614
-        },
-        {
-          "year": 1988,
-          "value": 45432
-        },
-        {
-          "year": 1989,
-          "value": 54236
-        },
-        {
-          "year": 1990,
-          "value": 53578
-        },
-        {
-          "year": 1991,
-          "value": 52814
-        },
-        {
-          "year": 1992,
-          "value": 50713
-        },
-        {
-          "year": 1993,
-          "value": 49855
-        },
-        {
-          "year": 1994,
-          "value": 51179
-        },
-        {
-          "year": 1995,
-          "value": 51529
-        },
-        {
-          "year": 1996,
-          "value": 53415
-        },
-        {
-          "year": 1997,
-          "value": 58112
-        },
-        {
-          "year": 1998,
-          "value": 64771
-        },
-        {
-          "year": 1999,
-          "value": 71816
-        },
-        {
-          "year": 2000,
-          "value": 82534
-        },
-        {
-          "year": 2001,
-          "value": 89255
-        },
-        {
-          "year": 2002,
-          "value": 103650
-        },
-        {
-          "year": 2003,
-          "value": 119904
-        },
-        {
-          "year": 2004,
-          "value": 134131
-        },
-        {
-          "year": 2005,
-          "value": 143921
-        },
-        {
-          "year": 2006,
-          "value": 155230
-        },
-        {
-          "year": 2007,
-          "value": 170598
-        },
-        {
-          "year": 2008,
-          "value": 162912
-        },
-        {
-          "year": 2009,
-          "value": 148445
-        },
-        {
-          "year": 2010,
-          "value": 156936
-        },
-        {
-          "year": 2011,
-          "value": 154654
-        },
-        {
-          "year": 2012,
-          "value": 155269
-        },
-        {
-          "year": 2013,
-          "value": 159262
-        },
-        {
-          "year": 2014,
-          "value": 172048
-        },
-        {
-          "year": 2015,
-          "value": 182291
-        },
-        {
-          "year": 2016,
-          "value": 195035
-        },
-        {
-          "year": 2017,
-          "value": 203950
-        },
-        {
-          "year": 2018,
-          "value": 210354
-        },
-        {
-          "year": 2019,
-          "value": 212434
-        },
-        {
-          "year": 2020,
-          "value": 218522
-        },
-        {
-          "year": 2021,
-          "value": 236313
-        },
-        {
-          "year": 2022,
-          "value": 258236
-        },
-        {
-          "year": 2023,
-          "value": 258956
-        },
-        {
-          "year": 2024,
-          "value": 260532
-        },
-        {
-          "year": 2025,
-          "value": 267899
-        },
-        {
-          "year": 2026,
-          "value": 267805
-        }
-      ],
-      "boeRate": [
+  "series": {
+    "boe-rate": {
+      "id": "boe-rate",
+      "name": "Bank of England Bank Rate",
+      "description": "Official Bank Rate, time-weighted annual mean. Counters the 'rates were 15% in the 80s' rebuttal.",
+      "unit": "percent",
+      "color": "#fb923c",
+      "source": {
+        "name": "Bank of England via datahub.io mirror",
+        "url": "https://datahub.io/core/interest-rates-gb"
+      },
+      "region": "uk",
+      "points": [
         {
           "year": 1694,
           "value": 6
@@ -1582,8 +1344,576 @@
           "year": 2026,
           "value": 4.25
         }
-      ],
-      "cpih": [
+      ]
+    },
+    "house-price-landreg": {
+      "id": "house-price-landreg",
+      "name": "House prices (HM Land Registry HPI)",
+      "description": "UK average property price from the official UK HPI, monthly aggregated to annual mean. Methodology dates from 1968.",
+      "unit": "GBP",
+      "color": "#f5f4f0",
+      "source": {
+        "name": "HM Land Registry UK House Price Index",
+        "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1968,
+          "value": 3380
+        },
+        {
+          "year": 1969,
+          "value": 3531
+        },
+        {
+          "year": 1970,
+          "value": 3737
+        },
+        {
+          "year": 1971,
+          "value": 4181
+        },
+        {
+          "year": 1972,
+          "value": 5589
+        },
+        {
+          "year": 1973,
+          "value": 7689
+        },
+        {
+          "year": 1974,
+          "value": 8292
+        },
+        {
+          "year": 1975,
+          "value": 8779
+        },
+        {
+          "year": 1976,
+          "value": 9555
+        },
+        {
+          "year": 1977,
+          "value": 10257
+        },
+        {
+          "year": 1978,
+          "value": 11936
+        },
+        {
+          "year": 1979,
+          "value": 15443
+        },
+        {
+          "year": 1980,
+          "value": 18670
+        },
+        {
+          "year": 1981,
+          "value": 19741
+        },
+        {
+          "year": 1982,
+          "value": 20209
+        },
+        {
+          "year": 1983,
+          "value": 22590
+        },
+        {
+          "year": 1984,
+          "value": 24694
+        },
+        {
+          "year": 1985,
+          "value": 26845
+        },
+        {
+          "year": 1986,
+          "value": 30494
+        },
+        {
+          "year": 1987,
+          "value": 35614
+        },
+        {
+          "year": 1988,
+          "value": 45432
+        },
+        {
+          "year": 1989,
+          "value": 54236
+        },
+        {
+          "year": 1990,
+          "value": 53578
+        },
+        {
+          "year": 1991,
+          "value": 52814
+        },
+        {
+          "year": 1992,
+          "value": 50713
+        },
+        {
+          "year": 1993,
+          "value": 49855
+        },
+        {
+          "year": 1994,
+          "value": 51179
+        },
+        {
+          "year": 1995,
+          "value": 51529
+        },
+        {
+          "year": 1996,
+          "value": 53415
+        },
+        {
+          "year": 1997,
+          "value": 58112
+        },
+        {
+          "year": 1998,
+          "value": 64771
+        },
+        {
+          "year": 1999,
+          "value": 71816
+        },
+        {
+          "year": 2000,
+          "value": 82534
+        },
+        {
+          "year": 2001,
+          "value": 89255
+        },
+        {
+          "year": 2002,
+          "value": 103650
+        },
+        {
+          "year": 2003,
+          "value": 119904
+        },
+        {
+          "year": 2004,
+          "value": 134131
+        },
+        {
+          "year": 2005,
+          "value": 143921
+        },
+        {
+          "year": 2006,
+          "value": 155230
+        },
+        {
+          "year": 2007,
+          "value": 170598
+        },
+        {
+          "year": 2008,
+          "value": 162912
+        },
+        {
+          "year": 2009,
+          "value": 148445
+        },
+        {
+          "year": 2010,
+          "value": 156936
+        },
+        {
+          "year": 2011,
+          "value": 154654
+        },
+        {
+          "year": 2012,
+          "value": 155269
+        },
+        {
+          "year": 2013,
+          "value": 159262
+        },
+        {
+          "year": 2014,
+          "value": 172048
+        },
+        {
+          "year": 2015,
+          "value": 182291
+        },
+        {
+          "year": 2016,
+          "value": 195035
+        },
+        {
+          "year": 2017,
+          "value": 203950
+        },
+        {
+          "year": 2018,
+          "value": 210354
+        },
+        {
+          "year": 2019,
+          "value": 212434
+        },
+        {
+          "year": 2020,
+          "value": 218522
+        },
+        {
+          "year": 2021,
+          "value": 236313
+        },
+        {
+          "year": 2022,
+          "value": 258236
+        },
+        {
+          "year": 2023,
+          "value": 258956
+        },
+        {
+          "year": 2024,
+          "value": 260532
+        },
+        {
+          "year": 2025,
+          "value": 267899
+        },
+        {
+          "year": 2026,
+          "value": 267805
+        }
+      ]
+    },
+    "house-price-nationwide": {
+      "id": "house-price-nationwide",
+      "name": "House prices (Nationwide HPI)",
+      "description": "UK Nationwide House Price Index, quarterly from Feb 1953. Aggregated to annual mean of the 'Price (All)' column. Methodology differs from Land Registry HPI — included for the longer back-series.",
+      "unit": "GBP",
+      "color": "#a78bfa",
+      "source": {
+        "name": "Nationwide via datahub.io mirror",
+        "url": "https://datahub.io/core/house-prices-uk"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1953,
+          "value": 1884
+        },
+        {
+          "year": 1954,
+          "value": 1863
+        },
+        {
+          "year": 1955,
+          "value": 1928
+        },
+        {
+          "year": 1956,
+          "value": 1996
+        },
+        {
+          "year": 1957,
+          "value": 2026
+        },
+        {
+          "year": 1958,
+          "value": 2056
+        },
+        {
+          "year": 1959,
+          "value": 2119
+        },
+        {
+          "year": 1960,
+          "value": 2263
+        },
+        {
+          "year": 1961,
+          "value": 2464
+        },
+        {
+          "year": 1962,
+          "value": 2617
+        },
+        {
+          "year": 1963,
+          "value": 2841
+        },
+        {
+          "year": 1964,
+          "value": 3104
+        },
+        {
+          "year": 1965,
+          "value": 3353
+        },
+        {
+          "year": 1966,
+          "value": 3542
+        },
+        {
+          "year": 1967,
+          "value": 3735
+        },
+        {
+          "year": 1968,
+          "value": 4010
+        },
+        {
+          "year": 1969,
+          "value": 4222
+        },
+        {
+          "year": 1970,
+          "value": 4480
+        },
+        {
+          "year": 1971,
+          "value": 5107
+        },
+        {
+          "year": 1972,
+          "value": 6960
+        },
+        {
+          "year": 1973,
+          "value": 9045
+        },
+        {
+          "year": 1974,
+          "value": 10078
+        },
+        {
+          "year": 1975,
+          "value": 10846
+        },
+        {
+          "year": 1976,
+          "value": 11867
+        },
+        {
+          "year": 1977,
+          "value": 12805
+        },
+        {
+          "year": 1978,
+          "value": 15262
+        },
+        {
+          "year": 1979,
+          "value": 19830
+        },
+        {
+          "year": 1980,
+          "value": 23288
+        },
+        {
+          "year": 1981,
+          "value": 23954
+        },
+        {
+          "year": 1982,
+          "value": 24851
+        },
+        {
+          "year": 1983,
+          "value": 27623
+        },
+        {
+          "year": 1984,
+          "value": 31076
+        },
+        {
+          "year": 1985,
+          "value": 34378
+        },
+        {
+          "year": 1986,
+          "value": 37627
+        },
+        {
+          "year": 1987,
+          "value": 43165
+        },
+        {
+          "year": 1988,
+          "value": 51405
+        },
+        {
+          "year": 1989,
+          "value": 61514
+        },
+        {
+          "year": 1990,
+          "value": 57683
+        },
+        {
+          "year": 1991,
+          "value": 54626
+        },
+        {
+          "year": 1992,
+          "value": 51815
+        },
+        {
+          "year": 1993,
+          "value": 51211
+        },
+        {
+          "year": 1994,
+          "value": 51634
+        },
+        {
+          "year": 1995,
+          "value": 51245
+        },
+        {
+          "year": 1996,
+          "value": 53394
+        },
+        {
+          "year": 1997,
+          "value": 59199
+        },
+        {
+          "year": 1998,
+          "value": 65201
+        },
+        {
+          "year": 1999,
+          "value": 71122
+        },
+        {
+          "year": 2000,
+          "value": 80366
+        },
+        {
+          "year": 2001,
+          "value": 88799
+        },
+        {
+          "year": 2002,
+          "value": 106407
+        },
+        {
+          "year": 2003,
+          "value": 127246
+        },
+        {
+          "year": 2004,
+          "value": 148658
+        },
+        {
+          "year": 2005,
+          "value": 156325
+        },
+        {
+          "year": 2006,
+          "value": 166470
+        },
+        {
+          "year": 2007,
+          "value": 181364
+        },
+        {
+          "year": 2008,
+          "value": 168973
+        },
+        {
+          "year": 2009,
+          "value": 156513
+        },
+        {
+          "year": 2010,
+          "value": 165483
+        },
+        {
+          "year": 2011,
+          "value": 165131
+        },
+        {
+          "year": 2012,
+          "value": 163628
+        },
+        {
+          "year": 2013,
+          "value": 168928
+        },
+        {
+          "year": 2014,
+          "value": 185620
+        },
+        {
+          "year": 2015,
+          "value": 193900
+        },
+        {
+          "year": 2016,
+          "value": 203771
+        },
+        {
+          "year": 2017,
+          "value": 209935
+        },
+        {
+          "year": 2018,
+          "value": 214163
+        },
+        {
+          "year": 2019,
+          "value": 215334
+        },
+        {
+          "year": 2020,
+          "value": 223050
+        },
+        {
+          "year": 2021,
+          "value": 243750
+        },
+        {
+          "year": 2022,
+          "value": 267388
+        },
+        {
+          "year": 2023,
+          "value": 259862
+        },
+        {
+          "year": 2024,
+          "value": 265240
+        },
+        {
+          "year": 2025,
+          "value": 271809
+        }
+      ]
+    },
+    "cpih": {
+      "id": "cpih",
+      "name": "Inflation (CPIH)",
+      "description": "ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. Coverage from 1988.",
+      "unit": "index",
+      "color": "#34d399",
+      "source": {
+        "name": "ONS — Consumer Prices Index (l522/mm23)",
+        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23"
+      },
+      "region": "uk",
+      "points": [
         {
           "year": 1988,
           "value": 48.2
@@ -1738,42 +2068,30 @@
         }
       ]
     },
-    "london": {
-      "medianWage": [],
-      "housePrice": [],
-      "boeRate": [],
-      "cpih": []
-    },
-    "northEast": {
-      "medianWage": [],
-      "housePrice": [],
-      "boeRate": [],
-      "cpih": []
+    "median-wage-ashe": {
+      "id": "median-wage-ashe",
+      "name": "Median wage (ASHE)",
+      "description": "UK median gross annual pay, full-time employees, from ONS ASHE Table 1. Manually curated — append to scripts/seed/ashe-annual.csv each October.",
+      "unit": "GBP",
+      "color": "#60a5fa",
+      "source": {
+        "name": "ONS — Annual Survey of Hours and Earnings, Table 1",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/allemployeesashetable1"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 2024,
+          "value": 37439
+        },
+        {
+          "year": 2025,
+          "value": 39039
+        }
+      ]
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-18T14:09:04.162Z",
-    "sources": {
-      "medianWage": {
-        "name": "ONS — Annual Survey of Hours and Earnings (ASHE)",
-        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/allemployeesashetable1",
-        "lastFetched": "2026-05-18T14:09:04.163Z"
-      },
-      "housePrice": {
-        "name": "HM Land Registry — UK House Price Index",
-        "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads",
-        "lastFetched": "2026-05-18T14:09:04.163Z"
-      },
-      "boeRate": {
-        "name": "Bank of England — Official Bank Rate history",
-        "url": "https://www.bankofengland.co.uk/boeapps/database/Bank-Rate.asp",
-        "lastFetched": "2026-05-18T14:09:04.163Z"
-      },
-      "cpih": {
-        "name": "ONS — Consumer price inflation (CPIH)",
-        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23",
-        "lastFetched": "2026-05-18T14:09:04.163Z"
-      }
-    }
+    "generatedAt": "2026-05-18T14:41:19.498Z"
   }
 }
