@@ -4,8 +4,10 @@ import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
+import { MortgageChart } from "./components/charts/MortgageChart"
 import { StatCallouts } from "./components/StatCallouts"
 import { AvosToastCalculator } from "./components/AvosToastCalculator"
+import { GenerationView } from "./components/GenerationView"
 import { ScrollyIntro } from "./components/ScrollyIntro"
 import { YearRangeBrush } from "./components/YearRangeBrush"
 import { deflateSeries } from "./lib/deflate"
@@ -290,6 +292,26 @@ function App() {
               boeRate={boeRate!}
             />
           </div>
+        </section>
+      )}
+
+      {canShowAffordability && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            What the mortgage actually costs.
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Monthly mortgage payment on a 90%-LTV, 25-year loan at the prevailing Bank Rate + 1% — as a share of estimated monthly take-home pay. The rate-vs-principal trade-off in one line: the 1980s peak (high rates, low prices) sits next to the 2020s peak (low rates, huge prices). The 30% line is the conventional "affordable" ceiling.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <MortgageChart housePrice={housePriceNationwide!} wage={wage!} boeRate={boeRate!} />
+          </div>
+        </section>
+      )}
+
+      {data && (
+        <section className="mb-20">
+          <GenerationView data={data} />
         </section>
       )}
 

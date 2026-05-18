@@ -16,7 +16,10 @@ import { fetchSeries as fetchBirths } from "./sources/births.ts"
 import { fetchSeries as fetchMigration } from "./sources/migration.ts"
 import { fetchSeries as fetchHouseholdSize } from "./sources/household-size.ts"
 
-const SOURCES = [
+// Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
+type SourceFn = () => Promise<Series | Series[]>
+
+const SOURCES: SourceFn[] = [
   fetchBoe,
   fetchLandReg,
   fetchNationwide,
@@ -38,7 +41,7 @@ const OUT_FILE = resolve(OUT_DIR, "series.json")
 async function main() {
   console.log("Running ETL…")
   const fetched = await Promise.all(SOURCES.map(safeFetch))
-  const seriesList = fetched.filter((s): s is Series => s !== null)
+  const seriesList = fetched.flat()
   const series = Object.fromEntries(seriesList.map((s) => [s.id, s]))
 
   const data: SeriesData = {
@@ -51,14 +54,17 @@ async function main() {
   console.log(`Wrote ${OUT_FILE} (${seriesList.length} series)`)
 }
 
-async function safeFetch(fn: () => Promise<Series>): Promise<Series | null> {
+async function safeFetch(fn: SourceFn): Promise<Series[]> {
   try {
-    const s = await fn()
-    console.log(`  ${s.id}: ${s.points.length} points`)
-    return s
+    const result = await fn()
+    const list = Array.isArray(result) ? result : [result]
+    for (const s of list) {
+      console.log(`  ${s.id}: ${s.points.length} points`)
+    }
+    return list
   } catch (err) {
     console.error(`  FAILED: ${(err as Error).message}`)
-    return null
+    return []
   }
 }
 
