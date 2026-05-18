@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 
 // Encode app state into URL search params so a link reproduces the view.
-// Format: ?mode=raw&base=1995&hidden=boe-rate,avocado-uk&real=1
+// Format: ?mode=raw&base=1995&hidden=boe-rate,avocado-uk&real=1&range=1968-2025
 export interface UrlState {
   mode: "indexed" | "raw"
   baseYear: number
   hiddenIds: Set<string>
   realTerms: boolean
+  range: [number, number] | null
 }
 
 const DEFAULTS: UrlState = {
@@ -14,6 +15,7 @@ const DEFAULTS: UrlState = {
   baseYear: 1995,
   hiddenIds: new Set(),
   realTerms: false,
+  range: null,
 }
 
 function parseUrl(search: string): Partial<UrlState> {
@@ -26,6 +28,15 @@ function parseUrl(search: string): Partial<UrlState> {
   const hidden = params.get("hidden")
   if (hidden) out.hiddenIds = new Set(hidden.split(",").filter(Boolean))
   if (params.get("real") === "1") out.realTerms = true
+  const range = params.get("range")
+  if (range) {
+    const m = range.match(/^(\d{4})-(\d{4})$/)
+    if (m) {
+      const a = Number(m[1])
+      const b = Number(m[2])
+      if (a < b) out.range = [a, b]
+    }
+  }
   return out
 }
 
@@ -35,6 +46,7 @@ function stringify(state: UrlState): string {
   if (state.baseYear !== DEFAULTS.baseYear) params.set("base", String(state.baseYear))
   if (state.hiddenIds.size > 0) params.set("hidden", [...state.hiddenIds].sort().join(","))
   if (state.realTerms) params.set("real", "1")
+  if (state.range) params.set("range", `${state.range[0]}-${state.range[1]}`)
   const s = params.toString()
   return s ? `?${s}` : ""
 }
@@ -47,6 +59,7 @@ export function useUrlState(initialHidden: Set<string>) {
       baseYear: parsed.baseYear ?? DEFAULTS.baseYear,
       hiddenIds: parsed.hiddenIds ?? initialHidden,
       realTerms: parsed.realTerms ?? DEFAULTS.realTerms,
+      range: parsed.range ?? DEFAULTS.range,
     }
   })
 

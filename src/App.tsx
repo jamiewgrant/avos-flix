@@ -6,6 +6,7 @@ import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { StatCallouts } from "./components/StatCallouts"
 import { AvosToastCalculator } from "./components/AvosToastCalculator"
 import { ScrollyIntro } from "./components/ScrollyIntro"
+import { YearRangeBrush } from "./components/YearRangeBrush"
 import { deflateSeries } from "./lib/deflate"
 import type { Series } from "./types/series"
 
@@ -34,7 +35,16 @@ function App() {
     )
   }, [data])
 
-  const [{ mode, baseYear, hiddenIds, realTerms }, setState] = useUrlState(initialHidden)
+  const [{ mode, baseYear, hiddenIds, realTerms, range }, setState] = useUrlState(initialHidden)
+
+  // Derive the data span across visible series for the brush bounds.
+  const dataSpan = useMemo<[number, number]>(() => {
+    const yrs = allSeries.flatMap((s) => s.points.map((p) => p.year))
+    if (yrs.length === 0) return [1950, new Date().getFullYear()]
+    return [Math.min(...yrs), Math.max(...yrs)]
+  }, [allSeries])
+  const activeRange: [number, number] = range ?? dataSpan
+  const [activeFrom, activeTo] = activeRange
 
   const cpihSeries = data?.series["cpih"]
   const cpihPoints = useMemo(() => cpihSeries?.points ?? [], [cpihSeries])
@@ -116,8 +126,29 @@ function App() {
                 series={visible}
                 mode={mode}
                 baseYear={baseYear}
-                fromYear={mode === "indexed" ? baseYear : undefined}
+                fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
+                toYear={activeTo}
               />
+
+              <div className="mt-4 px-1">
+                <YearRangeBrush
+                  min={dataSpan[0]}
+                  max={dataSpan[1]}
+                  value={activeRange}
+                  onChange={(next) =>
+                    setState((p) => ({
+                      ...p,
+                      range:
+                        next[0] === dataSpan[0] && next[1] === dataSpan[1] ? null : next,
+                    }))
+                  }
+                  presets={[
+                    { label: "All", range: dataSpan },
+                    { label: "Last 30y", range: [Math.max(dataSpan[0], dataSpan[1] - 30), dataSpan[1]] },
+                    { label: "Post-2008", range: [Math.max(dataSpan[0], 2008), dataSpan[1]] },
+                  ]}
+                />
+              </div>
 
               <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 px-1 text-sm">
                 <div className="flex items-center gap-2 text-(--color-muted)">
