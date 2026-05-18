@@ -196,7 +196,7 @@ function IndexedView({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                     >
                       {estimated.length > 1 && (
                         <LinePath
@@ -463,7 +463,7 @@ function UnitPanel({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35 }}
+                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                       >
                         {estimated.length > 1 && (
                           <LinePath

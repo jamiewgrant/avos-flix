@@ -1,5 +1,6 @@
 import { useState } from "react"
 import type { Series } from "../types/series"
+import { DepositChaseChart } from "./DepositChaseChart"
 
 interface Props {
   housePrice: Series
@@ -92,10 +93,10 @@ export function AvosToastCalculator({ housePrice }: Props) {
         <span>I'd save {formatGBP(annual)} a year.</span>
       </div>
 
-      <div className="mt-10 grid md:grid-cols-2 gap-6 items-end">
+      <div className="mt-10 grid md:grid-cols-2 gap-8 items-start">
         <div>
           <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
-            Years to a 10% UK deposit
+            Years to a 10% UK deposit (today's price)
           </div>
           <div className="text-7xl md:text-8xl font-bold text-(--color-accent) tabular-nums tracking-tighter leading-none">
             {yearsDisplay}
@@ -105,18 +106,21 @@ export function AvosToastCalculator({ housePrice }: Props) {
             <br />
             A 10% deposit is {formatGBP(deposit10pct)}.
           </div>
+          <div className="mt-5 text-sm text-(--color-muted) leading-relaxed">
+            Assumes you bank every penny saved, house prices stop rising while
+            you save, you ignore stamp duty and fees, and savings interest
+            cancels out inflation. None of those are true. The number above is
+            the <em>optimistic</em> case.
+          </div>
         </div>
-        <div className="text-(--color-muted) text-sm leading-relaxed border-l border-(--color-border) pl-6">
-          <p>That assumes:</p>
-          <ul className="mt-2 space-y-1 list-disc list-inside marker:text-(--color-accent)">
-            <li>You bank every saved penny</li>
-            <li>House prices stop rising while you save</li>
-            <li>You ignore stamp duty, mortgage fees, and surveys</li>
-            <li>Interest on the savings cancels out inflation</li>
-          </ul>
-          <p className="mt-4 text-(--color-text) opacity-80">
-            None of those are true. The number above is the optimistic case.
-          </p>
+        <div>
+          <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
+            But the target keeps moving…
+          </div>
+          <DepositChaseChart
+            annualSaving={annual}
+            currentHousePrice={housePriceNow}
+          />
         </div>
       </div>
     </section>

@@ -10,6 +10,8 @@ import { AvosToastCalculator } from "./components/AvosToastCalculator"
 import { GenerationView } from "./components/GenerationView"
 import { ScrollyIntro } from "./components/ScrollyIntro"
 import { YearRangeBrush } from "./components/YearRangeBrush"
+import { About } from "./components/About"
+import { OnboardingBanner } from "./components/OnboardingBanner"
 import { deflateSeries } from "./lib/deflate"
 import type { Series } from "./types/series"
 
@@ -120,6 +122,8 @@ function App() {
 
       {/* ─── Main interactive chart ───────────────────────────── */}
       <section className="mb-20" id="explore">
+        <OnboardingBanner />
+
         <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
           Explore the whole set.
         </h2>
@@ -320,6 +324,8 @@ function App() {
           <AvosToastCalculator housePrice={housePriceNationwide} />
         </section>
       )}
+
+      <About />
 
       {data && (
         <details className="mt-8 text-xs text-(--color-muted) font-mono">
