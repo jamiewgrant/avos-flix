@@ -1,4 +1,5 @@
-import { useMemo } from "react"
+import { useMemo, useRef, useState } from "react"
+import { toPng } from "html-to-image"
 import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
 import { Chart } from "./components/charts/Chart"
@@ -71,13 +72,35 @@ function App() {
     })
   }
 
+  const snapshotRef = useRef<HTMLDivElement>(null)
+  const [snapshotting, setSnapshotting] = useState(false)
+  async function downloadSnapshot() {
+    if (!snapshotRef.current || snapshotting) return
+    setSnapshotting(true)
+    try {
+      const dataUrl = await toPng(snapshotRef.current, {
+        backgroundColor: "#16171d",
+        pixelRatio: 2,
+        style: { borderRadius: "0px" },
+      })
+      const link = document.createElement("a")
+      link.download = `avos-flix-${mode}-${baseYear}.png`
+      link.href = dataUrl
+      link.click()
+    } catch (err) {
+      console.error("Snapshot failed:", err)
+    } finally {
+      setSnapshotting(false)
+    }
+  }
+
   const housePriceNationwide = data?.series["house-price-nationwide"]
   const wage = data?.series["median-wage"]
   const boeRate = data?.series["boe-rate"]
   const canShowAffordability = housePriceNationwide && wage && boeRate
 
   return (
-    <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
+    <main className="min-h-screen px-4 md:px-6 py-10 md:py-16 max-w-5xl mx-auto">
       <header className="text-center mb-24">
         <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
           avos<span className="text-(--color-accent)">+</span>flix
@@ -109,7 +132,10 @@ function App() {
           )}
         </p>
 
-        <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+        <div
+          ref={snapshotRef}
+          className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6"
+        >
           {loading && (
             <div className="h-[360px] grid place-items-center text-(--color-muted) text-sm">
               Loading data…
@@ -209,6 +235,15 @@ function App() {
                     ))}
                   </div>
                 </div>
+
+                <button
+                  onClick={downloadSnapshot}
+                  disabled={snapshotting}
+                  className="ml-auto px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50"
+                  title="Download this chart as a PNG"
+                >
+                  {snapshotting ? "saving…" : "↓ PNG"}
+                </button>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2 px-1">

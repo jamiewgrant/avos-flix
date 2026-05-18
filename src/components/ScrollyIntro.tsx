@@ -62,7 +62,7 @@ export function ScrollyIntro({ data }: Props) {
   return (
     <section className="mb-24">
       <div className="grid md:grid-cols-[1fr_1fr] gap-8">
-        <div className="sticky top-4 self-start z-10">
+        <div className="md:sticky md:top-4 self-start md:z-10">
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
             <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
               {activeIdx + 1} / {SCENES.length}
@@ -116,7 +116,7 @@ function SceneBlock({
   }, [onEnter])
 
   return (
-    <div ref={ref} className="min-h-[80vh] flex flex-col justify-center py-8">
+    <div ref={ref} className="min-h-[55vh] md:min-h-[80vh] flex flex-col justify-center py-8">
       <motion.div
         animate={{
           opacity: isActive ? 1 : 0.35,

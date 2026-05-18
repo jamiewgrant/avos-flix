@@ -13,7 +13,7 @@ const BG = "#0a0a0a"
 const BORDER = "#2e303a"
 const MUTED = "#9ca3af"
 const TRACK_HEIGHT = 8
-const HANDLE_R = 9
+const HANDLE_R = 11
 
 export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Props) {
   const ref = useRef<SVGSVGElement>(null)
