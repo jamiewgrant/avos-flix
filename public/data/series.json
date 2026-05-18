@@ -2071,74 +2071,174 @@
     "median-wage": {
       "id": "median-wage",
       "name": "Median wage (full-time, annual)",
-      "description": "UK median gross annual pay, full-time employees. NES (1970-1996) spliced to ASHE (1997+). ONS warns the two surveys aren't directly comparable — treat the pre-1997 portion as the best-available back-series.",
+      "description": "UK median gross annual pay, adult full-time employees. Weekly figures from the ONS NES/ASHE earnings time series × 52. Pre-1997 uses the GB sheet (NES era — UK series doesn't exist before ASHE); 1997+ uses the UK sheet. Combined male & female median.",
       "unit": "GBP",
       "color": "#60a5fa",
       "source": {
-        "name": "ONS — NES (1970-1996) + ASHE Table 1 (1997+)",
+        "name": "ONS — earnings time series of median gross weekly earnings 1968 to latest",
         "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022"
       },
       "region": "uk",
       "points": [
         {
-          "year": 1970,
-          "value": 1300
-        },
-        {
-          "year": 1975,
-          "value": 2800
-        },
-        {
-          "year": 1980,
-          "value": 5800
+          "year": 1984,
+          "value": 7400
         },
         {
           "year": 1985,
-          "value": 8400
+          "value": 7930
+        },
+        {
+          "year": 1986,
+          "value": 8518
+        },
+        {
+          "year": 1987,
+          "value": 9105
+        },
+        {
+          "year": 1988,
+          "value": 9927
+        },
+        {
+          "year": 1989,
+          "value": 10884
         },
         {
           "year": 1990,
-          "value": 12800
+          "value": 11929
+        },
+        {
+          "year": 1991,
+          "value": 12839
+        },
+        {
+          "year": 1992,
+          "value": 13759
+        },
+        {
+          "year": 1993,
+          "value": 14212
+        },
+        {
+          "year": 1994,
+          "value": 14659
         },
         {
           "year": 1995,
-          "value": 15800
+          "value": 15096
+        },
+        {
+          "year": 1996,
+          "value": 15657
         },
         {
           "year": 1997,
-          "value": 17400
+          "value": 16666
+        },
+        {
+          "year": 1998,
+          "value": 17415
+        },
+        {
+          "year": 1999,
+          "value": 17966
         },
         {
           "year": 2000,
-          "value": 19400
+          "value": 18668
+        },
+        {
+          "year": 2001,
+          "value": 19547
+        },
+        {
+          "year": 2002,
+          "value": 20327
+        },
+        {
+          "year": 2003,
+          "value": 21008
         },
         {
           "year": 2005,
-          "value": 23300
+          "value": 22422
+        },
+        {
+          "year": 2007,
+          "value": 23795
+        },
+        {
+          "year": 2008,
+          "value": 24913
+        },
+        {
+          "year": 2009,
+          "value": 25402
         },
         {
           "year": 2010,
-          "value": 25900
+          "value": 25922
+        },
+        {
+          "year": 2011,
+          "value": 25912
+        },
+        {
+          "year": 2012,
+          "value": 26317
+        },
+        {
+          "year": 2013,
+          "value": 26905
+        },
+        {
+          "year": 2014,
+          "value": 26952
         },
         {
           "year": 2015,
-          "value": 27600
+          "value": 27409
+        },
+        {
+          "year": 2016,
+          "value": 28007
+        },
+        {
+          "year": 2017,
+          "value": 28600
+        },
+        {
+          "year": 2018,
+          "value": 29552
+        },
+        {
+          "year": 2019,
+          "value": 30430
         },
         {
           "year": 2020,
-          "value": 31500
+          "value": 30456
+        },
+        {
+          "year": 2021,
+          "value": 31710
+        },
+        {
+          "year": 2022,
+          "value": 33374
         },
         {
           "year": 2023,
-          "value": 34963
+          "value": 35724
         },
         {
           "year": 2024,
-          "value": 37439
+          "value": 37872
         },
         {
           "year": 2025,
-          "value": 39039
+          "value": 39863
         }
       ]
     },
@@ -2892,6 +2992,6 @@
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-18T15:03:29.068Z"
+    "generatedAt": "2026-05-18T15:19:08.970Z"
   }
 }
