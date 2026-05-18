@@ -5,6 +5,7 @@ import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { StatCallouts } from "./components/StatCallouts"
 import { AvosToastCalculator } from "./components/AvosToastCalculator"
+import { ScrollyIntro } from "./components/ScrollyIntro"
 import { deflateSeries } from "./lib/deflate"
 import type { Series } from "./types/series"
 
@@ -60,7 +61,6 @@ function App() {
     })
   }
 
-  // Pull canonical series for the affordability + calculator widgets.
   const housePriceNationwide = data?.series["house-price-nationwide"]
   const wage = data?.series["median-wage"]
   const boeRate = data?.series["boe-rate"]
@@ -68,27 +68,33 @@ function App() {
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
-      <header className="text-center mb-16">
+      <header className="text-center mb-24">
         <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
           avos<span className="text-(--color-accent)">+</span>flix
         </h1>
         <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto">
           The numbers behind the avocado-toast argument.
         </p>
+        <div className="mt-12 text-xs text-(--color-muted) opacity-70 font-mono">
+          ↓ scroll
+        </div>
       </header>
 
-      {/* ─── Main chart ───────────────────────────────────────── */}
-      <section className="mb-20">
+      {/* ─── Scrollytelling intro ─────────────────────────────── */}
+      {data && <ScrollyIntro data={data} />}
+
+      {/* ─── Main interactive chart ───────────────────────────── */}
+      <section className="mb-20" id="explore">
         <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-          {mode === "indexed" ? "Index everything to one year." : "The raw numbers."}
+          Explore the whole set.
         </h2>
         <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
           {mode === "indexed"
-            ? `Every series rebased so ${baseYear} = 100. Lines that climb faster than the others ate more of your paycheque. Hover the chart for exact values; the gap between the lines is what doesn't fit on toast.`
-            : "Same series, native units. Pounds with pounds, percent with percent. Use this when you want to know how much, not how much faster."}
+            ? `Every series rebased so ${baseYear} = 100. Lines that climb faster than the others ate more of your paycheque. Hover for exact values; toggle anything on or off below.`
+            : "Same series, native units. Pounds with pounds, percent with percent."}
           {realTerms && (
             <span className="block mt-2 text-(--color-accent)">
-              Showing real terms (£ adjusted to {refYear} money). Years without CPIH coverage drop.
+              Showing real terms (£ in {refYear} money). Years outside CPIH coverage drop.
             </span>
           )}
         </p>
@@ -203,7 +209,6 @@ function App() {
         {data && <StatCallouts series={visible} baseYear={baseYear} />}
       </section>
 
-      {/* ─── Affordability multiplier ─────────────────────────── */}
       {canShowAffordability && (
         <section className="mb-20">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
@@ -222,7 +227,6 @@ function App() {
         </section>
       )}
 
-      {/* ─── Calculator ───────────────────────────────────────── */}
       {housePriceNationwide && (
         <section className="mb-20">
           <AvosToastCalculator housePrice={housePriceNationwide} />
