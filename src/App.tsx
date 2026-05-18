@@ -2,7 +2,10 @@ import { useMemo } from "react"
 import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
 import { Chart } from "./components/charts/Chart"
+import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { StatCallouts } from "./components/StatCallouts"
+import { AvosToastCalculator } from "./components/AvosToastCalculator"
+import { deflateSeries } from "./lib/deflate"
 import type { Series } from "./types/series"
 
 const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
@@ -30,10 +33,22 @@ function App() {
     )
   }, [data])
 
-  const [{ mode, baseYear, hiddenIds }, setState] = useUrlState(initialHidden)
+  const [{ mode, baseYear, hiddenIds, realTerms }, setState] = useUrlState(initialHidden)
 
-  const visible = allSeries.filter(
-    (s) => !hiddenIds.has(s.id) && s.points.length > 0,
+  const cpihSeries = data?.series["cpih"]
+  const cpihPoints = useMemo(() => cpihSeries?.points ?? [], [cpihSeries])
+
+  const visible = useMemo(() => {
+    const filtered = allSeries.filter(
+      (s) => !hiddenIds.has(s.id) && s.points.length > 0,
+    )
+    if (!realTerms || cpihPoints.length === 0) return filtered
+    return deflateSeries(filtered, cpihPoints).series
+  }, [allSeries, hiddenIds, realTerms, cpihPoints])
+
+  const refYear = useMemo(
+    () => (cpihPoints.length > 0 ? cpihPoints[cpihPoints.length - 1].year : new Date().getFullYear()),
+    [cpihPoints],
   )
 
   function toggle(id: string) {
@@ -44,6 +59,12 @@ function App() {
       return { ...prev, hiddenIds: next }
     })
   }
+
+  // Pull canonical series for the affordability + calculator widgets.
+  const housePriceNationwide = data?.series["house-price-nationwide"]
+  const wage = data?.series["median-wage"]
+  const boeRate = data?.series["boe-rate"]
+  const canShowAffordability = housePriceNationwide && wage && boeRate
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
@@ -56,7 +77,8 @@ function App() {
         </p>
       </header>
 
-      <section>
+      {/* ─── Main chart ───────────────────────────────────────── */}
+      <section className="mb-20">
         <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
           {mode === "indexed" ? "Index everything to one year." : "The raw numbers."}
         </h2>
@@ -64,6 +86,11 @@ function App() {
           {mode === "indexed"
             ? `Every series rebased so ${baseYear} = 100. Lines that climb faster than the others ate more of your paycheque. Hover the chart for exact values; the gap between the lines is what doesn't fit on toast.`
             : "Same series, native units. Pounds with pounds, percent with percent. Use this when you want to know how much, not how much faster."}
+          {realTerms && (
+            <span className="block mt-2 text-(--color-accent)">
+              Showing real terms (£ adjusted to {refYear} money). Years without CPIH coverage drop.
+            </span>
+          )}
         </p>
 
         <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
@@ -126,6 +153,25 @@ function App() {
                     </div>
                   </div>
                 )}
+
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>£ in</span>
+                  <div className="flex gap-1">
+                    {(["nominal", "real"] as const).map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
+                        className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                          (v === "real") === realTerms
+                            ? "bg-(--color-accent) text-black"
+                            : "bg-(--color-bg) hover:text-white"
+                        }`}
+                      >
+                        {v === "nominal" ? "Nominal" : `${refYear} £`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2 px-1">
@@ -155,32 +201,58 @@ function App() {
         </div>
 
         {data && <StatCallouts series={visible} baseYear={baseYear} />}
-
-        {data && (
-          <details className="mt-8 text-xs text-(--color-muted) font-mono">
-            <summary className="cursor-pointer hover:text-white">Sources & methodology</summary>
-            <ul className="mt-3 space-y-1.5">
-              {allSeries.map((s) => (
-                <li key={s.id}>
-                  <span style={{ color: s.color }}>●</span>{" "}
-                  <strong className="text-white/80">{s.name}</strong> — {s.description}{" "}
-                  <a
-                    className="underline hover:text-white"
-                    href={s.source.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    [{s.source.name}]
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 opacity-60">
-              Built {new Date(data.metadata.generatedAt).toLocaleDateString("en-GB")}.
-            </p>
-          </details>
-        )}
       </section>
+
+      {/* ─── Affordability multiplier ─────────────────────────── */}
+      {canShowAffordability && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            "But interest rates were 15%!"
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            How many years of median full-time salary it costs to buy the average UK house. Bank Rate on the right axis — so when somebody points to the 1980s, you can point back.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <AffordabilityChart
+              housePrice={housePriceNationwide!}
+              wage={wage!}
+              boeRate={boeRate!}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* ─── Calculator ───────────────────────────────────────── */}
+      {housePriceNationwide && (
+        <section className="mb-20">
+          <AvosToastCalculator housePrice={housePriceNationwide} />
+        </section>
+      )}
+
+      {data && (
+        <details className="mt-8 text-xs text-(--color-muted) font-mono">
+          <summary className="cursor-pointer hover:text-white">Sources & methodology</summary>
+          <ul className="mt-3 space-y-1.5">
+            {allSeries.map((s) => (
+              <li key={s.id}>
+                <span style={{ color: s.color }}>●</span>{" "}
+                <strong className="text-white/80">{s.name}</strong> — {s.description}{" "}
+                <a
+                  className="underline hover:text-white"
+                  href={s.source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  [{s.source.name}]
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 opacity-60">
+            Built {new Date(data.metadata.generatedAt).toLocaleDateString("en-GB")}.
+          </p>
+        </details>
+      )}
     </main>
   )
 }
