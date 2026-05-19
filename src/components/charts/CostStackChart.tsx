@@ -6,13 +6,14 @@ import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { line as d3Line, area as d3Area, curveMonotoneX } from "d3-shape"
 import type { Series } from "../../types/series"
-import { buildStack, netWageLine, type Persona } from "../../lib/costBasket"
+import { buildStack, type Persona, type WageBenchmark, type WagePoint } from "../../lib/costBasket"
 
 interface Props {
   series: Record<string, Series>
-  wage: Series
   persona: Persona
-  earners?: 1 | 2
+  wageData: WagePoint[]
+  earners: 1 | 2
+  benchmark: WageBenchmark
 }
 
 const MUTED = "#9ca3af"
@@ -22,14 +23,10 @@ const SURFACE = "#16171d"
 const BORDER = "#2e303a"
 const WAGE = "#ffffff"
 
-export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
+export function CostStackChart({ series, persona, wageData, earners, benchmark }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
 
   const stack = useMemo(() => buildStack(series, persona.layers), [series, persona])
-  const wageData = useMemo(
-    () => netWageLine(wage, { hasStudentLoan: persona.hasStudentLoan, hasAutoEnrolPension: persona.hasAutoEnrolPension, earners }),
-    [wage, persona, earners],
-  )
 
   const yearRange = useMemo<[number, number] | null>(() => {
     if (stack.length === 0) return null
@@ -81,7 +78,7 @@ export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
             .curve(curveMonotoneX)(stacked) ?? ""
 
         const wagePath =
-          d3Line<{ year: number; value: number }>()
+          d3Line<WagePoint>()
             .x((p) => xScale(p.year))
             .y((p) => yScale(p.value))
             .curve(curveMonotoneX)(wageInRange) ?? ""
@@ -96,11 +93,20 @@ export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
 
         const hoverStack = hovered === null ? null : stack.find((p) => p.year === hovered)
         const hoverWage = hovered === null ? null : wageData.find((p) => p.year === hovered)
-        const tooltipRows = persona.layers.length + (persona.hasStudentLoan ? 1 : 0) + (persona.hasAutoEnrolPension ? 1 : 0)
+        const tooltipRows = persona.layers.length + 2
         const tooltipH = 24 + tooltipRows * 16 + 44
 
+        const wageLineLabel =
+          earners === 2
+            ? benchmark.isAlreadyNet
+              ? `${benchmark.shortLabel} × 2 adults`
+              : `${benchmark.shortLabel} × 2 earners (net)`
+            : benchmark.isAlreadyNet
+            ? benchmark.shortLabel
+            : `${benchmark.shortLabel} (net)`
+
         return (
-          <svg width={width} height={height} role="img" aria-label="Cost-of-living basket stacked, with median net wage overlay">
+          <svg width={width} height={height} role="img" aria-label="Cost-of-living basket stacked area chart with wage overlay">
             <Group left={margin.left} top={margin.top}>
               <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
 
@@ -133,37 +139,41 @@ export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
                 />
               ))}
 
+              {/* Wage line with glow */}
               <path d={wagePath} stroke="#000" strokeWidth={4} fill="none" opacity={0.3} style={{ filter: "blur(2px)" }} />
               <path d={wagePath} stroke={WAGE} strokeWidth={2.5} fill="none" />
 
+              {/* Wage line label at right edge */}
+              {wageInRange.length > 0 && (() => {
+                const last = wageInRange[wageInRange.length - 1]
+                const ly = yScale(last.value)
+                return (
+                  <text
+                    x={innerW - 4}
+                    y={ly - 6}
+                    fill={WAGE}
+                    fontSize={9}
+                    textAnchor="end"
+                    opacity={0.7}
+                  >
+                    {wageLineLabel}
+                  </text>
+                )
+              })()}
+
               {hoverStack && (
                 <g>
-                  <line
-                    x1={xScale(hoverStack.year)}
-                    x2={xScale(hoverStack.year)}
-                    y1={0}
-                    y2={innerH}
-                    stroke={TEXT}
-                    strokeOpacity={0.5}
-                  />
+                  <line x1={xScale(hoverStack.year)} x2={xScale(hoverStack.year)} y1={0} y2={innerH} stroke={TEXT} strokeOpacity={0.5} />
                   {hoverWage && (
-                    <circle
-                      cx={xScale(hoverStack.year)}
-                      cy={yScale(hoverWage.value)}
-                      r={4}
-                      fill={WAGE}
-                      stroke={SURFACE}
-                      strokeWidth={2}
-                    />
+                    <circle cx={xScale(hoverStack.year)} cy={yScale(hoverWage.value)} r={4} fill={WAGE} stroke={SURFACE} strokeWidth={2} />
                   )}
                   <g
-                    transform={`translate(${Math.min(xScale(hoverStack.year) + 12, innerW - 232)}, 8)`}
+                    transform={`translate(${Math.min(xScale(hoverStack.year) + 12, innerW - 236)}, 8)`}
                     pointerEvents="none"
                   >
-                    <rect width={228} height={tooltipH} rx={8} fill={SURFACE} stroke={BORDER} />
-                    <text x={10} y={16} fill={TEXT} fontSize={12} fontWeight={700}>
-                      {hoverStack.year}
-                    </text>
+                    <rect width={232} height={tooltipH} rx={8} fill={SURFACE} stroke={BORDER} />
+                    <text x={10} y={16} fill={TEXT} fontSize={12} fontWeight={700}>{hoverStack.year}</text>
+
                     {persona.layers.map((layer, i) => {
                       const v = hoverStack.layers[layer.id] ?? 0
                       const pct = (v / hoverStack.total) * 100
@@ -173,27 +183,31 @@ export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
                           <text x={14} y={0} fill={MUTED} fontSize={10}>
                             {layer.label.replace(/\(.+?\)/, "").trim()}
                           </text>
-                          <text x={210} y={0} fill={TEXT} fontSize={10} fontWeight={600} textAnchor="end">
+                          <text x={214} y={0} fill={TEXT} fontSize={10} fontWeight={600} textAnchor="end">
                             £{Math.round(v).toLocaleString("en-GB")} ({pct.toFixed(0)}%)
                           </text>
                         </g>
                       )
                     })}
-                    <line x1={10} x2={218} y1={32 + persona.layers.length * 16} y2={32 + persona.layers.length * 16} stroke={BORDER} />
-                    <text x={10} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700}>
-                      Total basket
-                    </text>
-                    <text x={218} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700} textAnchor="end">
+
+                    <line x1={10} x2={222} y1={32 + persona.layers.length * 16} y2={32 + persona.layers.length * 16} stroke={BORDER} />
+                    <text x={10} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700}>Total basket</text>
+                    <text x={222} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700} textAnchor="end">
                       £{Math.round(hoverStack.total).toLocaleString("en-GB")}
                     </text>
+
                     {hoverWage && (
                       <>
                         <text x={10} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10}>
-                          {earners === 2 ? "Household take-home (×2)" : "Take-home pay"}
+                          {wageLineLabel}
                         </text>
-                        <text x={218} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10} textAnchor="end">
+                        <text x={222} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10} textAnchor="end">
                           £{Math.round(hoverWage.value).toLocaleString("en-GB")}
-                          {earners === 2 ? ` (£${Math.round(hoverWage.breakdown.net).toLocaleString("en-GB")} ea)` : ` of £${Math.round(hoverWage.breakdown.gross).toLocaleString("en-GB")}`}
+                          {earners === 2 && !benchmark.isAlreadyNet
+                            ? ` (£${Math.round(hoverWage.netPerEarner).toLocaleString("en-GB")} ea)`
+                            : !benchmark.isAlreadyNet
+                            ? ` of £${Math.round(hoverWage.grossPerEarner).toLocaleString("en-GB")}`
+                            : ""}
                         </text>
                       </>
                     )}
@@ -201,15 +215,7 @@ export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
                 </g>
               )}
 
-              <rect
-                x={0}
-                y={0}
-                width={innerW}
-                height={innerH}
-                fill="transparent"
-                onPointerMove={handleMove}
-                onPointerLeave={() => setHovered(null)}
-              />
+              <rect x={0} y={0} width={innerW} height={innerH} fill="transparent" onPointerMove={handleMove} onPointerLeave={() => setHovered(null)} />
             </Group>
           </svg>
         )
