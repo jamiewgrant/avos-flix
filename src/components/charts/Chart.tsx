@@ -10,6 +10,7 @@ import { curveMonotoneX } from "@visx/curve"
 import type { Series, Unit, YearValue } from "../../types/series"
 import { UNIT_LABEL, formatAxisValue, formatValue } from "../../types/series"
 import { splitAtVerified } from "../../lib/splitAtVerified"
+import type { Annotation } from "../../lib/annotations"
 
 export type ChartMode = "indexed" | "raw"
 
@@ -19,6 +20,7 @@ interface ChartProps {
   baseYear: number
   fromYear?: number
   toYear?: number
+  annotations?: Annotation[]
 }
 
 const MUTED = "#9ca3af"
@@ -27,9 +29,17 @@ const SURFACE = "#16171d"
 const BORDER = "#2e303a"
 const TEXT = "#e8e6e3"
 
-export function Chart({ series, mode, baseYear, fromYear, toYear }: ChartProps) {
+export function Chart({ series, mode, baseYear, fromYear, toYear, annotations }: ChartProps) {
   if (mode === "indexed") {
-    return <IndexedView series={series} baseYear={baseYear} fromYear={fromYear} toYear={toYear} />
+    return (
+      <IndexedView
+        series={series}
+        baseYear={baseYear}
+        fromYear={fromYear}
+        toYear={toYear}
+        annotations={annotations}
+      />
+    )
   }
   return <RawView series={series} fromYear={fromYear} toYear={toYear} />
 }
@@ -60,13 +70,19 @@ function IndexedView({
   baseYear,
   fromYear,
   toYear,
+  annotations,
 }: {
   series: Series[]
   baseYear: number
   fromYear?: number
   toYear?: number
+  annotations?: Annotation[]
 }) {
-  const [hovered, setHovered] = useState<number | null>(null)
+  const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
+  const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
+  const [pinned, setPinned] = useState<number | null>(null)
+  const hovered = pinned ?? hoveredRaw
+  const setHovered = setHoveredRaw
   const startYear = fromYear ?? baseYear
 
   const normalized = useMemo(() => {
@@ -186,6 +202,47 @@ function IndexedView({
                 tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
               />
 
+              {annotations?.filter((a) => a.year >= startYear && a.year <= endYear).map((a) => {
+                const cx = xScale(a.year)
+                const isHovered = hoveredAnno?.year === a.year
+                return (
+                  <g key={`anno-${a.year}`} style={{ cursor: "help" }}>
+                    <line
+                      x1={cx}
+                      x2={cx}
+                      y1={0}
+                      y2={innerH}
+                      stroke={MUTED}
+                      strokeOpacity={isHovered ? 0.6 : 0.18}
+                      strokeWidth={1}
+                      strokeDasharray="2,3"
+                    />
+                    <circle
+                      cx={cx}
+                      cy={innerH - 4}
+                      r={isHovered ? 6 : 4}
+                      fill={SURFACE}
+                      stroke={MUTED}
+                      strokeOpacity={isHovered ? 1 : 0.6}
+                      strokeWidth={1.5}
+                      onPointerEnter={() => setHoveredAnno(a)}
+                      onPointerLeave={() => setHoveredAnno(null)}
+                    />
+                    <text
+                      x={cx}
+                      y={innerH - 3}
+                      fill={MUTED}
+                      fontSize={8}
+                      textAnchor="middle"
+                      pointerEvents="none"
+                      opacity={isHovered ? 1 : 0.7}
+                    >
+                      ⓘ
+                    </text>
+                  </g>
+                )
+              })}
+
               <AnimatePresence>
                 {normalized.map((s) => {
                   const sw = hovered === null ? 2.5 : 2
@@ -246,7 +303,6 @@ function IndexedView({
                   )
                 })}
 
-              {/* Crosshair */}
               {hovered !== null && (
                 <g>
                   <line
@@ -254,9 +310,9 @@ function IndexedView({
                     x2={xScale(hovered)}
                     y1={0}
                     y2={innerH}
-                    stroke={TEXT}
-                    strokeOpacity={0.4}
-                    strokeWidth={1}
+                    stroke={pinned !== null ? "#c084fc" : TEXT}
+                    strokeOpacity={pinned !== null ? 0.7 : 0.4}
+                    strokeWidth={pinned !== null ? 1.5 : 1}
                   />
                   {tooltipItems.map((item) => (
                     <circle
@@ -272,10 +328,10 @@ function IndexedView({
                 </g>
               )}
 
-              {/* Tooltip */}
               {hovered !== null && tooltipItems.length > 0 && (
                 <TooltipBox
                   year={hovered}
+                  pinned={pinned !== null}
                   items={tooltipItems.map((i) => ({
                     id: i.id,
                     name: i.name,
@@ -287,15 +343,51 @@ function IndexedView({
                 />
               )}
 
-              {/* Overlay rect captures pointer */}
+              {hoveredAnno && (
+                <AnnotationTooltip
+                  annotation={hoveredAnno}
+                  anchorX={xScale(hoveredAnno.year)}
+                  innerW={innerW}
+                  innerH={innerH}
+                />
+              )}
+
               <rect
                 x={0}
                 y={0}
                 width={innerW}
                 height={innerH}
                 fill="transparent"
+                tabIndex={0}
+                style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default" }}
                 onPointerMove={handleMove}
-                onPointerLeave={() => setHovered(null)}
+                onPointerLeave={() => pinned === null && setHovered(null)}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const x = e.clientX - rect.left
+                  const year = Math.round(xScale.invert(x))
+                  if (year < startYear || year > endYear) {
+                    setPinned(null)
+                    return
+                  }
+                  setPinned((p) => (p === year ? null : year))
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setPinned(null)
+                    setHovered(null)
+                    return
+                  }
+                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                    e.preventDefault()
+                    const step = e.shiftKey ? 5 : 1
+                    const dir = e.key === "ArrowLeft" ? -step : step
+                    const current = hovered ?? Math.round((startYear + endYear) / 2)
+                    const next = Math.min(endYear, Math.max(startYear, current + dir))
+                    if (pinned !== null) setPinned(next)
+                    else setHovered(next)
+                  }
+                }}
               />
             </Group>
           </svg>
@@ -564,18 +656,71 @@ interface TooltipItem {
   value: string
 }
 
+function AnnotationTooltip({
+  annotation,
+  anchorX,
+  innerW,
+  innerH,
+}: {
+  annotation: Annotation
+  anchorX: number
+  innerW: number
+  innerH: number
+}) {
+  const w = 240
+  const flipLeft = anchorX + w + 12 > innerW
+  const x = flipLeft ? anchorX - w - 10 : anchorX + 10
+  const lines = wrapText(annotation.description ?? "", 36)
+  const headerH = 22
+  const lineH = 14
+  const h = headerH + lines.length * lineH + 12
+  const y = Math.max(4, innerH - h - 24)
+
+  return (
+    <g transform={`translate(${x}, ${y})`} pointerEvents="none">
+      <rect width={w} height={h} rx={8} fill={SURFACE} stroke={BORDER} strokeWidth={1} opacity={0.97} />
+      <text x={10} y={headerH - 6} fill={TEXT} fontSize={12} fontWeight={700}>
+        {annotation.year} — {annotation.label}
+      </text>
+      {lines.map((line, i) => (
+        <text key={i} x={10} y={headerH + 6 + i * lineH} fill={MUTED} fontSize={11}>
+          {line}
+        </text>
+      ))}
+    </g>
+  )
+}
+
+function wrapText(text: string, maxChars: number): string[] {
+  const words = text.split(/\s+/)
+  const lines: string[] = []
+  let current = ""
+  for (const w of words) {
+    if (current.length + w.length + 1 > maxChars) {
+      if (current) lines.push(current)
+      current = w
+    } else {
+      current = current ? `${current} ${w}` : w
+    }
+  }
+  if (current) lines.push(current)
+  return lines
+}
+
 function TooltipBox({
   year,
   items,
   anchorX,
   innerW,
   compact = false,
+  pinned = false,
 }: {
   year: number
   items: TooltipItem[]
   anchorX: number
   innerW: number
   compact?: boolean
+  pinned?: boolean
 }) {
   const rowH = compact ? 16 : 18
   const padding = 10
@@ -599,7 +744,7 @@ function TooltipBox({
         opacity={0.97}
       />
       <text x={padding} y={headerH - 6} fill={TEXT} fontSize={compact ? 11 : 12} fontWeight={700}>
-        {year}
+        {year}{pinned ? "  · pinned" : ""}
       </text>
       {items.map((item, i) => (
         <g key={item.id} transform={`translate(${padding}, ${headerH + i * rowH + 4})`}>

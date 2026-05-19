@@ -26,3 +26,49 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+body.embed {
+  background: transparent;
+}
+body.embed header,
+body.embed details,
+body.embed .chart-actions,
+body.embed nav {
+  display: none !important;
+}
+
+@media print {
+  body {
+    background: white;
+    color: #111;
+  }
+  header,
+  details,
+  .chart-actions,
+  .chart-legend input[type="search"],
+  button {
+    display: none !important;
+  }
+  .rounded-2xl,
+  .rounded-xl {
+    border-color: #ddd !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
+  h1, h2, h3, p, li {
+    color: #111 !important;
+  }
+  text {
+    fill: #333 !important;
+  }
+  line, path {
+    /* keep series colours visible on white */
+  }
+  a {
+    color: #333 !important;
+    text-decoration: underline;
+  }
+  section {
+    page-break-inside: avoid;
+  }
+}

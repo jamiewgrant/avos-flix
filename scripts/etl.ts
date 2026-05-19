@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { resolve } from "node:path"
 import type { Series, SeriesData } from "../src/types/series.ts"
 
@@ -15,6 +15,11 @@ import { fetchSeries as fetchAvocado } from "./sources/avocado.ts"
 import { fetchSeries as fetchBirths } from "./sources/births.ts"
 import { fetchSeries as fetchMigration } from "./sources/migration.ts"
 import { fetchSeries as fetchHouseholdSize } from "./sources/household-size.ts"
+import { fetchSeries as fetchTuition } from "./sources/tuition.ts"
+import { fetchSeries as fetchCouncilTax } from "./sources/council-tax.ts"
+import { fetchSeries as fetchRailFares } from "./sources/rail-fares.ts"
+import { fetchSeries as fetchMinWage } from "./sources/min-wage.ts"
+import { fetchSeries as fetchStudentDebt } from "./sources/student-debt.ts"
 
 // Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
 type SourceFn = () => Promise<Series | Series[]>
@@ -33,6 +38,11 @@ const SOURCES: SourceFn[] = [
   fetchBirths,
   fetchMigration,
   fetchHouseholdSize,
+  fetchTuition,
+  fetchCouncilTax,
+  fetchRailFares,
+  fetchMinWage,
+  fetchStudentDebt,
 ]
 
 const OUT_DIR = resolve("public", "data")
@@ -40,9 +50,17 @@ const OUT_FILE = resolve(OUT_DIR, "series.json")
 
 async function main() {
   console.log("Running ETL…")
+  const previous = await loadPrevious()
   const fetched = await Promise.all(SOURCES.map(safeFetch))
   const seriesList = fetched.flat()
-  const series = Object.fromEntries(seriesList.map((s) => [s.id, s]))
+  const series: Record<string, Series> = { ...previous }
+  for (const s of seriesList) {
+    if (s.points.length === 0 && series[s.id]?.points.length) {
+      console.log(`  ${s.id}: fetch empty, keeping previous ${series[s.id].points.length} points`)
+      continue
+    }
+    series[s.id] = s
+  }
 
   const data: SeriesData = {
     series,
@@ -51,7 +69,17 @@ async function main() {
 
   await mkdir(OUT_DIR, { recursive: true })
   await writeFile(OUT_FILE, JSON.stringify(data, null, 2))
-  console.log(`Wrote ${OUT_FILE} (${seriesList.length} series)`)
+  console.log(`Wrote ${OUT_FILE} (${Object.keys(series).length} series)`)
+}
+
+async function loadPrevious(): Promise<Record<string, Series>> {
+  try {
+    const raw = await readFile(OUT_FILE, "utf8")
+    const parsed = JSON.parse(raw) as SeriesData
+    return parsed.series ?? {}
+  } catch {
+    return {}
+  }
 }
 
 async function safeFetch(fn: SourceFn): Promise<Series[]> {

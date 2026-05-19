@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toPng } from "html-to-image"
 import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
@@ -12,7 +12,14 @@ import { ScrollyIntro } from "./components/ScrollyIntro"
 import { YearRangeBrush } from "./components/YearRangeBrush"
 import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
+import { TodaysMoney } from "./components/TodaysMoney"
+import { ThenVsNow } from "./components/ThenVsNow"
+import { ChartSkeleton } from "./components/ChartSkeleton"
+import { SourceStrip } from "./components/SourceStrip"
 import { deflateSeries } from "./lib/deflate"
+import { HISTORICAL_EVENTS } from "./lib/annotations"
+import { CATEGORY_LABELS, CATEGORY_ORDER, categoryOf } from "./lib/categories"
+import type { Category } from "./lib/categories"
 import type { Series } from "./types/series"
 
 const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
@@ -103,31 +110,79 @@ function App() {
   const boeRate = data?.series["boe-rate"]
   const canShowAffordability = housePriceNationwide && wage && boeRate
 
+  const [search, setSearch] = useState("")
+  const grouped = useMemo(() => {
+    const out = new Map<Category, Series[]>()
+    const q = search.trim().toLowerCase()
+    for (const s of allSeries) {
+      if (q && !s.name.toLowerCase().includes(q) && !s.id.toLowerCase().includes(q)) continue
+      const cat = categoryOf(s.id)
+      const arr = out.get(cat) ?? []
+      arr.push(s)
+      out.set(cat, arr)
+    }
+    return out
+  }, [allSeries, search])
+
+  const [shareToast, setShareToast] = useState<string | null>(null)
+  async function shareView() {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setShareToast("Link copied — anyone with it gets your exact view.")
+    } catch {
+      setShareToast(`Copy failed. URL: ${window.location.href}`)
+    }
+    setTimeout(() => setShareToast(null), 2800)
+  }
+
+  function resetToDefaults() {
+    setState(() => ({
+      mode: "indexed",
+      baseYear: 1995,
+      hiddenIds: new Set(initialHidden),
+      realTerms: false,
+      range: null,
+    }))
+    setSearch("")
+  }
+
+  const embedMode = useMemo(() => {
+    if (typeof window === "undefined") return false
+    return new URLSearchParams(window.location.search).get("embed") === "1"
+  }, [])
+
+  useEffect(() => {
+    if (embedMode) document.body.classList.add("embed")
+    return () => document.body.classList.remove("embed")
+  }, [embedMode])
+
   return (
-    <main className="min-h-screen px-4 md:px-6 py-10 md:py-16 max-w-5xl mx-auto">
-      <header className="text-center mb-24">
-        <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
-          avos<span className="text-(--color-accent)">+</span>flix
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto">
-          The numbers behind the avocado-toast argument.
-        </p>
-        <div className="mt-12 text-xs text-(--color-muted) opacity-70 font-mono">
-          ↓ scroll
-        </div>
-      </header>
+    <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
+      {!embedMode && (
+        <header className="text-center mb-24">
+          <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
+            avos<span className="text-(--color-accent)">+</span>flix
+          </h1>
+          <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto">
+            The numbers behind the avocado-toast argument.
+          </p>
+          <div className="mt-12 text-xs text-(--color-muted) opacity-70 font-mono">
+            ↓ scroll
+          </div>
+        </header>
+      )}
 
-      {/* ─── Scrollytelling intro ─────────────────────────────── */}
-      {data && <ScrollyIntro data={data} />}
+      {!embedMode && data && <ScrollyIntro data={data} />}
 
-      {/* ─── Main interactive chart ───────────────────────────── */}
-      <section className="mb-20" id="explore">
-        <OnboardingBanner />
+      <section className={embedMode ? "" : "mb-20"} id="explore">
+        {!embedMode && <OnboardingBanner />}
 
-        <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-          Explore the whole set.
-        </h2>
-        <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+        {!embedMode && (
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            Explore the whole set.
+          </h2>
+        )}
+        <p className={`text-(--color-muted) max-w-2xl text-lg leading-relaxed ${embedMode ? "mb-4 text-sm" : "mb-8"}`}>
           {mode === "indexed"
             ? `Every series rebased so ${baseYear} = 100. Lines that climb faster than the others ate more of your paycheque. Hover for exact values; toggle anything on or off below.`
             : "Same series, native units. Pounds with pounds, percent with percent."}
@@ -143,11 +198,7 @@ function App() {
           ref={snapshotRef}
           className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6"
         >
-          {loading && (
-            <div className="h-[360px] grid place-items-center text-(--color-muted) text-sm">
-              Loading data…
-            </div>
-          )}
+          {loading && <ChartSkeleton />}
           {error && (
             <div className="h-[360px] grid place-items-center text-(--color-danger) text-sm">
               Failed to load data: {error.message}
@@ -161,6 +212,7 @@ function App() {
                 baseYear={baseYear}
                 fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
                 toYear={activeTo}
+                annotations={HISTORICAL_EVENTS}
               />
 
               <div className="mt-4 px-1">
@@ -248,46 +300,107 @@ function App() {
                   </div>
                 </div>
 
-                <button
-                  onClick={downloadSnapshot}
-                  disabled={snapshotting}
-                  className="ml-auto px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50"
-                  title="Download this chart as a PNG"
-                >
-                  {snapshotting ? "saving…" : "↓ PNG"}
-                </button>
+                <div className="ml-auto flex items-center gap-1.5 chart-actions">
+                  <button
+                    onClick={shareView}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Copy a link to this exact view"
+                  >
+                    ↗ Share
+                  </button>
+                  <button
+                    onClick={resetToDefaults}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Reset all controls to defaults"
+                  >
+                    ↺ Reset
+                  </button>
+                  <button
+                    onClick={downloadSnapshot}
+                    disabled={snapshotting}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50"
+                    title="Download this chart as a PNG"
+                  >
+                    {snapshotting ? "saving…" : "↓ PNG"}
+                  </button>
+                </div>
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-2 px-1">
-                {allSeries.map((s) => {
-                  const isOn = !hiddenIds.has(s.id)
-                  const hasData = s.points.length > 0
+              {shareToast && (
+                <div className="mt-3 px-3 py-2 rounded-md bg-(--color-bg) border border-(--color-accent-border) text-xs text-(--color-accent)" style={{ borderColor: "rgba(192, 132, 252, 0.4)" }}>
+                  {shareToast}
+                </div>
+              )}
+
+              <div className="mt-5 px-1 chart-legend">
+                <div className="mb-3 flex items-center gap-2">
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Filter series…"
+                    className="flex-1 max-w-xs bg-(--color-bg) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-white placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent)"
+                  />
+                  <span className="text-[10px] text-(--color-muted) font-mono">
+                    {visible.length}/{allSeries.length} on
+                  </span>
+                </div>
+
+                {CATEGORY_ORDER.map((cat) => {
+                  const items = grouped.get(cat)
+                  if (!items || items.length === 0) return null
                   return (
-                    <button
-                      key={s.id}
-                      onClick={() => toggle(s.id)}
-                      disabled={!hasData}
-                      title={s.description}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition border-(--color-border) ${
-                        isOn && hasData
-                          ? "bg-(--color-bg) text-white"
-                          : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
-                      } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    >
-                      <span className="size-2.5 rounded-full" style={{ background: s.color }} />
-                      {s.name}
-                    </button>
+                    <div key={cat} className="mb-3">
+                      <div className="text-[10px] uppercase tracking-wider text-(--color-muted) font-mono mb-1.5 opacity-70">
+                        {CATEGORY_LABELS[cat]}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((s) => {
+                          const isOn = !hiddenIds.has(s.id)
+                          const hasData = s.points.length > 0
+                          return (
+                            <button
+                              key={s.id}
+                              onClick={() => toggle(s.id)}
+                              disabled={!hasData}
+                              title={s.description}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition border-(--color-border) ${
+                                isOn && hasData
+                                  ? "bg-(--color-bg) text-white"
+                                  : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
+                              } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
+                            >
+                              <span className="size-2.5 rounded-full" style={{ background: s.color }} />
+                              {s.name}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
                   )
                 })}
+                {grouped.size === 0 && (
+                  <div className="text-xs text-(--color-muted) py-2">
+                    No series match “{search}”.
+                  </div>
+                )}
+
+                <SourceStrip series={visible} />
               </div>
             </>
           )}
         </div>
 
-        {data && <StatCallouts series={visible} baseYear={baseYear} />}
+        {!embedMode && data && <StatCallouts series={visible} baseYear={baseYear} />}
       </section>
 
-      {canShowAffordability && (
+      {embedMode && (
+        <div className="mt-3 text-[10px] text-(--color-muted) font-mono text-center opacity-70">
+          via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-white">avos-flix.vercel.app</a>
+        </div>
+      )}
+
+      {!embedMode && canShowAffordability && (
         <section className="mb-20">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
             "But interest rates were 15%!"
@@ -305,7 +418,7 @@ function App() {
         </section>
       )}
 
-      {canShowAffordability && (
+      {!embedMode && canShowAffordability && (
         <section className="mb-20">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
             What the mortgage actually costs.
@@ -319,21 +432,28 @@ function App() {
         </section>
       )}
 
-      {data && (
+      {!embedMode && data && (
         <section className="mb-20">
           <GenerationView data={data} />
         </section>
       )}
 
-      {housePriceNationwide && (
+      {!embedMode && housePriceNationwide && (
         <section className="mb-20">
           <AvosToastCalculator housePrice={housePriceNationwide} />
         </section>
       )}
 
-      <About />
+      {!embedMode && data && cpihSeries && (
+        <section className="mb-20 grid gap-6 md:grid-cols-2">
+          <TodaysMoney cpih={cpihSeries} />
+          <ThenVsNow series={visible} />
+        </section>
+      )}
 
-      {data && (
+      {!embedMode && <About />}
+
+      {!embedMode && data && (
         <details className="mt-8 text-xs text-(--color-muted) font-mono">
           <summary className="cursor-pointer hover:text-white">Sources & methodology</summary>
           <ul className="mt-3 space-y-1.5">
