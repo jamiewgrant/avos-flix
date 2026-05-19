@@ -4,6 +4,50 @@ Development log for avos+flix. Entries newest-first.
 
 ---
 
+## 2026-05-19 — v0.4: more data, more rebuttals, smoother chart
+
+Twenty-item batch H shipped across four commits. Series count 20 → 27;
+three new dedicated chart sections; spotlight + CSV + colour-blind +
+fullscreen on the main chart; smooth path-morph base-year transitions;
+narrative pull-quote + FAQ + counterfactual callout; below-the-fold
+sections code-split.
+
+### Batch H/1 — data
+- **Childcare costs** (Coram, full-time nursery under-2, England) —
+  £3,000 → £16,300 nominal 1995→2026.
+- **Homeownership rate by age band** (25–34, 35–44, 55–64) — the
+  structural decline of young ownership in one cohort triple.
+- **First-time buyer average age** (~25 → ~34 since 1980).
+- **Effective income tax + NI rate** for a median earner.
+- **Graduate starting salaries** (HECSU / ISE medians, 1990–2026).
+
+### Batch H/2 — charts
+- **Rent-to-income** section with 30% affordability reference line.
+- **What-if counterfactual** — actual house prices vs the parallel
+  universe where they grew at wage rate from 1995; shaded gap.
+- **Real take-home** — nominal vs CPIH-deflated post-tax median pay; the
+  real line is flat since 2008.
+
+### Batch H/3 — UX
+- **Spotlight** — shift-click any legend chip to dim all others to 12%.
+- **CSV export** — visible series → wide-format CSV download.
+- **Annotations toggle** — show/hide event markers.
+- **Colour-blind palette** — Okabe-Ito mapping per-series id.
+- **Fullscreen** — main chart container into the browser fullscreen API.
+- **Smooth base-year transition** — d3-shape + motion.path d-attribute
+  morphing instead of fade-out/fade-in. Lines now glide.
+
+### Batch H/4 — content + polish
+- **Pull-quote** — auto-generated sentence above the chart.
+- **FAQ accordion** — six common rebuttals pre-answered.
+- **What-if callout** — single prominent counterfactual sentence.
+- **Tuition scrollytelling scene** added to the intro.
+- **ARIA labels** on icon-led control buttons.
+- **Code splitting** — below-the-fold sections lazy-loaded; initial JS
+  down ~13 KB gzip; per-chunk sizes 1-6 KB gzip.
+
+---
+
 ## 2026-05-19 — v0.3: more series, tighter UX, embed + polish
 
 Twenty-item batch G shipped across four commits. Series count 15 → 20;
