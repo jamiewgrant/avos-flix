@@ -36,6 +36,7 @@ import { ScrollyIntro } from "./components/ScrollyIntro"
 import { PullQuote } from "./components/PullQuote"
 import { Faq } from "./components/Faq"
 import { WhatIfCallout } from "./components/WhatIfCallout"
+import { CostStackSection } from "./components/CostStackSection"
 import { YearRangeBrush } from "./components/YearRangeBrush"
 import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
@@ -524,6 +525,10 @@ function App() {
         <div className="mt-3 text-[10px] text-(--color-muted) font-mono text-center opacity-70">
           via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-white">avos-flix.vercel.app</a>
         </div>
+      )}
+
+      {!embedMode && data && wage && (
+        <CostStackSection series={data.series} wage={wage} />
       )}
 
       {!embedMode && canShowAffordability && (
