@@ -4,6 +4,61 @@ Development log for avos+flix. Entries newest-first.
 
 ---
 
+## 2026-05-19 — v0.3: more series, tighter UX, embed + polish
+
+Twenty-item batch G shipped across four commits. Series count 15 → 20;
+the main chart picks up an annotations layer, click-to-pin, keyboard
+scrubbing and category-grouped/searchable legend; two new widgets (today's
+money, then-vs-now); embed mode; polish layer.
+
+### Batch G/1 — data
+- **Tuition fees (England)** — £0 (1997) → £1,000 (1998) → £3,000 (2006) →
+  £9,000 (2012) → £9,535 (2025). The single sharpest "stop drinking flat
+  whites" rebuttal.
+- **Council tax (Band D, England)** — 1980-2026, includes the 1993
+  community-charge transition (pre-1993 modelled / dashed).
+- **Rail fares index** — ORR series 1995+, modelled extension back to 1980.
+- **Minimum / Living Wage** — NMW/NLW annualised at 37.5h × 52w, 1999-2026.
+- **Student loan balance at graduation** — combined tuition + maintenance
+  loans, average outstanding on graduation day, 1995-2026.
+- ETL now preserves previously-good points when an upstream fetch returns
+  empty, so a transient 403 no longer wipes data on disk.
+
+### Batch G/2 — charts
+- **Historical events layer** — twelve annotations rendered on the indexed
+  chart (Right to Buy 1980, Big Bang 1986, Lawson peak 1989, Black
+  Wednesday 1992, BoE independence 1997, tuition introduced 1998, Northern
+  Rock 2007, GFC 2008, tuition trebled 2012, Brexit 2016, COVID 2020,
+  Truss 2022). Vertical dashed marker + hover-only descriptive popup.
+- **Today's money widget** — £X in YEAR → £Y today via CPIH.
+- **Then-vs-now widget** — pick two years, see every visible series sorted
+  by multiple change.
+
+### Batch G/3 — UX
+- **Categorised + searchable legend** — series grouped into income /
+  housing / costs / demographics / macro with a free-text filter and a
+  visible/total counter.
+- **Click-to-pin tooltip** — click any year on the indexed chart to lock
+  the crosshair. Arrow keys scrub year-by-year (shift = ±5), Escape
+  unpins. Touch users get a sticky tooltip without needing hover.
+- **Share button** — copies the current URL with a toast confirmation.
+- **Reset button** — clears mode/base/range/hidden/realTerms/search back
+  to defaults.
+- **Embed mode** — `?embed=1` strips header, scrolly intro, all sections
+  below the main chart, and adds a small "via avos-flix.vercel.app"
+  attribution. Designed for blog/article embeds.
+
+### Batch G/4 — polish
+- **Loading skeleton** — animated SVG line shimmer replaces "Loading data…"
+- **Source strip** — distinct upstreams across visible series shown as a
+  compact "Sources: ONS · Nationwide · BoE…" attribution row.
+- **Print stylesheet** — hides interactive controls and rebases palette
+  for paper.
+- **/404.html** — themed not-found page that doubles as a stat hook.
+- **/robots.txt + /sitemap.xml** — for indexers.
+
+---
+
 ## 2026-05-18 — v0.2: reach + sharper arguments + polish
 
 Built on top of v0.1 in three batches (D / E / F). All 10 features from the
