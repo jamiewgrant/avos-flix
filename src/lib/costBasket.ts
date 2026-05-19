@@ -25,11 +25,11 @@ export interface CostLayer {
 const BASE_LAYERS: CostLayer[] = [
   {
     id: "housing",
-    label: "Housing (rent or mortgage interest)",
+    label: "Housing — FTB mortgage payment",
     color: "#a78bfa",
     refValue: 9000,
-    driverId: "rent-index",
-    hint: "Scaled by the rent index — a proxy for shelter cost whether you rent or service a mortgage.",
+    driverId: "mortgage-payment-ftb",
+    hint: "Annual mortgage payment for a first-time buyer on the average UK house: 15% deposit, 25-year term, rate = Bank Rate + 1.5%. Captures the combined squeeze of house prices AND interest rates.",
   },
   {
     id: "energy",
@@ -37,6 +37,14 @@ const BASE_LAYERS: CostLayer[] = [
     color: "#f43f5e",
     refValue: 1256,
     driverId: "energy-cost",
+  },
+  {
+    id: "water",
+    label: "Water + sewerage",
+    color: "#38bdf8",
+    refValue: 415,
+    driverId: "cpih",
+    hint: "Average household water and sewerage bill. Scaled by CPIH as a conservative proxy — Ofwat-regulated bills have grown roughly in line with inflation.",
   },
   {
     id: "council-tax",
@@ -47,11 +55,19 @@ const BASE_LAYERS: CostLayer[] = [
   },
   {
     id: "transport",
-    label: "Transport (rail / commuting)",
+    label: "Transport (rail, bus, car running)",
     color: "#22d3ee",
-    refValue: 1500,
+    refValue: 2500,
     driverId: "rail-fares",
-    hint: "Rail fare index used as a proxy for the broader transport bill.",
+    hint: "Rail fare index used as the driver but the £ value covers the broader transport bill (rail, bus, car running costs). A conservative proxy — car insurance has actually risen far faster than rail fares.",
+  },
+  {
+    id: "comms",
+    label: "Broadband + mobile",
+    color: "#94a3b8",
+    refValue: 480,
+    driverId: "cpih",
+    hint: "Home broadband + one mobile contract. Tracked by CPIH; in reality didn't really exist as a household bill before ~2000.",
   },
   {
     id: "groceries",
@@ -59,7 +75,7 @@ const BASE_LAYERS: CostLayer[] = [
     color: "#eab308",
     refValue: 5200,
     driverId: "cpih",
-    hint: "Everything else in the shopping basket. Scaled by general CPIH inflation.",
+    hint: "Food, household goods, clothing. Scaled by CPIH — food prices specifically rose 20%+ in 2022-23 alone, so this is conservative.",
   },
 ]
 
@@ -231,10 +247,53 @@ export interface StackPoint {
   total: number
 }
 
+// Synthesize a first-time-buyer mortgage payment series from house
+// prices + Bank Rate. Assumes 15% deposit, 25-year term, mortgage rate
+// = Bank Rate + 1.5pp margin. This captures the combined effect of
+// rising house prices AND rising interest rates — the actual mortgage
+// squeeze, which the rent index alone misses.
+function syntheticMortgageFtb(series: Record<string, Series>): Series | null {
+  const hp = series["house-price-landreg"] || series["house-price-nationwide"]
+  const rate = series["boe-rate"]
+  if (!hp || !rate) return null
+  const rateMap = new Map(rate.points.map((p) => [p.year, p.value]))
+  const TERM_MONTHS = 25 * 12
+  const DEPOSIT = 0.15
+  const MARGIN = 1.5
+  const points = hp.points
+    .filter((p) => rateMap.has(p.year))
+    .map((p) => {
+      const annualRate = (rateMap.get(p.year)! + MARGIN) / 100
+      const loan = p.value * (1 - DEPOSIT)
+      const m = annualRate / 12
+      const monthly =
+        m === 0
+          ? loan / TERM_MONTHS
+          : (loan * m * Math.pow(1 + m, TERM_MONTHS)) / (Math.pow(1 + m, TERM_MONTHS) - 1)
+      return { year: p.year, value: monthly * 12 }
+    })
+  return {
+    id: "mortgage-payment-ftb",
+    name: "First-time buyer mortgage payment (synthesized)",
+    unit: "GBP",
+    color: "#a78bfa",
+    source: hp.source,
+    region: hp.region,
+    points,
+  }
+}
+
 export function buildStack(
-  series: Record<string, Series>,
+  rawSeries: Record<string, Series>,
   layers: CostLayer[] = BASE_LAYERS,
 ): StackPoint[] {
+  // Inject synthesized drivers if any layer needs them.
+  const series: Record<string, Series> = { ...rawSeries }
+  if (!series["mortgage-payment-ftb"]) {
+    const m = syntheticMortgageFtb(rawSeries)
+    if (m) series["mortgage-payment-ftb"] = m
+  }
+
   const driverMaps = new Map<string, Map<number, number>>()
   for (const layer of layers) {
     const s = series[layer.driverId]
