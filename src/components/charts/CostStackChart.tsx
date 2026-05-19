@@ -12,6 +12,7 @@ interface Props {
   series: Record<string, Series>
   wage: Series
   persona: Persona
+  earners?: 1 | 2
 }
 
 const MUTED = "#9ca3af"
@@ -21,13 +22,13 @@ const SURFACE = "#16171d"
 const BORDER = "#2e303a"
 const WAGE = "#ffffff"
 
-export function CostStackChart({ series, wage, persona }: Props) {
+export function CostStackChart({ series, wage, persona, earners = 1 }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
 
   const stack = useMemo(() => buildStack(series, persona.layers), [series, persona])
   const wageData = useMemo(
-    () => netWageLine(wage, { hasStudentLoan: persona.hasStudentLoan, hasAutoEnrolPension: persona.hasAutoEnrolPension }),
-    [wage, persona],
+    () => netWageLine(wage, { hasStudentLoan: persona.hasStudentLoan, hasAutoEnrolPension: persona.hasAutoEnrolPension, earners }),
+    [wage, persona, earners],
   )
 
   const yearRange = useMemo<[number, number] | null>(() => {
@@ -188,10 +189,11 @@ export function CostStackChart({ series, wage, persona }: Props) {
                     {hoverWage && (
                       <>
                         <text x={10} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10}>
-                          Take-home pay
+                          {earners === 2 ? "Household take-home (×2)" : "Take-home pay"}
                         </text>
                         <text x={218} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10} textAnchor="end">
-                          £{Math.round(hoverWage.value).toLocaleString("en-GB")} of £{Math.round(hoverWage.breakdown.gross).toLocaleString("en-GB")}
+                          £{Math.round(hoverWage.value).toLocaleString("en-GB")}
+                          {earners === 2 ? ` (£${Math.round(hoverWage.breakdown.net).toLocaleString("en-GB")} ea)` : ` of £${Math.round(hoverWage.breakdown.gross).toLocaleString("en-GB")}`}
                         </text>
                       </>
                     )}
