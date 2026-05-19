@@ -79,7 +79,10 @@ function IndexedView({
   annotations?: Annotation[]
 }) {
   const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
-  const [hovered, setHovered] = useState<number | null>(null)
+  const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
+  const [pinned, setPinned] = useState<number | null>(null)
+  const hovered = pinned ?? hoveredRaw
+  const setHovered = setHoveredRaw
   const startYear = fromYear ?? baseYear
 
   const normalized = useMemo(() => {
@@ -300,7 +303,6 @@ function IndexedView({
                   )
                 })}
 
-              {/* Crosshair */}
               {hovered !== null && (
                 <g>
                   <line
@@ -308,9 +310,9 @@ function IndexedView({
                     x2={xScale(hovered)}
                     y1={0}
                     y2={innerH}
-                    stroke={TEXT}
-                    strokeOpacity={0.4}
-                    strokeWidth={1}
+                    stroke={pinned !== null ? "#c084fc" : TEXT}
+                    strokeOpacity={pinned !== null ? 0.7 : 0.4}
+                    strokeWidth={pinned !== null ? 1.5 : 1}
                   />
                   {tooltipItems.map((item) => (
                     <circle
@@ -326,10 +328,10 @@ function IndexedView({
                 </g>
               )}
 
-              {/* Tooltip */}
               {hovered !== null && tooltipItems.length > 0 && (
                 <TooltipBox
                   year={hovered}
+                  pinned={pinned !== null}
                   items={tooltipItems.map((i) => ({
                     id: i.id,
                     name: i.name,
@@ -341,7 +343,7 @@ function IndexedView({
                 />
               )}
 
-              {hoveredAnno && hovered === null && (
+              {hoveredAnno && (
                 <AnnotationTooltip
                   annotation={hoveredAnno}
                   anchorX={xScale(hoveredAnno.year)}
@@ -350,15 +352,42 @@ function IndexedView({
                 />
               )}
 
-              {/* Overlay rect captures pointer */}
               <rect
                 x={0}
                 y={0}
                 width={innerW}
                 height={innerH}
                 fill="transparent"
+                tabIndex={0}
+                style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default" }}
                 onPointerMove={handleMove}
-                onPointerLeave={() => setHovered(null)}
+                onPointerLeave={() => pinned === null && setHovered(null)}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const x = e.clientX - rect.left
+                  const year = Math.round(xScale.invert(x))
+                  if (year < startYear || year > endYear) {
+                    setPinned(null)
+                    return
+                  }
+                  setPinned((p) => (p === year ? null : year))
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setPinned(null)
+                    setHovered(null)
+                    return
+                  }
+                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                    e.preventDefault()
+                    const step = e.shiftKey ? 5 : 1
+                    const dir = e.key === "ArrowLeft" ? -step : step
+                    const current = hovered ?? Math.round((startYear + endYear) / 2)
+                    const next = Math.min(endYear, Math.max(startYear, current + dir))
+                    if (pinned !== null) setPinned(next)
+                    else setHovered(next)
+                  }
+                }}
               />
             </Group>
           </svg>
@@ -684,12 +713,14 @@ function TooltipBox({
   anchorX,
   innerW,
   compact = false,
+  pinned = false,
 }: {
   year: number
   items: TooltipItem[]
   anchorX: number
   innerW: number
   compact?: boolean
+  pinned?: boolean
 }) {
   const rowH = compact ? 16 : 18
   const padding = 10
@@ -713,7 +744,7 @@ function TooltipBox({
         opacity={0.97}
       />
       <text x={padding} y={headerH - 6} fill={TEXT} fontSize={compact ? 11 : 12} fontWeight={700}>
-        {year}
+        {year}{pinned ? "  · pinned" : ""}
       </text>
       {items.map((item, i) => (
         <g key={item.id} transform={`translate(${padding}, ${headerH + i * rowH + 4})`}>
