@@ -14,6 +14,8 @@ import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
 import { TodaysMoney } from "./components/TodaysMoney"
 import { ThenVsNow } from "./components/ThenVsNow"
+import { ChartSkeleton } from "./components/ChartSkeleton"
+import { SourceStrip } from "./components/SourceStrip"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { CATEGORY_LABELS, CATEGORY_ORDER, categoryOf } from "./lib/categories"
@@ -196,11 +198,7 @@ function App() {
           ref={snapshotRef}
           className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6"
         >
-          {loading && (
-            <div className="h-[360px] grid place-items-center text-(--color-muted) text-sm">
-              Loading data…
-            </div>
-          )}
+          {loading && <ChartSkeleton />}
           {error && (
             <div className="h-[360px] grid place-items-center text-(--color-danger) text-sm">
               Failed to load data: {error.message}
@@ -386,6 +384,8 @@ function App() {
                     No series match “{search}”.
                   </div>
                 )}
+
+                <SourceStrip series={visible} />
               </div>
             </>
           )}

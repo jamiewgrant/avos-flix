@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>404 — avos+flix</title>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --surface: #16171d;
+        --text: #e8e6e3;
+        --muted: #9ca3af;
+        --accent: #c084fc;
+        --border: #2e303a;
+      }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        max-width: 480px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 4rem;
+        font-weight: 600;
+        margin: 0 0 .5rem;
+        letter-spacing: -0.02em;
+      }
+      h1 .accent { color: var(--accent); }
+      p { color: var(--muted); line-height: 1.6; }
+      .code {
+        font-family: ui-monospace, Consolas, monospace;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: .25rem .5rem;
+        border-radius: .25rem;
+        color: var(--text);
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid currentColor;
+      }
+      a:hover { color: white; }
+      .stat {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: .9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>4<span class="accent">0</span>4</h1>
+      <p>That URL isn't on the chart.</p>
+      <p>
+        <a href="/">← Back to avos<span style="color:var(--accent)">+</span>flix</a>
+      </p>
+      <div class="stat">
+        While you're here: UK house prices grew <span class="code">5.0×</span>
+        since 1995. Wages grew <span class="code">2.6×</span>.
+      </div>
+    </div>
+  </body>
+</html>
