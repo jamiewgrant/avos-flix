@@ -92,6 +92,51 @@ const CHILDCARE_LAYER: CostLayer = {
 // COST_LAYERS exported for back-compat with the legacy headline summary.
 export const COST_LAYERS: CostLayer[] = BASE_LAYERS
 
+// ---------- Wage benchmarks ----------
+
+export type WageBenchmarkId = "ashe-ft" | "gdhi" | "grad"
+
+export interface WageBenchmark {
+  id: WageBenchmarkId
+  shortLabel: string
+  label: string
+  description: string
+  seriesId: string
+  // GDHI is already post-tax disposable income — skip deduction model.
+  isAlreadyNet: boolean
+}
+
+export const WAGE_BENCHMARKS: WageBenchmark[] = [
+  {
+    id: "ashe-ft",
+    shortLabel: "ASHE FT",
+    label: "ASHE full-time median",
+    description: "ONS median gross pay for full-time employees. The highest benchmark — excludes part-time workers (~25% of workforce) and self-employed (~15%).",
+    seriesId: "median-wage",
+    isAlreadyNet: false,
+  },
+  {
+    id: "gdhi",
+    shortLabel: "GDHI / head",
+    label: "ONS GDHI per head",
+    description: "ONS Household Disposable Income per adult, averaged across everyone — full-time, part-time, self-employed, and non-working. Already post-tax.",
+    seriesId: "household-income",
+    isAlreadyNet: true,
+  },
+  {
+    id: "grad",
+    shortLabel: "Grad entry",
+    label: "Graduate starting salary",
+    description: "HECSU/ISE median graduate starting salary — the floor for a graduate household before pay grows with experience. Most conservative for an early-career young family.",
+    seriesId: "grad-salary",
+    isAlreadyNet: false,
+  },
+]
+
+export function wageBenchmarkById(id: WageBenchmarkId): WageBenchmark {
+  return WAGE_BENCHMARKS.find((b) => b.id === id) ?? WAGE_BENCHMARKS[0]
+}
+
 export type PersonaId = "settled" | "young-family"
 
 export interface Persona {
@@ -102,8 +147,8 @@ export interface Persona {
   layers: CostLayer[]
   hasStudentLoan: boolean
   hasAutoEnrolPension: boolean
-  // Default number of earners for this persona's household income.
   defaultEarners: 1 | 2
+  defaultWageBenchmark: WageBenchmarkId
 }
 
 export const PERSONAS: Persona[] = [
@@ -116,16 +161,18 @@ export const PERSONAS: Persona[] = [
     hasStudentLoan: false,
     hasAutoEnrolPension: false,
     defaultEarners: 1,
+    defaultWageBenchmark: "ashe-ft",
   },
   {
     id: "young-family",
     label: "Young graduate family — one under-2 in nursery, Plan 2 loan, auto-enrolled",
     shortLabel: "Young family",
-    description: "Both parents work full-time at median wage (they have to — nursery costs nearly a full salary). Post-2012 graduates, Plan 2 student loans, auto-enrolled pension.",
+    description: "Post-2012 graduates, one under-2 in full-time nursery, Plan 2 student loans, auto-enrolled pension.",
     layers: [...BASE_LAYERS, CHILDCARE_LAYER],
     hasStudentLoan: true,
     hasAutoEnrolPension: true,
     defaultEarners: 2,
+    defaultWageBenchmark: "gdhi",
   },
 ]
 
@@ -342,10 +389,8 @@ export function buildStack(
   return out
 }
 
-// Net-of-deductions wage line for a given persona. Replaces the old
-// flat `gross × 0.78` proxy with year-aware tax/NI/SL/pension.
-// `earners` multiplies the resulting net pay to represent a household
-// with multiple full-time earners (all on the same gross wage).
+// Net-of-deductions wage line. `earners` multiplies net pay to represent
+// a household with multiple full-time earners on the same gross wage.
 export function netWageLine(
   wage: Series,
   opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean; earners?: number } = {},
@@ -357,8 +402,50 @@ export function netWageLine(
   })
 }
 
-// Back-compat alias used by old callers — keep so any other code path
-// still resolves. Equivalent to settled-persona net.
+export interface WagePoint {
+  year: number
+  value: number
+  // Per-earner gross and net for tooltip display.
+  grossPerEarner: number
+  netPerEarner: number
+  // Only set when deductions were modelled (isAlreadyNet=false).
+  breakdown: NetPayBreakdown | null
+}
+
+// Single entry-point that handles all three wage benchmarks.
+// For GDHI (isAlreadyNet=true) the series value is already disposable;
+// deductions are not applied. For ASHE-FT and grad, the tax model runs.
+export function resolveWageLine(
+  allSeries: Record<string, Series>,
+  benchmark: WageBenchmark,
+  deductionOpts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean },
+  earners: number,
+): WagePoint[] {
+  const src = allSeries[benchmark.seriesId]
+  if (!src) return []
+  return src.points.map((p) => {
+    if (benchmark.isAlreadyNet) {
+      return {
+        year: p.year,
+        value: p.value * earners,
+        grossPerEarner: p.value,
+        netPerEarner: p.value,
+        breakdown: null,
+      }
+    }
+    const b = netPayDetail(p.value, p.year, deductionOpts)
+    return {
+      year: p.year,
+      value: b.net * earners,
+      grossPerEarner: b.gross,
+      netPerEarner: b.net,
+      breakdown: b,
+    }
+  })
+}
+
+// Back-compat alias — used by other parts of the app that only need
+// the settled-persona net wage.
 export function wageLine(
   wage: Series,
 ): Array<{ year: number; value: number }> {
@@ -366,3 +453,4 @@ export function wageLine(
     (p) => ({ year: p.year, value: p.value }),
   )
 }
+
