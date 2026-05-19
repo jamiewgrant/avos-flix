@@ -217,6 +217,12 @@ function App() {
     <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
       {!embedMode && (
         <header className="text-center mb-24">
+          <img
+            src="/avos_flix_logo.svg"
+            alt=""
+            aria-hidden="true"
+            className="mx-auto h-24 md:h-28 w-auto mb-6"
+          />
           <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
             avos<span className="text-(--color-accent)">+</span>flix
           </h1>
