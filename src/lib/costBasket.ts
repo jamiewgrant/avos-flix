@@ -84,9 +84,10 @@ export interface Persona {
   shortLabel: string
   description: string
   layers: CostLayer[]
-  // Wage-side deductions to apply when computing take-home pay.
   hasStudentLoan: boolean
   hasAutoEnrolPension: boolean
+  // Default number of earners for this persona's household income.
+  defaultEarners: 1 | 2
 }
 
 export const PERSONAS: Persona[] = [
@@ -98,15 +99,17 @@ export const PERSONAS: Persona[] = [
     layers: BASE_LAYERS,
     hasStudentLoan: false,
     hasAutoEnrolPension: false,
+    defaultEarners: 1,
   },
   {
     id: "young-family",
     label: "Young graduate family — one under-2 in nursery, Plan 2 loan, auto-enrolled",
     shortLabel: "Young family",
-    description: "Post-2012 graduate, one child in full-time nursery, repaying Plan 2 student loan, auto-enrolled in workplace pension.",
+    description: "Both parents work full-time at median wage (they have to — nursery costs nearly a full salary). Post-2012 graduates, Plan 2 student loans, auto-enrolled pension.",
     layers: [...BASE_LAYERS, CHILDCARE_LAYER],
     hasStudentLoan: true,
     hasAutoEnrolPension: true,
+    defaultEarners: 2,
   },
 ]
 
@@ -282,13 +285,16 @@ export function buildStack(
 
 // Net-of-deductions wage line for a given persona. Replaces the old
 // flat `gross × 0.78` proxy with year-aware tax/NI/SL/pension.
+// `earners` multiplies the resulting net pay to represent a household
+// with multiple full-time earners (all on the same gross wage).
 export function netWageLine(
   wage: Series,
-  opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean } = {},
+  opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean; earners?: number } = {},
 ): Array<{ year: number; value: number; breakdown: NetPayBreakdown }> {
+  const earners = opts.earners ?? 1
   return wage.points.map((p) => {
     const b = netPayDetail(p.value, p.year, opts)
-    return { year: p.year, value: b.net, breakdown: b }
+    return { year: p.year, value: b.net * earners, breakdown: b }
   })
 }
 
