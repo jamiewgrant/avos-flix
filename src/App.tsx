@@ -12,7 +12,10 @@ import { ScrollyIntro } from "./components/ScrollyIntro"
 import { YearRangeBrush } from "./components/YearRangeBrush"
 import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
+import { TodaysMoney } from "./components/TodaysMoney"
+import { ThenVsNow } from "./components/ThenVsNow"
 import { deflateSeries } from "./lib/deflate"
+import { HISTORICAL_EVENTS } from "./lib/annotations"
 import type { Series } from "./types/series"
 
 const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
@@ -161,6 +164,7 @@ function App() {
                 baseYear={baseYear}
                 fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
                 toYear={activeTo}
+                annotations={HISTORICAL_EVENTS}
               />
 
               <div className="mt-4 px-1">
@@ -328,6 +332,13 @@ function App() {
       {housePriceNationwide && (
         <section className="mb-20">
           <AvosToastCalculator housePrice={housePriceNationwide} />
+        </section>
+      )}
+
+      {data && cpihSeries && (
+        <section className="mb-20 grid gap-6 md:grid-cols-2">
+          <TodaysMoney cpih={cpihSeries} />
+          <ThenVsNow series={visible} />
         </section>
       )}
 
