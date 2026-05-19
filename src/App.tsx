@@ -217,9 +217,13 @@ function App() {
     <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
       {!embedMode && (
         <header className="text-center mb-24">
-          <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
-            avos<span className="text-(--color-accent)">+</span>flix
-          </h1>
+          <img
+            src="/avos_flix_logo.svg"
+            alt="avos+flix"
+            className="mx-auto h-32 md:h-40 w-auto"
+            width={160}
+            height={160}
+          />
           <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto">
             The numbers behind the avocado-toast argument.
           </p>
