@@ -22,6 +22,9 @@ import { SourceStrip } from "./components/SourceStrip"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { CATEGORY_LABELS, CATEGORY_ORDER, categoryOf } from "./lib/categories"
+import { applyPalette } from "./lib/palette"
+import type { PaletteMode } from "./lib/palette"
+import { seriesToCsv, downloadCsv } from "./lib/csv"
 import type { Category } from "./lib/categories"
 import type { Series } from "./types/series"
 
@@ -127,6 +130,31 @@ function App() {
     return out
   }, [allSeries, search])
 
+  const [spotlightId, setSpotlightId] = useState<string | null>(null)
+  const [showAnnotations, setShowAnnotations] = useState(true)
+  const [palette, setPalette] = useState<PaletteMode>("default")
+  const palettedAllSeries = useMemo(() => applyPalette(allSeries, palette), [allSeries, palette])
+  const palettedVisible = useMemo(() => applyPalette(visible, palette), [visible, palette])
+
+  function exportCsv() {
+    const csv = seriesToCsv(palettedVisible)
+    downloadCsv(csv, `avos-flix-${new Date().toISOString().slice(0, 10)}.csv`)
+  }
+
+  const chartContainerRef = useRef<HTMLDivElement>(null)
+  async function toggleFullscreen() {
+    if (!chartContainerRef.current) return
+    if (document.fullscreenElement) {
+      await document.exitFullscreen()
+    } else {
+      try {
+        await chartContainerRef.current.requestFullscreen()
+      } catch {
+        // Some browsers / sandboxed iframes block fullscreen — ignore
+      }
+    }
+  }
+
   const [shareToast, setShareToast] = useState<string | null>(null)
   async function shareView() {
     try {
@@ -147,6 +175,9 @@ function App() {
       range: null,
     }))
     setSearch("")
+    setSpotlightId(null)
+    setShowAnnotations(true)
+    setPalette("default")
   }
 
   const embedMode = useMemo(() => {
@@ -210,12 +241,13 @@ function App() {
           {data && (
             <>
               <Chart
-                series={visible}
+                series={palettedVisible}
                 mode={mode}
                 baseYear={baseYear}
                 fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
                 toYear={activeTo}
-                annotations={HISTORICAL_EVENTS}
+                annotations={showAnnotations ? HISTORICAL_EVENTS : []}
+                spotlightId={spotlightId}
               />
 
               <div className="mt-4 px-1">
@@ -303,7 +335,47 @@ function App() {
                   </div>
                 </div>
 
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>Events</span>
+                  <button
+                    onClick={() => setShowAnnotations((v) => !v)}
+                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                      showAnnotations ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                    }`}
+                    title="Show/hide historical event markers"
+                  >
+                    {showAnnotations ? "On" : "Off"}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>Palette</span>
+                  <button
+                    onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
+                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                      palette === "cb" ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                    }`}
+                    title="Swap to a colour-blind-safe (Okabe-Ito) palette"
+                  >
+                    {palette === "cb" ? "CB-safe" : "Default"}
+                  </button>
+                </div>
+
                 <div className="ml-auto flex items-center gap-1.5 chart-actions">
+                  <button
+                    onClick={toggleFullscreen}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Toggle fullscreen"
+                  >
+                    ⤢ Full
+                  </button>
+                  <button
+                    onClick={exportCsv}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Download visible series as CSV"
+                  >
+                    ↓ CSV
+                  </button>
                   <button
                     onClick={shareView}
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
@@ -336,7 +408,7 @@ function App() {
               )}
 
               <div className="mt-5 px-1 chart-legend">
-                <div className="mb-3 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 flex-wrap">
                   <input
                     type="search"
                     value={search}
@@ -345,8 +417,16 @@ function App() {
                     className="flex-1 max-w-xs bg-(--color-bg) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-white placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent)"
                   />
                   <span className="text-[10px] text-(--color-muted) font-mono">
-                    {visible.length}/{allSeries.length} on
+                    {visible.length}/{allSeries.length} on · shift-click to spotlight
                   </span>
+                  {spotlightId && (
+                    <button
+                      onClick={() => setSpotlightId(null)}
+                      className="text-[10px] font-mono text-(--color-accent) hover:text-white underline underline-offset-2"
+                    >
+                      clear spotlight
+                    </button>
+                  )}
                 </div>
 
                 {CATEGORY_ORDER.map((cat) => {
@@ -358,20 +438,31 @@ function App() {
                         {CATEGORY_LABELS[cat]}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {items.map((s) => {
+                        {items.map((sOrig) => {
+                          const s = palettedAllSeries.find((x) => x.id === sOrig.id) ?? sOrig
                           const isOn = !hiddenIds.has(s.id)
                           const hasData = s.points.length > 0
+                          const isSpot = spotlightId === s.id
                           return (
                             <button
                               key={s.id}
-                              onClick={() => toggle(s.id)}
+                              onClick={(e) => {
+                                if (e.shiftKey) {
+                                  setSpotlightId((cur) => (cur === s.id ? null : s.id))
+                                } else {
+                                  toggle(s.id)
+                                }
+                              }}
                               disabled={!hasData}
-                              title={s.description}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition border-(--color-border) ${
+                              title={`${s.description}\n\nClick to toggle. Shift-click to spotlight.`}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition ${
+                                isSpot ? "border-(--color-accent) ring-1 ring-(--color-accent)" : "border-(--color-border)"
+                              } ${
                                 isOn && hasData
                                   ? "bg-(--color-bg) text-white"
                                   : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
                               } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
+                              style={isSpot ? { borderColor: "var(--color-accent)" } : undefined}
                             >
                               <span className="size-2.5 rounded-full" style={{ background: s.color }} />
                               {s.name}
