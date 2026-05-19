@@ -3111,9 +3111,523 @@
           "value": 47600
         }
       ]
+    },
+    "childcare-cost": {
+      "id": "childcare-cost",
+      "name": "Full-time nursery (England, under-2, annual)",
+      "description": "Annual cost of full-time (50h/week) nursery for a child under 2 in England. Coram Family & Childcare conducts the canonical annual survey; nominal £, sticker price (before any government support). Pre-2003 modelled from CPI-trended estimates of historical part-time rates (dashed).",
+      "unit": "GBP",
+      "color": "#fde047",
+      "source": {
+        "name": "Coram Family & Childcare — Childcare Survey",
+        "url": "https://www.coram.org.uk/our-impact/childcare-survey/"
+      },
+      "region": "england",
+      "verifiedFrom": 2003,
+      "points": [
+        {
+          "year": 1995,
+          "value": 3000
+        },
+        {
+          "year": 2000,
+          "value": 5000
+        },
+        {
+          "year": 2003,
+          "value": 7100
+        },
+        {
+          "year": 2005,
+          "value": 7950
+        },
+        {
+          "year": 2007,
+          "value": 8750
+        },
+        {
+          "year": 2009,
+          "value": 9600
+        },
+        {
+          "year": 2011,
+          "value": 9950
+        },
+        {
+          "year": 2013,
+          "value": 10550
+        },
+        {
+          "year": 2015,
+          "value": 11100
+        },
+        {
+          "year": 2017,
+          "value": 11600
+        },
+        {
+          "year": 2019,
+          "value": 12350
+        },
+        {
+          "year": 2021,
+          "value": 13150
+        },
+        {
+          "year": 2023,
+          "value": 14250
+        },
+        {
+          "year": 2024,
+          "value": 15100
+        },
+        {
+          "year": 2025,
+          "value": 15700
+        },
+        {
+          "year": 2026,
+          "value": 16300
+        }
+      ]
+    },
+    "homeownership-25-34": {
+      "id": "homeownership-25-34",
+      "name": "Homeownership rate (25–34)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#f87171",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 60
+        },
+        {
+          "year": 1991,
+          "value": 67
+        },
+        {
+          "year": 2001,
+          "value": 59
+        },
+        {
+          "year": 2011,
+          "value": 43
+        },
+        {
+          "year": 2014,
+          "value": 36
+        },
+        {
+          "year": 2017,
+          "value": 35
+        },
+        {
+          "year": 2019,
+          "value": 41
+        },
+        {
+          "year": 2021,
+          "value": 41
+        },
+        {
+          "year": 2023,
+          "value": 39
+        },
+        {
+          "year": 2025,
+          "value": 39
+        }
+      ]
+    },
+    "homeownership-35-44": {
+      "id": "homeownership-35-44",
+      "name": "Homeownership rate (35–44)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#fbbf24",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 67
+        },
+        {
+          "year": 1991,
+          "value": 78
+        },
+        {
+          "year": 2001,
+          "value": 76
+        },
+        {
+          "year": 2011,
+          "value": 64
+        },
+        {
+          "year": 2014,
+          "value": 59
+        },
+        {
+          "year": 2017,
+          "value": 56
+        },
+        {
+          "year": 2019,
+          "value": 56
+        },
+        {
+          "year": 2021,
+          "value": 57
+        },
+        {
+          "year": 2023,
+          "value": 57
+        },
+        {
+          "year": 2025,
+          "value": 57
+        }
+      ]
+    },
+    "homeownership-55-64": {
+      "id": "homeownership-55-64",
+      "name": "Homeownership rate (55–64)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#34d399",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 56
+        },
+        {
+          "year": 1991,
+          "value": 68
+        },
+        {
+          "year": 2001,
+          "value": 75
+        },
+        {
+          "year": 2011,
+          "value": 76
+        },
+        {
+          "year": 2014,
+          "value": 74
+        },
+        {
+          "year": 2017,
+          "value": 74
+        },
+        {
+          "year": 2019,
+          "value": 73
+        },
+        {
+          "year": 2021,
+          "value": 74
+        },
+        {
+          "year": 2023,
+          "value": 73
+        },
+        {
+          "year": 2025,
+          "value": 73
+        }
+      ]
+    },
+    "ftb-age": {
+      "id": "ftb-age",
+      "name": "First-time buyer average age (UK)",
+      "description": "Average age of UK first-time buyers based on mortgage completions. Combines HMRC / CML / UK Finance / Halifax FTB tracker historical figures. Pre-1995 reflects industry estimates (dashed).",
+      "unit": "rate",
+      "color": "#a3a3a3",
+      "source": {
+        "name": "UK Finance / Halifax First-Time Buyer Review",
+        "url": "https://www.ukfinance.org.uk/data-and-research"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1960,
+          "value": 23
+        },
+        {
+          "year": 1970,
+          "value": 24
+        },
+        {
+          "year": 1980,
+          "value": 25
+        },
+        {
+          "year": 1990,
+          "value": 28
+        },
+        {
+          "year": 1995,
+          "value": 29
+        },
+        {
+          "year": 2000,
+          "value": 30
+        },
+        {
+          "year": 2005,
+          "value": 31
+        },
+        {
+          "year": 2008,
+          "value": 32
+        },
+        {
+          "year": 2010,
+          "value": 31
+        },
+        {
+          "year": 2013,
+          "value": 30
+        },
+        {
+          "year": 2015,
+          "value": 30
+        },
+        {
+          "year": 2017,
+          "value": 31
+        },
+        {
+          "year": 2019,
+          "value": 32
+        },
+        {
+          "year": 2021,
+          "value": 32
+        },
+        {
+          "year": 2023,
+          "value": 33
+        },
+        {
+          "year": 2024,
+          "value": 34
+        },
+        {
+          "year": 2025,
+          "value": 34
+        },
+        {
+          "year": 2026,
+          "value": 34
+        }
+      ]
+    },
+    "tax-burden-median": {
+      "id": "tax-burden-median",
+      "name": "Effective tax + NI rate (median earner)",
+      "description": "Income tax + employee National Insurance as a percentage of gross pay for a single worker on the median full-time wage. Reflects each year's personal allowance, basic-rate threshold and NI primary threshold. Pre-1990 modelled from IFS historical effective-rate tables (dashed).",
+      "unit": "percent",
+      "color": "#fb7185",
+      "source": {
+        "name": "HMRC / IFS — Direct tax statistics",
+        "url": "https://ifs.org.uk/taxlab"
+      },
+      "region": "uk",
+      "verifiedFrom": 1990,
+      "points": [
+        {
+          "year": 1970,
+          "value": 21
+        },
+        {
+          "year": 1975,
+          "value": 26.5
+        },
+        {
+          "year": 1980,
+          "value": 29
+        },
+        {
+          "year": 1985,
+          "value": 27.5
+        },
+        {
+          "year": 1990,
+          "value": 25.2
+        },
+        {
+          "year": 1995,
+          "value": 24
+        },
+        {
+          "year": 2000,
+          "value": 23.5
+        },
+        {
+          "year": 2005,
+          "value": 23.8
+        },
+        {
+          "year": 2008,
+          "value": 23.4
+        },
+        {
+          "year": 2010,
+          "value": 22
+        },
+        {
+          "year": 2012,
+          "value": 20.5
+        },
+        {
+          "year": 2014,
+          "value": 19.8
+        },
+        {
+          "year": 2016,
+          "value": 19
+        },
+        {
+          "year": 2018,
+          "value": 18.4
+        },
+        {
+          "year": 2020,
+          "value": 18
+        },
+        {
+          "year": 2021,
+          "value": 18.2
+        },
+        {
+          "year": 2022,
+          "value": 21.5
+        },
+        {
+          "year": 2023,
+          "value": 22.4
+        },
+        {
+          "year": 2024,
+          "value": 22.9
+        },
+        {
+          "year": 2025,
+          "value": 23.6
+        },
+        {
+          "year": 2026,
+          "value": 24.1
+        }
+      ]
+    },
+    "grad-salary": {
+      "id": "grad-salary",
+      "name": "Graduate starting salary (median, UK)",
+      "description": "Median annual starting salary for new UK graduates entering full-time employment. Combines HECSU 'What Do Graduates Do?' and ISE Student Recruitment Survey medians. Nominal £.",
+      "unit": "GBP",
+      "color": "#60a5fa",
+      "source": {
+        "name": "HECSU / Prospects + Institute of Student Employers",
+        "url": "https://luminate.prospects.ac.uk/what-do-graduates-do"
+      },
+      "region": "uk",
+      "verifiedFrom": 1999,
+      "points": [
+        {
+          "year": 1990,
+          "value": 11500
+        },
+        {
+          "year": 1995,
+          "value": 14000
+        },
+        {
+          "year": 1999,
+          "value": 17500
+        },
+        {
+          "year": 2001,
+          "value": 18500
+        },
+        {
+          "year": 2003,
+          "value": 19500
+        },
+        {
+          "year": 2005,
+          "value": 20500
+        },
+        {
+          "year": 2007,
+          "value": 21500
+        },
+        {
+          "year": 2009,
+          "value": 21500
+        },
+        {
+          "year": 2011,
+          "value": 22000
+        },
+        {
+          "year": 2013,
+          "value": 22500
+        },
+        {
+          "year": 2015,
+          "value": 23000
+        },
+        {
+          "year": 2017,
+          "value": 23500
+        },
+        {
+          "year": 2019,
+          "value": 24000
+        },
+        {
+          "year": 2021,
+          "value": 25500
+        },
+        {
+          "year": 2023,
+          "value": 27000
+        },
+        {
+          "year": 2024,
+          "value": 28000
+        },
+        {
+          "year": 2025,
+          "value": 28500
+        },
+        {
+          "year": 2026,
+          "value": 29000
+        }
+      ]
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-19T11:42:48.863Z"
+    "generatedAt": "2026-05-19T13:58:51.757Z"
   }
 }
