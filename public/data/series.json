@@ -13,1152 +13,8 @@
       "region": "uk",
       "points": [
         {
-          "year": 1694,
-          "value": 6
-        },
-        {
-          "year": 1695,
-          "value": 3.49
-        },
-        {
-          "year": 1696,
-          "value": 3
-        },
-        {
-          "year": 1697,
-          "value": 3
-        },
-        {
-          "year": 1698,
-          "value": 3
-        },
-        {
-          "year": 1699,
-          "value": 3.88
-        },
-        {
-          "year": 1700,
-          "value": 4.5
-        },
-        {
-          "year": 1701,
-          "value": 4.5
-        },
-        {
-          "year": 1702,
-          "value": 4.5
-        },
-        {
-          "year": 1703,
-          "value": 4.5
-        },
-        {
-          "year": 1704,
-          "value": 4.5
-        },
-        {
-          "year": 1705,
-          "value": 4.5
-        },
-        {
-          "year": 1706,
-          "value": 4.5
-        },
-        {
-          "year": 1707,
-          "value": 4.5
-        },
-        {
-          "year": 1708,
-          "value": 4.5
-        },
-        {
-          "year": 1709,
-          "value": 4.5
-        },
-        {
-          "year": 1710,
-          "value": 4.5
-        },
-        {
-          "year": 1711,
-          "value": 4.5
-        },
-        {
-          "year": 1712,
-          "value": 4.5
-        },
-        {
-          "year": 1713,
-          "value": 4.5
-        },
-        {
-          "year": 1714,
-          "value": 4.5
-        },
-        {
-          "year": 1715,
-          "value": 4.5
-        },
-        {
-          "year": 1716,
-          "value": 4.25
-        },
-        {
-          "year": 1717,
-          "value": 4
-        },
-        {
-          "year": 1718,
-          "value": 4
-        },
-        {
-          "year": 1719,
-          "value": 4.75
-        },
-        {
-          "year": 1720,
-          "value": 5
-        },
-        {
-          "year": 1721,
-          "value": 5
-        },
-        {
-          "year": 1722,
-          "value": 5
-        },
-        {
-          "year": 1723,
-          "value": 5
-        },
-        {
-          "year": 1724,
-          "value": 5
-        },
-        {
-          "year": 1725,
-          "value": 5
-        },
-        {
-          "year": 1726,
-          "value": 5
-        },
-        {
-          "year": 1727,
-          "value": 5
-        },
-        {
-          "year": 1728,
-          "value": 5
-        },
-        {
-          "year": 1729,
-          "value": 5
-        },
-        {
-          "year": 1730,
-          "value": 5
-        },
-        {
-          "year": 1731,
-          "value": 5
-        },
-        {
-          "year": 1732,
-          "value": 5
-        },
-        {
-          "year": 1733,
-          "value": 5
-        },
-        {
-          "year": 1734,
-          "value": 5
-        },
-        {
-          "year": 1735,
-          "value": 5
-        },
-        {
-          "year": 1736,
-          "value": 5
-        },
-        {
-          "year": 1737,
-          "value": 5
-        },
-        {
-          "year": 1738,
-          "value": 5
-        },
-        {
-          "year": 1739,
-          "value": 5
-        },
-        {
-          "year": 1740,
-          "value": 5
-        },
-        {
-          "year": 1741,
-          "value": 5
-        },
-        {
-          "year": 1742,
-          "value": 5
-        },
-        {
-          "year": 1743,
-          "value": 5
-        },
-        {
-          "year": 1744,
-          "value": 5
-        },
-        {
-          "year": 1745,
-          "value": 5
-        },
-        {
-          "year": 1746,
-          "value": 5
-        },
-        {
-          "year": 1747,
-          "value": 5
-        },
-        {
-          "year": 1748,
-          "value": 5
-        },
-        {
-          "year": 1749,
-          "value": 5
-        },
-        {
-          "year": 1750,
-          "value": 5
-        },
-        {
-          "year": 1751,
-          "value": 5
-        },
-        {
-          "year": 1752,
-          "value": 5
-        },
-        {
-          "year": 1753,
-          "value": 5
-        },
-        {
-          "year": 1754,
-          "value": 5
-        },
-        {
-          "year": 1755,
-          "value": 5
-        },
-        {
-          "year": 1756,
-          "value": 5
-        },
-        {
-          "year": 1757,
-          "value": 5
-        },
-        {
-          "year": 1758,
-          "value": 5
-        },
-        {
-          "year": 1759,
-          "value": 5
-        },
-        {
-          "year": 1760,
-          "value": 5
-        },
-        {
-          "year": 1761,
-          "value": 5
-        },
-        {
-          "year": 1762,
-          "value": 5
-        },
-        {
-          "year": 1763,
-          "value": 5
-        },
-        {
-          "year": 1764,
-          "value": 5
-        },
-        {
-          "year": 1765,
-          "value": 5
-        },
-        {
-          "year": 1766,
-          "value": 5
-        },
-        {
-          "year": 1767,
-          "value": 5
-        },
-        {
-          "year": 1768,
-          "value": 5
-        },
-        {
-          "year": 1769,
-          "value": 5
-        },
-        {
-          "year": 1770,
-          "value": 5
-        },
-        {
-          "year": 1771,
-          "value": 5
-        },
-        {
-          "year": 1772,
-          "value": 5
-        },
-        {
-          "year": 1773,
-          "value": 5
-        },
-        {
-          "year": 1774,
-          "value": 5
-        },
-        {
-          "year": 1775,
-          "value": 5
-        },
-        {
-          "year": 1776,
-          "value": 5
-        },
-        {
-          "year": 1777,
-          "value": 5
-        },
-        {
-          "year": 1778,
-          "value": 5
-        },
-        {
-          "year": 1779,
-          "value": 5
-        },
-        {
-          "year": 1780,
-          "value": 5
-        },
-        {
-          "year": 1781,
-          "value": 5
-        },
-        {
-          "year": 1782,
-          "value": 5
-        },
-        {
-          "year": 1783,
-          "value": 5
-        },
-        {
-          "year": 1784,
-          "value": 5
-        },
-        {
-          "year": 1785,
-          "value": 5
-        },
-        {
-          "year": 1786,
-          "value": 5
-        },
-        {
-          "year": 1787,
-          "value": 5
-        },
-        {
-          "year": 1788,
-          "value": 5
-        },
-        {
-          "year": 1789,
-          "value": 5
-        },
-        {
-          "year": 1790,
-          "value": 5
-        },
-        {
-          "year": 1791,
-          "value": 5
-        },
-        {
-          "year": 1792,
-          "value": 5
-        },
-        {
-          "year": 1793,
-          "value": 5
-        },
-        {
-          "year": 1794,
-          "value": 5
-        },
-        {
-          "year": 1795,
-          "value": 5
-        },
-        {
-          "year": 1796,
-          "value": 5
-        },
-        {
-          "year": 1797,
-          "value": 5
-        },
-        {
-          "year": 1798,
-          "value": 5
-        },
-        {
-          "year": 1799,
-          "value": 5
-        },
-        {
-          "year": 1800,
-          "value": 5
-        },
-        {
-          "year": 1801,
-          "value": 5
-        },
-        {
-          "year": 1802,
-          "value": 5
-        },
-        {
-          "year": 1803,
-          "value": 5
-        },
-        {
-          "year": 1804,
-          "value": 5
-        },
-        {
-          "year": 1805,
-          "value": 5
-        },
-        {
-          "year": 1806,
-          "value": 5
-        },
-        {
-          "year": 1807,
-          "value": 5
-        },
-        {
-          "year": 1808,
-          "value": 5
-        },
-        {
-          "year": 1809,
-          "value": 5
-        },
-        {
-          "year": 1810,
-          "value": 5
-        },
-        {
-          "year": 1811,
-          "value": 5
-        },
-        {
-          "year": 1812,
-          "value": 5
-        },
-        {
-          "year": 1813,
-          "value": 5
-        },
-        {
-          "year": 1814,
-          "value": 5
-        },
-        {
-          "year": 1815,
-          "value": 5
-        },
-        {
-          "year": 1816,
-          "value": 5
-        },
-        {
-          "year": 1817,
-          "value": 5
-        },
-        {
-          "year": 1818,
-          "value": 5
-        },
-        {
-          "year": 1819,
-          "value": 5
-        },
-        {
-          "year": 1820,
-          "value": 5
-        },
-        {
-          "year": 1821,
-          "value": 5
-        },
-        {
-          "year": 1822,
-          "value": 4.41
-        },
-        {
-          "year": 1823,
-          "value": 4
-        },
-        {
-          "year": 1824,
-          "value": 4
-        },
-        {
-          "year": 1825,
-          "value": 4.08
-        },
-        {
-          "year": 1826,
-          "value": 5
-        },
-        {
-          "year": 1827,
-          "value": 4.5
-        },
-        {
-          "year": 1828,
-          "value": 4
-        },
-        {
-          "year": 1829,
-          "value": 4
-        },
-        {
-          "year": 1830,
-          "value": 4
-        },
-        {
-          "year": 1831,
-          "value": 4
-        },
-        {
-          "year": 1832,
-          "value": 4
-        },
-        {
-          "year": 1833,
-          "value": 4
-        },
-        {
-          "year": 1834,
-          "value": 4
-        },
-        {
-          "year": 1835,
-          "value": 4
-        },
-        {
-          "year": 1836,
-          "value": 4.42
-        },
-        {
-          "year": 1837,
-          "value": 5
-        },
-        {
-          "year": 1838,
-          "value": 4.08
-        },
-        {
-          "year": 1839,
-          "value": 5.17
-        },
-        {
-          "year": 1840,
-          "value": 5
-        },
-        {
-          "year": 1841,
-          "value": 5
-        },
-        {
-          "year": 1842,
-          "value": 4.25
-        },
-        {
-          "year": 1843,
-          "value": 4
-        },
-        {
-          "year": 1844,
-          "value": 3.52
-        },
-        {
-          "year": 1845,
-          "value": 2.68
-        },
-        {
-          "year": 1846,
-          "value": 3.33
-        },
-        {
-          "year": 1847,
-          "value": 5.18
-        },
-        {
-          "year": 1848,
-          "value": 3.72
-        },
-        {
-          "year": 1849,
-          "value": 2.95
-        },
-        {
-          "year": 1850,
-          "value": 2.51
-        },
-        {
-          "year": 1851,
-          "value": 3
-        },
-        {
-          "year": 1852,
-          "value": 2.15
-        },
-        {
-          "year": 1853,
-          "value": 3.7
-        },
-        {
-          "year": 1854,
-          "value": 4.7
-        },
-        {
-          "year": 1855,
-          "value": 4.64
-        },
-        {
-          "year": 1856,
-          "value": 5.95
-        },
-        {
-          "year": 1857,
-          "value": 6.66
-        },
-        {
-          "year": 1858,
-          "value": 3.21
-        },
-        {
-          "year": 1859,
-          "value": 2.74
-        },
-        {
-          "year": 1860,
-          "value": 4.19
-        },
-        {
-          "year": 1861,
-          "value": 5.24
-        },
-        {
-          "year": 1862,
-          "value": 2.53
-        },
-        {
-          "year": 1863,
-          "value": 4.42
-        },
-        {
-          "year": 1864,
-          "value": 7.35
-        },
-        {
-          "year": 1865,
-          "value": 4.77
-        },
-        {
-          "year": 1866,
-          "value": 6.94
-        },
-        {
-          "year": 1867,
-          "value": 2.54
-        },
-        {
-          "year": 1868,
-          "value": 2.1
-        },
-        {
-          "year": 1869,
-          "value": 3.2
-        },
-        {
-          "year": 1870,
-          "value": 3.1
-        },
-        {
-          "year": 1871,
-          "value": 2.88
-        },
-        {
-          "year": 1872,
-          "value": 4.1
-        },
-        {
-          "year": 1873,
-          "value": 4.8
-        },
-        {
-          "year": 1874,
-          "value": 3.7
-        },
-        {
-          "year": 1875,
-          "value": 3.23
-        },
-        {
-          "year": 1876,
-          "value": 2.6
-        },
-        {
-          "year": 1877,
-          "value": 2.91
-        },
-        {
-          "year": 1878,
-          "value": 3.76
-        },
-        {
-          "year": 1879,
-          "value": 2.51
-        },
-        {
-          "year": 1880,
-          "value": 2.76
-        },
-        {
-          "year": 1881,
-          "value": 3.49
-        },
-        {
-          "year": 1882,
-          "value": 4.15
-        },
-        {
-          "year": 1883,
-          "value": 3.57
-        },
-        {
-          "year": 1884,
-          "value": 2.96
-        },
-        {
-          "year": 1885,
-          "value": 2.92
-        },
-        {
-          "year": 1886,
-          "value": 3.06
-        },
-        {
-          "year": 1887,
-          "value": 3.34
-        },
-        {
-          "year": 1888,
-          "value": 3.31
-        },
-        {
-          "year": 1889,
-          "value": 3.56
-        },
-        {
-          "year": 1890,
-          "value": 4.44
-        },
-        {
-          "year": 1891,
-          "value": 3.32
-        },
-        {
-          "year": 1892,
-          "value": 2.52
-        },
-        {
-          "year": 1893,
-          "value": 3.06
-        },
-        {
-          "year": 1894,
-          "value": 2.11
-        },
-        {
-          "year": 1895,
-          "value": 2
-        },
-        {
-          "year": 1896,
-          "value": 2.48
-        },
-        {
-          "year": 1897,
-          "value": 2.63
-        },
-        {
-          "year": 1898,
-          "value": 3.25
-        },
-        {
-          "year": 1899,
-          "value": 3.76
-        },
-        {
-          "year": 1900,
-          "value": 3.96
-        },
-        {
-          "year": 1901,
-          "value": 3.75
-        },
-        {
-          "year": 1902,
-          "value": 3.33
-        },
-        {
-          "year": 1903,
-          "value": 3.75
-        },
-        {
-          "year": 1904,
-          "value": 3.29
-        },
-        {
-          "year": 1905,
-          "value": 3.01
-        },
-        {
-          "year": 1906,
-          "value": 4.27
-        },
-        {
-          "year": 1907,
-          "value": 4.93
-        },
-        {
-          "year": 1908,
-          "value": 3
-        },
-        {
-          "year": 1909,
-          "value": 3.11
-        },
-        {
-          "year": 1910,
-          "value": 3.72
-        },
-        {
-          "year": 1911,
-          "value": 3.47
-        },
-        {
-          "year": 1912,
-          "value": 3.78
-        },
-        {
-          "year": 1913,
-          "value": 4.77
-        },
-        {
-          "year": 1914,
-          "value": 4.04
-        },
-        {
-          "year": 1915,
-          "value": 5
-        },
-        {
-          "year": 1916,
-          "value": 5.47
-        },
-        {
-          "year": 1917,
-          "value": 5.15
-        },
-        {
-          "year": 1918,
-          "value": 5
-        },
-        {
-          "year": 1919,
-          "value": 5.15
-        },
-        {
-          "year": 1920,
-          "value": 6.71
-        },
-        {
-          "year": 1921,
-          "value": 6.09
-        },
-        {
-          "year": 1922,
-          "value": 3.69
-        },
-        {
-          "year": 1923,
-          "value": 3.49
-        },
-        {
-          "year": 1924,
-          "value": 4
-        },
-        {
-          "year": 1925,
-          "value": 4.58
-        },
-        {
-          "year": 1926,
-          "value": 5
-        },
-        {
-          "year": 1927,
-          "value": 4.65
-        },
-        {
-          "year": 1928,
-          "value": 4.5
-        },
-        {
-          "year": 1929,
-          "value": 5.5
-        },
-        {
-          "year": 1930,
-          "value": 3.41
-        },
-        {
-          "year": 1931,
-          "value": 3.97
-        },
-        {
-          "year": 1932,
-          "value": 3
-        },
-        {
-          "year": 1933,
-          "value": 2
-        },
-        {
-          "year": 1934,
-          "value": 2
-        },
-        {
-          "year": 1935,
-          "value": 2
-        },
-        {
-          "year": 1936,
-          "value": 2
-        },
-        {
-          "year": 1937,
-          "value": 2
-        },
-        {
-          "year": 1938,
-          "value": 2
-        },
-        {
-          "year": 1939,
-          "value": 2.27
-        },
-        {
-          "year": 1940,
-          "value": 2
-        },
-        {
-          "year": 1941,
-          "value": 2
-        },
-        {
-          "year": 1942,
-          "value": 2
-        },
-        {
-          "year": 1943,
-          "value": 2
-        },
-        {
-          "year": 1944,
-          "value": 2
-        },
-        {
-          "year": 1945,
-          "value": 2
-        },
-        {
-          "year": 1946,
-          "value": 2
-        },
-        {
-          "year": 1947,
-          "value": 2
-        },
-        {
-          "year": 1948,
-          "value": 2
-        },
-        {
-          "year": 1949,
-          "value": 2
-        },
-        {
-          "year": 1950,
-          "value": 2
-        },
-        {
-          "year": 1951,
-          "value": 2.07
-        },
-        {
-          "year": 1952,
-          "value": 3.71
-        },
-        {
-          "year": 1953,
-          "value": 3.85
-        },
-        {
-          "year": 1954,
-          "value": 3.18
-        },
-        {
-          "year": 1955,
-          "value": 4.32
-        },
-        {
-          "year": 1956,
-          "value": 5.37
-        },
-        {
-          "year": 1957,
-          "value": 5.62
-        },
-        {
-          "year": 1958,
-          "value": 5.39
-        },
-        {
-          "year": 1959,
-          "value": 4
-        },
-        {
-          "year": 1960,
-          "value": 5.35
-        },
-        {
-          "year": 1961,
-          "value": 5.67
-        },
-        {
-          "year": 1962,
-          "value": 4.86
-        },
-        {
-          "year": 1963,
-          "value": 4
-        },
-        {
-          "year": 1964,
-          "value": 5.06
-        },
-        {
-          "year": 1965,
-          "value": 6.42
-        },
-        {
-          "year": 1966,
-          "value": 6.47
-        },
-        {
-          "year": 1967,
-          "value": 6.16
-        },
-        {
-          "year": 1968,
-          "value": 7.47
-        },
-        {
-          "year": 1969,
-          "value": 7.84
-        },
-        {
-          "year": 1970,
-          "value": 7.23
-        },
-        {
-          "year": 1971,
-          "value": 5.92
-        },
-        {
-          "year": 1972,
-          "value": 5.88
-        },
-        {
-          "year": 1973,
-          "value": 9.86
-        },
-        {
-          "year": 1974,
-          "value": 11.95
-        },
-        {
-          "year": 1975,
-          "value": 10.8
-        },
-        {
-          "year": 1976,
-          "value": 11.73
-        },
-        {
-          "year": 1977,
-          "value": 8.46
-        },
-        {
-          "year": 1978,
-          "value": 9.14
-        },
-        {
-          "year": 1979,
-          "value": 13.76
-        },
-        {
           "year": 1980,
-          "value": 16.3
+          "value": 15.8
         },
         {
           "year": 1981,
@@ -1326,7 +182,7 @@
         },
         {
           "year": 2022,
-          "value": 1.47
+          "value": 1.41
         },
         {
           "year": 2023,
@@ -2323,166 +1179,6 @@
       "verifiedFrom": 1988,
       "points": [
         {
-          "year": 1949,
-          "value": 5.4
-        },
-        {
-          "year": 1950,
-          "value": 5.6
-        },
-        {
-          "year": 1951,
-          "value": 6
-        },
-        {
-          "year": 1952,
-          "value": 6.5
-        },
-        {
-          "year": 1953,
-          "value": 6.7
-        },
-        {
-          "year": 1954,
-          "value": 6.8
-        },
-        {
-          "year": 1955,
-          "value": 7.1
-        },
-        {
-          "year": 1956,
-          "value": 7.4
-        },
-        {
-          "year": 1957,
-          "value": 7.7
-        },
-        {
-          "year": 1958,
-          "value": 7.9
-        },
-        {
-          "year": 1959,
-          "value": 7.9
-        },
-        {
-          "year": 1960,
-          "value": 8
-        },
-        {
-          "year": 1961,
-          "value": 8.3
-        },
-        {
-          "year": 1962,
-          "value": 8.6
-        },
-        {
-          "year": 1963,
-          "value": 8.8
-        },
-        {
-          "year": 1964,
-          "value": 9.1
-        },
-        {
-          "year": 1965,
-          "value": 9.5
-        },
-        {
-          "year": 1966,
-          "value": 9.8
-        },
-        {
-          "year": 1967,
-          "value": 10.1
-        },
-        {
-          "year": 1968,
-          "value": 10.5
-        },
-        {
-          "year": 1969,
-          "value": 11
-        },
-        {
-          "year": 1970,
-          "value": 11.6
-        },
-        {
-          "year": 1971,
-          "value": 12.5
-        },
-        {
-          "year": 1972,
-          "value": 13.3
-        },
-        {
-          "year": 1973,
-          "value": 14.4
-        },
-        {
-          "year": 1974,
-          "value": 16.2
-        },
-        {
-          "year": 1975,
-          "value": 19.2
-        },
-        {
-          "year": 1976,
-          "value": 21.7
-        },
-        {
-          "year": 1977,
-          "value": 24.5
-        },
-        {
-          "year": 1978,
-          "value": 26.2
-        },
-        {
-          "year": 1979,
-          "value": 28.6
-        },
-        {
-          "year": 1980,
-          "value": 32.1
-        },
-        {
-          "year": 1981,
-          "value": 35
-        },
-        {
-          "year": 1982,
-          "value": 37.4
-        },
-        {
-          "year": 1983,
-          "value": 39.1
-        },
-        {
-          "year": 1984,
-          "value": 40.8
-        },
-        {
-          "year": 1985,
-          "value": 42.8
-        },
-        {
-          "year": 1986,
-          "value": 44.4
-        },
-        {
-          "year": 1987,
-          "value": 46
-        },
-        {
-          "year": 1988,
-          "value": 48.2
-        },
-        {
           "year": 1989,
           "value": 51
         },
@@ -2645,66 +1341,6 @@
       "region": "uk",
       "verifiedFrom": 1984,
       "points": [
-        {
-          "year": 1968,
-          "value": 1119
-        },
-        {
-          "year": 1970,
-          "value": 1290
-        },
-        {
-          "year": 1971,
-          "value": 1413
-        },
-        {
-          "year": 1972,
-          "value": 1584
-        },
-        {
-          "year": 1973,
-          "value": 1821
-        },
-        {
-          "year": 1974,
-          "value": 2077
-        },
-        {
-          "year": 1975,
-          "value": 2651
-        },
-        {
-          "year": 1976,
-          "value": 3120
-        },
-        {
-          "year": 1977,
-          "value": 3428
-        },
-        {
-          "year": 1978,
-          "value": 3888
-        },
-        {
-          "year": 1979,
-          "value": 4453
-        },
-        {
-          "year": 1980,
-          "value": 5373
-        },
-        {
-          "year": 1981,
-          "value": 5998
-        },
-        {
-          "year": 1982,
-          "value": 6596
-        },
-        {
-          "year": 1983,
-          "value": 7127
-        },
         {
           "year": 1984,
           "value": 7400
@@ -2879,6 +1515,14 @@
       },
       "region": "uk",
       "points": [
+        {
+          "year": 1953,
+          "value": 220
+        },
+        {
+          "year": 1954,
+          "value": 235
+        },
         {
           "year": 1955,
           "value": 248
@@ -3742,9 +2386,734 @@
           "value": 2.36
         }
       ]
+    },
+    "tuition-uk": {
+      "id": "tuition-uk",
+      "name": "Undergraduate tuition fees (England, max)",
+      "description": "Maximum annual undergraduate tuition fee chargeable by English universities. Pre-1998 = £0 (no fees). Top-up fees raised the cap to £3,000 in 2006; the Browne reforms tripled it to £9,000 in 2012. Held flat at £9,250 since 2017.",
+      "unit": "GBP",
+      "color": "#fb923c",
+      "source": {
+        "name": "Department for Education / Office for Students fee cap history",
+        "url": "https://www.officeforstudents.org.uk/advice-and-guidance/fees-and-funding/"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1990,
+          "value": 0
+        },
+        {
+          "year": 1997,
+          "value": 0
+        },
+        {
+          "year": 1998,
+          "value": 1000
+        },
+        {
+          "year": 1999,
+          "value": 1025
+        },
+        {
+          "year": 2000,
+          "value": 1050
+        },
+        {
+          "year": 2001,
+          "value": 1075
+        },
+        {
+          "year": 2002,
+          "value": 1100
+        },
+        {
+          "year": 2003,
+          "value": 1125
+        },
+        {
+          "year": 2004,
+          "value": 1150
+        },
+        {
+          "year": 2005,
+          "value": 1175
+        },
+        {
+          "year": 2006,
+          "value": 3000
+        },
+        {
+          "year": 2007,
+          "value": 3070
+        },
+        {
+          "year": 2008,
+          "value": 3145
+        },
+        {
+          "year": 2009,
+          "value": 3225
+        },
+        {
+          "year": 2010,
+          "value": 3290
+        },
+        {
+          "year": 2011,
+          "value": 3375
+        },
+        {
+          "year": 2012,
+          "value": 9000
+        },
+        {
+          "year": 2013,
+          "value": 9000
+        },
+        {
+          "year": 2014,
+          "value": 9000
+        },
+        {
+          "year": 2015,
+          "value": 9000
+        },
+        {
+          "year": 2016,
+          "value": 9000
+        },
+        {
+          "year": 2017,
+          "value": 9250
+        },
+        {
+          "year": 2018,
+          "value": 9250
+        },
+        {
+          "year": 2019,
+          "value": 9250
+        },
+        {
+          "year": 2020,
+          "value": 9250
+        },
+        {
+          "year": 2021,
+          "value": 9250
+        },
+        {
+          "year": 2022,
+          "value": 9250
+        },
+        {
+          "year": 2023,
+          "value": 9250
+        },
+        {
+          "year": 2024,
+          "value": 9250
+        },
+        {
+          "year": 2025,
+          "value": 9535
+        },
+        {
+          "year": 2026,
+          "value": 9535
+        }
+      ]
+    },
+    "council-tax": {
+      "id": "council-tax",
+      "name": "Council Tax (England, Band D average)",
+      "description": "Average council tax bill for a Band D property in England. Council tax replaced the community charge in 1993. Pre-1993 figures show domestic rates / community charge equivalents for context (modelled, dashed).",
+      "unit": "GBP",
+      "color": "#84cc16",
+      "source": {
+        "name": "Department for Levelling Up, Housing & Communities / MHCLG council-tax statistics",
+        "url": "https://www.gov.uk/government/collections/council-tax-statistics"
+      },
+      "region": "england",
+      "verifiedFrom": 1993,
+      "points": [
+        {
+          "year": 1980,
+          "value": 120
+        },
+        {
+          "year": 1985,
+          "value": 250
+        },
+        {
+          "year": 1990,
+          "value": 360
+        },
+        {
+          "year": 1991,
+          "value": 380
+        },
+        {
+          "year": 1992,
+          "value": 410
+        },
+        {
+          "year": 1993,
+          "value": 568
+        },
+        {
+          "year": 1994,
+          "value": 600
+        },
+        {
+          "year": 1995,
+          "value": 609
+        },
+        {
+          "year": 1996,
+          "value": 646
+        },
+        {
+          "year": 1997,
+          "value": 688
+        },
+        {
+          "year": 1998,
+          "value": 727
+        },
+        {
+          "year": 1999,
+          "value": 770
+        },
+        {
+          "year": 2000,
+          "value": 798
+        },
+        {
+          "year": 2001,
+          "value": 851
+        },
+        {
+          "year": 2002,
+          "value": 901
+        },
+        {
+          "year": 2003,
+          "value": 1014
+        },
+        {
+          "year": 2004,
+          "value": 1102
+        },
+        {
+          "year": 2005,
+          "value": 1167
+        },
+        {
+          "year": 2006,
+          "value": 1214
+        },
+        {
+          "year": 2007,
+          "value": 1268
+        },
+        {
+          "year": 2008,
+          "value": 1320
+        },
+        {
+          "year": 2009,
+          "value": 1373
+        },
+        {
+          "year": 2010,
+          "value": 1414
+        },
+        {
+          "year": 2011,
+          "value": 1439
+        },
+        {
+          "year": 2012,
+          "value": 1444
+        },
+        {
+          "year": 2013,
+          "value": 1456
+        },
+        {
+          "year": 2014,
+          "value": 1468
+        },
+        {
+          "year": 2015,
+          "value": 1484
+        },
+        {
+          "year": 2016,
+          "value": 1530
+        },
+        {
+          "year": 2017,
+          "value": 1591
+        },
+        {
+          "year": 2018,
+          "value": 1671
+        },
+        {
+          "year": 2019,
+          "value": 1750
+        },
+        {
+          "year": 2020,
+          "value": 1818
+        },
+        {
+          "year": 2021,
+          "value": 1898
+        },
+        {
+          "year": 2022,
+          "value": 1966
+        },
+        {
+          "year": 2023,
+          "value": 2065
+        },
+        {
+          "year": 2024,
+          "value": 2171
+        },
+        {
+          "year": 2025,
+          "value": 2280
+        },
+        {
+          "year": 2026,
+          "value": 2393
+        }
+      ]
+    },
+    "rail-fares": {
+      "id": "rail-fares",
+      "name": "Rail fares (UK index, Jan 1995 = 100)",
+      "description": "ORR/DfT rail-fares index covering all GB rail tickets. Regulated fares track RPI (+1% for many years post-2004) — the line climbs faster than wages essentially by formula. Pre-1995 indexed back to BR-era estimates (dashed).",
+      "unit": "index",
+      "color": "#22d3ee",
+      "source": {
+        "name": "Office of Rail and Road — Rail fares index",
+        "url": "https://dataportal.orr.gov.uk/statistics/usage/passenger-rail-usage/"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1980,
+          "value": 38
+        },
+        {
+          "year": 1985,
+          "value": 50
+        },
+        {
+          "year": 1990,
+          "value": 70
+        },
+        {
+          "year": 1995,
+          "value": 100
+        },
+        {
+          "year": 1996,
+          "value": 103
+        },
+        {
+          "year": 1997,
+          "value": 106
+        },
+        {
+          "year": 1998,
+          "value": 110
+        },
+        {
+          "year": 1999,
+          "value": 113
+        },
+        {
+          "year": 2000,
+          "value": 116
+        },
+        {
+          "year": 2001,
+          "value": 119
+        },
+        {
+          "year": 2002,
+          "value": 122
+        },
+        {
+          "year": 2003,
+          "value": 126
+        },
+        {
+          "year": 2004,
+          "value": 130
+        },
+        {
+          "year": 2005,
+          "value": 134
+        },
+        {
+          "year": 2006,
+          "value": 140
+        },
+        {
+          "year": 2007,
+          "value": 146
+        },
+        {
+          "year": 2008,
+          "value": 153
+        },
+        {
+          "year": 2009,
+          "value": 158
+        },
+        {
+          "year": 2010,
+          "value": 159
+        },
+        {
+          "year": 2011,
+          "value": 167
+        },
+        {
+          "year": 2012,
+          "value": 177
+        },
+        {
+          "year": 2013,
+          "value": 184
+        },
+        {
+          "year": 2014,
+          "value": 190
+        },
+        {
+          "year": 2015,
+          "value": 195
+        },
+        {
+          "year": 2016,
+          "value": 197
+        },
+        {
+          "year": 2017,
+          "value": 200
+        },
+        {
+          "year": 2018,
+          "value": 207
+        },
+        {
+          "year": 2019,
+          "value": 214
+        },
+        {
+          "year": 2020,
+          "value": 220
+        },
+        {
+          "year": 2021,
+          "value": 220
+        },
+        {
+          "year": 2022,
+          "value": 226
+        },
+        {
+          "year": 2023,
+          "value": 238
+        },
+        {
+          "year": 2024,
+          "value": 252
+        },
+        {
+          "year": 2025,
+          "value": 263
+        },
+        {
+          "year": 2026,
+          "value": 273
+        }
+      ]
+    },
+    "min-wage": {
+      "id": "min-wage",
+      "name": "Minimum / National Living Wage (annual, 37.5h)",
+      "description": "Statutory wage floor for adults (21/22+), annualised at a 37.5-hour week × 52 weeks. National Minimum Wage introduced 1999 at £3.60; rebadged National Living Wage for 25+ from 2016 and lowered to 21+ from 2024. Pre-1999 there was no UK statutory floor.",
+      "unit": "GBP",
+      "color": "#eab308",
+      "source": {
+        "name": "Low Pay Commission / gov.uk NMW & NLW rates",
+        "url": "https://www.gov.uk/national-minimum-wage-rates"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1999,
+          "value": 7020
+        },
+        {
+          "year": 2000,
+          "value": 7215
+        },
+        {
+          "year": 2001,
+          "value": 7995
+        },
+        {
+          "year": 2002,
+          "value": 8190
+        },
+        {
+          "year": 2003,
+          "value": 8775
+        },
+        {
+          "year": 2004,
+          "value": 9458
+        },
+        {
+          "year": 2005,
+          "value": 9848
+        },
+        {
+          "year": 2006,
+          "value": 10433
+        },
+        {
+          "year": 2007,
+          "value": 10764
+        },
+        {
+          "year": 2008,
+          "value": 11174
+        },
+        {
+          "year": 2009,
+          "value": 11310
+        },
+        {
+          "year": 2010,
+          "value": 11564
+        },
+        {
+          "year": 2011,
+          "value": 11856
+        },
+        {
+          "year": 2012,
+          "value": 12071
+        },
+        {
+          "year": 2013,
+          "value": 12304
+        },
+        {
+          "year": 2014,
+          "value": 12675
+        },
+        {
+          "year": 2015,
+          "value": 13065
+        },
+        {
+          "year": 2016,
+          "value": 14040
+        },
+        {
+          "year": 2017,
+          "value": 14625
+        },
+        {
+          "year": 2018,
+          "value": 15269
+        },
+        {
+          "year": 2019,
+          "value": 16010
+        },
+        {
+          "year": 2020,
+          "value": 17004
+        },
+        {
+          "year": 2021,
+          "value": 17375
+        },
+        {
+          "year": 2022,
+          "value": 18525
+        },
+        {
+          "year": 2023,
+          "value": 20319
+        },
+        {
+          "year": 2024,
+          "value": 22308
+        },
+        {
+          "year": 2025,
+          "value": 23810
+        },
+        {
+          "year": 2026,
+          "value": 24785
+        }
+      ]
+    },
+    "student-debt": {
+      "id": "student-debt",
+      "name": "Student loan balance at graduation (England, average)",
+      "description": "Average outstanding student-loan balance on the day of graduation, England, full-time undergrad. Combines tuition-fee loans and maintenance loans. Reflects 3 years of borrowing under each year's regime. Pre-1998 = £0 (no tuition fees, mortgage-style maintenance loans were small).",
+      "unit": "GBP",
+      "color": "#ec4899",
+      "source": {
+        "name": "Student Loans Company / House of Commons Library — Student loan statistics",
+        "url": "https://commonslibrary.parliament.uk/research-briefings/sn01079/"
+      },
+      "region": "england",
+      "verifiedFrom": 2000,
+      "points": [
+        {
+          "year": 1995,
+          "value": 0
+        },
+        {
+          "year": 1998,
+          "value": 1700
+        },
+        {
+          "year": 1999,
+          "value": 2300
+        },
+        {
+          "year": 2000,
+          "value": 3100
+        },
+        {
+          "year": 2001,
+          "value": 4500
+        },
+        {
+          "year": 2002,
+          "value": 6500
+        },
+        {
+          "year": 2003,
+          "value": 8400
+        },
+        {
+          "year": 2004,
+          "value": 9800
+        },
+        {
+          "year": 2005,
+          "value": 10800
+        },
+        {
+          "year": 2006,
+          "value": 11200
+        },
+        {
+          "year": 2007,
+          "value": 12200
+        },
+        {
+          "year": 2008,
+          "value": 13400
+        },
+        {
+          "year": 2009,
+          "value": 14600
+        },
+        {
+          "year": 2010,
+          "value": 15800
+        },
+        {
+          "year": 2011,
+          "value": 16800
+        },
+        {
+          "year": 2012,
+          "value": 18000
+        },
+        {
+          "year": 2013,
+          "value": 21200
+        },
+        {
+          "year": 2014,
+          "value": 27300
+        },
+        {
+          "year": 2015,
+          "value": 33800
+        },
+        {
+          "year": 2016,
+          "value": 38200
+        },
+        {
+          "year": 2017,
+          "value": 41800
+        },
+        {
+          "year": 2018,
+          "value": 44700
+        },
+        {
+          "year": 2019,
+          "value": 47200
+        },
+        {
+          "year": 2020,
+          "value": 49500
+        },
+        {
+          "year": 2021,
+          "value": 51000
+        },
+        {
+          "year": 2022,
+          "value": 50400
+        },
+        {
+          "year": 2023,
+          "value": 49500
+        },
+        {
+          "year": 2024,
+          "value": 48400
+        },
+        {
+          "year": 2025,
+          "value": 47800
+        },
+        {
+          "year": 2026,
+          "value": 47600
+        }
+      ]
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-18T19:24:36.904Z"
+    "generatedAt": "2026-05-19T11:42:48.863Z"
   }
 }
