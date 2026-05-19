@@ -20,6 +20,11 @@ import { fetchSeries as fetchCouncilTax } from "./sources/council-tax.ts"
 import { fetchSeries as fetchRailFares } from "./sources/rail-fares.ts"
 import { fetchSeries as fetchMinWage } from "./sources/min-wage.ts"
 import { fetchSeries as fetchStudentDebt } from "./sources/student-debt.ts"
+import { fetchSeries as fetchChildcare } from "./sources/childcare.ts"
+import { fetchSeries as fetchHomeownership } from "./sources/homeownership.ts"
+import { fetchSeries as fetchFtbAge } from "./sources/ftb-age.ts"
+import { fetchSeries as fetchTaxBurden } from "./sources/tax-burden.ts"
+import { fetchSeries as fetchGradSalary } from "./sources/grad-salary.ts"
 
 // Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
 type SourceFn = () => Promise<Series | Series[]>
@@ -43,6 +48,11 @@ const SOURCES: SourceFn[] = [
   fetchRailFares,
   fetchMinWage,
   fetchStudentDebt,
+  fetchChildcare,
+  fetchHomeownership,
+  fetchFtbAge,
+  fetchTaxBurden,
+  fetchGradSalary,
 ]
 
 const OUT_DIR = resolve("public", "data")

@@ -1,24 +1,52 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { toPng } from "html-to-image"
 import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { MortgageChart } from "./components/charts/MortgageChart"
+
+const RentToIncomeChart = lazy(() =>
+  import("./components/charts/RentToIncomeChart").then((m) => ({ default: m.RentToIncomeChart })),
+)
+const WhatIfChart = lazy(() =>
+  import("./components/charts/WhatIfChart").then((m) => ({ default: m.WhatIfChart })),
+)
+const RealTakeHomeChart = lazy(() =>
+  import("./components/charts/RealTakeHomeChart").then((m) => ({ default: m.RealTakeHomeChart })),
+)
+const ThenVsNowLazy = lazy(() =>
+  import("./components/ThenVsNow").then((m) => ({ default: m.ThenVsNow })),
+)
+const TodaysMoneyLazy = lazy(() =>
+  import("./components/TodaysMoney").then((m) => ({ default: m.TodaysMoney })),
+)
+const AvosToastCalculatorLazy = lazy(() =>
+  import("./components/AvosToastCalculator").then((m) => ({ default: m.AvosToastCalculator })),
+)
+
+const ChartFallback = () => (
+  <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
+    loading section…
+  </div>
+)
 import { StatCallouts } from "./components/StatCallouts"
-import { AvosToastCalculator } from "./components/AvosToastCalculator"
 import { GenerationView } from "./components/GenerationView"
 import { ScrollyIntro } from "./components/ScrollyIntro"
+import { PullQuote } from "./components/PullQuote"
+import { Faq } from "./components/Faq"
+import { WhatIfCallout } from "./components/WhatIfCallout"
 import { YearRangeBrush } from "./components/YearRangeBrush"
 import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
-import { TodaysMoney } from "./components/TodaysMoney"
-import { ThenVsNow } from "./components/ThenVsNow"
 import { ChartSkeleton } from "./components/ChartSkeleton"
 import { SourceStrip } from "./components/SourceStrip"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { CATEGORY_LABELS, CATEGORY_ORDER, categoryOf } from "./lib/categories"
+import { applyPalette } from "./lib/palette"
+import type { PaletteMode } from "./lib/palette"
+import { seriesToCsv, downloadCsv } from "./lib/csv"
 import type { Category } from "./lib/categories"
 import type { Series } from "./types/series"
 
@@ -124,6 +152,31 @@ function App() {
     return out
   }, [allSeries, search])
 
+  const [spotlightId, setSpotlightId] = useState<string | null>(null)
+  const [showAnnotations, setShowAnnotations] = useState(true)
+  const [palette, setPalette] = useState<PaletteMode>("default")
+  const palettedAllSeries = useMemo(() => applyPalette(allSeries, palette), [allSeries, palette])
+  const palettedVisible = useMemo(() => applyPalette(visible, palette), [visible, palette])
+
+  function exportCsv() {
+    const csv = seriesToCsv(palettedVisible)
+    downloadCsv(csv, `avos-flix-${new Date().toISOString().slice(0, 10)}.csv`)
+  }
+
+  const chartContainerRef = useRef<HTMLDivElement>(null)
+  async function toggleFullscreen() {
+    if (!chartContainerRef.current) return
+    if (document.fullscreenElement) {
+      await document.exitFullscreen()
+    } else {
+      try {
+        await chartContainerRef.current.requestFullscreen()
+      } catch {
+        // Some browsers / sandboxed iframes block fullscreen — ignore
+      }
+    }
+  }
+
   const [shareToast, setShareToast] = useState<string | null>(null)
   async function shareView() {
     try {
@@ -144,6 +197,9 @@ function App() {
       range: null,
     }))
     setSearch("")
+    setSpotlightId(null)
+    setShowAnnotations(true)
+    setPalette("default")
   }
 
   const embedMode = useMemo(() => {
@@ -194,8 +250,13 @@ function App() {
           )}
         </p>
 
+        {!embedMode && data && <PullQuote series={palettedVisible} baseYear={baseYear} />}
+
         <div
-          ref={snapshotRef}
+          ref={(node) => {
+            snapshotRef.current = node
+            chartContainerRef.current = node
+          }}
           className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6"
         >
           {loading && <ChartSkeleton />}
@@ -207,12 +268,13 @@ function App() {
           {data && (
             <>
               <Chart
-                series={visible}
+                series={palettedVisible}
                 mode={mode}
                 baseYear={baseYear}
                 fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
                 toYear={activeTo}
-                annotations={HISTORICAL_EVENTS}
+                annotations={showAnnotations ? HISTORICAL_EVENTS : []}
+                spotlightId={spotlightId}
               />
 
               <div className="mt-4 px-1">
@@ -300,9 +362,52 @@ function App() {
                   </div>
                 </div>
 
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>Events</span>
+                  <button
+                    onClick={() => setShowAnnotations((v) => !v)}
+                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                      showAnnotations ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                    }`}
+                    title="Show/hide historical event markers"
+                  >
+                    {showAnnotations ? "On" : "Off"}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>Palette</span>
+                  <button
+                    onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
+                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                      palette === "cb" ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                    }`}
+                    title="Swap to a colour-blind-safe (Okabe-Ito) palette"
+                  >
+                    {palette === "cb" ? "CB-safe" : "Default"}
+                  </button>
+                </div>
+
                 <div className="ml-auto flex items-center gap-1.5 chart-actions">
                   <button
+                    onClick={toggleFullscreen}
+                    aria-label="Toggle fullscreen for the main chart"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Toggle fullscreen"
+                  >
+                    ⤢ Full
+                  </button>
+                  <button
+                    onClick={exportCsv}
+                    aria-label="Download visible series as CSV"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    title="Download visible series as CSV"
+                  >
+                    ↓ CSV
+                  </button>
+                  <button
                     onClick={shareView}
+                    aria-label="Copy a link to this exact view"
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
                     title="Copy a link to this exact view"
                   >
@@ -310,6 +415,7 @@ function App() {
                   </button>
                   <button
                     onClick={resetToDefaults}
+                    aria-label="Reset all controls to defaults"
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
                     title="Reset all controls to defaults"
                   >
@@ -318,6 +424,7 @@ function App() {
                   <button
                     onClick={downloadSnapshot}
                     disabled={snapshotting}
+                    aria-label="Download this chart as a PNG"
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50"
                     title="Download this chart as a PNG"
                   >
@@ -333,7 +440,7 @@ function App() {
               )}
 
               <div className="mt-5 px-1 chart-legend">
-                <div className="mb-3 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 flex-wrap">
                   <input
                     type="search"
                     value={search}
@@ -342,8 +449,16 @@ function App() {
                     className="flex-1 max-w-xs bg-(--color-bg) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-white placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent)"
                   />
                   <span className="text-[10px] text-(--color-muted) font-mono">
-                    {visible.length}/{allSeries.length} on
+                    {visible.length}/{allSeries.length} on · shift-click to spotlight
                   </span>
+                  {spotlightId && (
+                    <button
+                      onClick={() => setSpotlightId(null)}
+                      className="text-[10px] font-mono text-(--color-accent) hover:text-white underline underline-offset-2"
+                    >
+                      clear spotlight
+                    </button>
+                  )}
                 </div>
 
                 {CATEGORY_ORDER.map((cat) => {
@@ -355,20 +470,31 @@ function App() {
                         {CATEGORY_LABELS[cat]}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {items.map((s) => {
+                        {items.map((sOrig) => {
+                          const s = palettedAllSeries.find((x) => x.id === sOrig.id) ?? sOrig
                           const isOn = !hiddenIds.has(s.id)
                           const hasData = s.points.length > 0
+                          const isSpot = spotlightId === s.id
                           return (
                             <button
                               key={s.id}
-                              onClick={() => toggle(s.id)}
+                              onClick={(e) => {
+                                if (e.shiftKey) {
+                                  setSpotlightId((cur) => (cur === s.id ? null : s.id))
+                                } else {
+                                  toggle(s.id)
+                                }
+                              }}
                               disabled={!hasData}
-                              title={s.description}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition border-(--color-border) ${
+                              title={`${s.description}\n\nClick to toggle. Shift-click to spotlight.`}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition ${
+                                isSpot ? "border-(--color-accent) ring-1 ring-(--color-accent)" : "border-(--color-border)"
+                              } ${
                                 isOn && hasData
                                   ? "bg-(--color-bg) text-white"
                                   : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
                               } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
+                              style={isSpot ? { borderColor: "var(--color-accent)" } : undefined}
                             >
                               <span className="size-2.5 rounded-full" style={{ background: s.color }} />
                               {s.name}
@@ -432,6 +558,55 @@ function App() {
         </section>
       )}
 
+      {!embedMode && data?.series["rent-index"] && wage && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            "Just buy instead of renting."
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Rent on a typical UK 2-bed flat as a share of median take-home pay. The 30% line is the ceiling banks and benefit calculators traditionally call "affordable" — the line has lived above it for most of the last decade.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <Suspense fallback={<ChartFallback />}>
+              <RentToIncomeChart rentIndex={data.series["rent-index"]} wage={wage} />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
+      {!embedMode && housePriceNationwide && wage && (
+        <section className="mb-20">
+          <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-3">
+            What if houses had grown at wage rate?
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Take the 1995 house price. Grow it each year by the same percentage wages grew. The dashed line is the parallel universe where buying a house tracked the paycheque. The gap is what you actually owe the bank.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <Suspense fallback={<ChartFallback />}>
+              <WhatIfChart housePrice={housePriceNationwide} wage={wage} />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
+      {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            What actually lands in your bank.
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Median full-time gross pay, minus income tax and employee NI, then deflated by CPIH to today's money. The line of "what you can actually spend" has barely moved since the financial crisis.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <Suspense fallback={<ChartFallback />}>
+              <RealTakeHomeChart wage={wage} taxBurden={data.series["tax-burden-median"]} cpih={cpihSeries} />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
       {!embedMode && data && (
         <section className="mb-20">
           <GenerationView data={data} />
@@ -440,16 +615,24 @@ function App() {
 
       {!embedMode && housePriceNationwide && (
         <section className="mb-20">
-          <AvosToastCalculator housePrice={housePriceNationwide} />
+          <Suspense fallback={<ChartFallback />}>
+            <AvosToastCalculatorLazy housePrice={housePriceNationwide} />
+          </Suspense>
         </section>
       )}
 
       {!embedMode && data && cpihSeries && (
         <section className="mb-20 grid gap-6 md:grid-cols-2">
-          <TodaysMoney cpih={cpihSeries} />
-          <ThenVsNow series={visible} />
+          <Suspense fallback={<ChartFallback />}>
+            <TodaysMoneyLazy cpih={cpihSeries} />
+          </Suspense>
+          <Suspense fallback={<ChartFallback />}>
+            <ThenVsNowLazy series={visible} />
+          </Suspense>
         </section>
       )}
+
+      {!embedMode && <Faq />}
 
       {!embedMode && <About />}
 

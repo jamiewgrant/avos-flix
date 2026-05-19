@@ -7,6 +7,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
+import { line as d3Line, curveMonotoneX as d3CurveMonotoneX } from "d3-shape"
 import type { Series, Unit, YearValue } from "../../types/series"
 import { UNIT_LABEL, formatAxisValue, formatValue } from "../../types/series"
 import { splitAtVerified } from "../../lib/splitAtVerified"
@@ -21,6 +22,7 @@ interface ChartProps {
   fromYear?: number
   toYear?: number
   annotations?: Annotation[]
+  spotlightId?: string | null
 }
 
 const MUTED = "#9ca3af"
@@ -29,7 +31,22 @@ const SURFACE = "#16171d"
 const BORDER = "#2e303a"
 const TEXT = "#e8e6e3"
 
-export function Chart({ series, mode, baseYear, fromYear, toYear, annotations }: ChartProps) {
+type LinearScale = (n: number) => number
+
+function pathFromPoints(
+  points: YearValue[],
+  xScale: LinearScale,
+  yScale: LinearScale,
+): string {
+  return (
+    d3Line<YearValue>()
+      .x((p) => xScale(p.year))
+      .y((p) => yScale(p.value))
+      .curve(d3CurveMonotoneX)(points) ?? ""
+  )
+}
+
+export function Chart({ series, mode, baseYear, fromYear, toYear, annotations, spotlightId }: ChartProps) {
   if (mode === "indexed") {
     return (
       <IndexedView
@@ -38,10 +55,11 @@ export function Chart({ series, mode, baseYear, fromYear, toYear, annotations }:
         fromYear={fromYear}
         toYear={toYear}
         annotations={annotations}
+        spotlightId={spotlightId}
       />
     )
   }
-  return <RawView series={series} fromYear={fromYear} toYear={toYear} />
+  return <RawView series={series} fromYear={fromYear} toYear={toYear} spotlightId={spotlightId} />
 }
 
 // ─── Indexed: every series rebased to baseYear=100, one shared axis ──────────
@@ -71,12 +89,14 @@ function IndexedView({
   fromYear,
   toYear,
   annotations,
+  spotlightId,
 }: {
   series: Series[]
   baseYear: number
   fromYear?: number
   toYear?: number
   annotations?: Annotation[]
+  spotlightId?: string | null
 }) {
   const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
   const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
@@ -246,35 +266,39 @@ function IndexedView({
               <AnimatePresence>
                 {normalized.map((s) => {
                   const sw = hovered === null ? 2.5 : 2
+                  const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
+                  const baseOpacity = dimmed ? 0.12 : 1
                   const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
                   return (
                     <motion.g
-                      key={`${s.meta.id}-${baseYear}`}
+                      key={s.meta.id}
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      animate={{ opacity: baseOpacity }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                     >
                       {estimated.length > 1 && (
-                        <LinePath
-                          data={estimated}
-                          x={(p) => xScale(p.year)}
-                          y={(p) => yScale(p.value)}
+                        <motion.path
+                          d={pathFromPoints(estimated, xScale, yScale)}
                           stroke={s.meta.color}
                           strokeWidth={sw}
                           strokeDasharray="5,4"
-                          opacity={0.55}
-                          curve={curveMonotoneX}
+                          opacity={0.55 * baseOpacity}
+                          fill="none"
+                          initial={false}
+                          animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
+                          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                         />
                       )}
                       {verified.length > 1 && (
-                        <LinePath
-                          data={verified}
-                          x={(p) => xScale(p.year)}
-                          y={(p) => yScale(p.value)}
+                        <motion.path
+                          d={pathFromPoints(verified, xScale, yScale)}
                           stroke={s.meta.color}
                           strokeWidth={sw}
-                          curve={curveMonotoneX}
+                          fill="none"
+                          initial={false}
+                          animate={{ d: pathFromPoints(verified, xScale, yScale) }}
+                          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                         />
                       )}
                     </motion.g>
@@ -403,10 +427,12 @@ function RawView({
   series,
   fromYear,
   toYear,
+  spotlightId,
 }: {
   series: Series[]
   fromYear?: number
   toYear?: number
+  spotlightId?: string | null
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const groups = useMemo(() => {
@@ -439,6 +465,7 @@ function RawView({
           toYear={toYear}
           hovered={hovered}
           onHover={setHovered}
+          spotlightId={spotlightId}
         />
       ))}
     </div>
@@ -452,6 +479,7 @@ function UnitPanel({
   toYear,
   hovered,
   onHover,
+  spotlightId,
 }: {
   unit: Unit
   series: Series[]
@@ -459,6 +487,7 @@ function UnitPanel({
   toYear?: number
   hovered: number | null
   onHover: (year: number | null) => void
+  spotlightId?: string | null
 }) {
   return (
     <div>
@@ -549,11 +578,12 @@ function UnitPanel({
                   {series.map((s) => {
                     const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
                     const { estimated, verified } = splitAtVerified(inRange, s.verifiedFrom)
+                    const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.id
                     return (
                       <motion.g
                         key={s.id}
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        animate={{ opacity: dimmed ? 0.12 : 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                       >
