@@ -3,8 +3,13 @@ import type { Series } from "../types/series"
 // A "typical UK household basket" of cost categories. £ values for the
 // REFERENCE_YEAR are calibrated to roughly match an ONS Family Spending
 // Survey middle quintile; every other year is scaled by the corresponding
-// indicator series. Childcare + tuition are excluded from the headline
-// basket (not every household pays them) but exposed separately.
+// indicator series.
+//
+// Two personas are exposed: a "settled" household (no kids in nursery,
+// no graduate debt, no auto-enrol pension because pre-dates 2012) and a
+// "young family" household — graduate, one under-2 in full-time nursery,
+// repaying a Plan 2 loan, auto-enrolled pension. Same gross wage; the
+// persona changes deductions and which basket layers apply.
 
 export const REFERENCE_YEAR = 2015
 
@@ -12,15 +17,12 @@ export interface CostLayer {
   id: string
   label: string
   color: string
-  // £ value of this layer in REFERENCE_YEAR.
   refValue: number
-  // The series-id whose growth this layer follows.
   driverId: string
-  // Optional explainer for the layer.
   hint?: string
 }
 
-export const COST_LAYERS: CostLayer[] = [
+const BASE_LAYERS: CostLayer[] = [
   {
     id: "housing",
     label: "Housing (rent or mortgage interest)",
@@ -61,6 +63,165 @@ export const COST_LAYERS: CostLayer[] = [
   },
 ]
 
+const CHILDCARE_LAYER: CostLayer = {
+  id: "childcare",
+  label: "Childcare (one under-2 in nursery)",
+  color: "#fb923c",
+  // Coram 2015 weekly = £222 × 50 = £11,100. Use as ref value direct.
+  refValue: 11100,
+  driverId: "childcare-cost",
+  hint: "Full-time nursery for a child under 2. Pre-1998 the cost (and the dual-earner norm) barely existed.",
+}
+
+// COST_LAYERS exported for back-compat with the legacy headline summary.
+export const COST_LAYERS: CostLayer[] = BASE_LAYERS
+
+export type PersonaId = "settled" | "young-family"
+
+export interface Persona {
+  id: PersonaId
+  label: string
+  shortLabel: string
+  description: string
+  layers: CostLayer[]
+  // Wage-side deductions to apply when computing take-home pay.
+  hasStudentLoan: boolean
+  hasAutoEnrolPension: boolean
+}
+
+export const PERSONAS: Persona[] = [
+  {
+    id: "settled",
+    label: "Settled household — no kids in nursery, no graduate debt",
+    shortLabel: "Settled",
+    description: "Pre-1998 graduate or no degree, no children under 5, opted out of auto-enrolment. Tax + NI only.",
+    layers: BASE_LAYERS,
+    hasStudentLoan: false,
+    hasAutoEnrolPension: false,
+  },
+  {
+    id: "young-family",
+    label: "Young graduate family — one under-2 in nursery, Plan 2 loan, auto-enrolled",
+    shortLabel: "Young family",
+    description: "Post-2012 graduate, one child in full-time nursery, repaying Plan 2 student loan, auto-enrolled in workplace pension.",
+    layers: [...BASE_LAYERS, CHILDCARE_LAYER],
+    hasStudentLoan: true,
+    hasAutoEnrolPension: true,
+  },
+]
+
+export function personaById(id: PersonaId): Persona {
+  return PERSONAS.find((p) => p.id === id) ?? PERSONAS[0]
+}
+
+// ---------- UK tax / NI / SL / pension model (approximate, year-aware) ----------
+
+interface TaxYear {
+  personalAllowance: number
+  basicRate: number
+  basicBandTop: number
+  higherRate: number
+  niPrimaryThreshold: number
+  niMainRate: number
+  studentLoanThreshold: number | null
+  studentLoanRate: number
+  pensionEmployeeRate: number
+}
+
+// Piecewise-linear interpolation over an anchor table.
+function interp(year: number, anchors: Array<[number, number]>): number {
+  if (year <= anchors[0][0]) return anchors[0][1]
+  if (year >= anchors[anchors.length - 1][0]) return anchors[anchors.length - 1][1]
+  for (let i = 1; i < anchors.length; i++) {
+    const [y1, v1] = anchors[i]
+    if (y1 >= year) {
+      const [y0, v0] = anchors[i - 1]
+      const t = (year - y0) / (y1 - y0)
+      return v0 + (v1 - v0) * t
+    }
+  }
+  return anchors[anchors.length - 1][1]
+}
+
+const PA_ANCHORS: Array<[number, number]> = [
+  [1990, 3005], [1995, 3525], [2000, 4385], [2005, 4895],
+  [2010, 6475], [2014, 10000], [2016, 11000], [2019, 12500],
+  [2021, 12570], [2030, 12570],
+]
+
+const NI_PT_ANCHORS: Array<[number, number]> = [
+  [1990, 2600], [2000, 3900], [2010, 5715], [2015, 8060],
+  [2019, 8632], [2022, 12570], [2030, 12570],
+]
+
+function taxYear(year: number): TaxYear {
+  const personalAllowance = interp(year, PA_ANCHORS)
+  // Basic rate: 25% → 24% → 23% → 22% → 20%
+  const basicRate =
+    year < 1996 ? 0.25 : year < 1997 ? 0.24 : year < 2000 ? 0.23 : year < 2008 ? 0.22 : 0.20
+  // NI main rate: 9% historically → 11% in 2003 → 12% in 2011 → 13.25% briefly → back to 12% → 10% → 8%
+  const niMainRate =
+    year < 2003 ? 0.09
+    : year < 2011 ? 0.11
+    : year < 2022 ? 0.12
+    : year < 2024 ? 0.12
+    : year < 2025 ? 0.10
+    : 0.08
+  // Student loan: Plan 1 threshold from 1998 (~£10k rising), Plan 2 from 2012 (£21k rising to £27,295).
+  const studentLoanThreshold =
+    year < 1998 ? null
+    : year < 2005 ? 10000
+    : year < 2012 ? 15000
+    : year < 2016 ? 21000
+    : year < 2022 ? 25000
+    : 27295
+  // Pension auto-enrolment: 0% before Oct 2012, 1% then, 3% from Apr 2018, 5% from Apr 2019.
+  const pensionEmployeeRate =
+    year < 2013 ? 0 : year < 2018 ? 0.01 : year < 2019 ? 0.03 : 0.05
+
+  return {
+    personalAllowance,
+    basicRate,
+    basicBandTop: 50270,
+    higherRate: 0.40,
+    niPrimaryThreshold: interp(year, NI_PT_ANCHORS),
+    niMainRate,
+    studentLoanThreshold,
+    studentLoanRate: 0.09,
+    pensionEmployeeRate,
+  }
+}
+
+export interface NetPayBreakdown {
+  gross: number
+  tax: number
+  ni: number
+  studentLoan: number
+  pension: number
+  net: number
+}
+
+export function netPayDetail(
+  gross: number,
+  year: number,
+  opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean },
+): NetPayBreakdown {
+  const ty = taxYear(year)
+  const taxable = Math.max(0, gross - ty.personalAllowance)
+  const basicBand = Math.max(0, ty.basicBandTop - ty.personalAllowance)
+  const tax =
+    Math.min(taxable, basicBand) * ty.basicRate +
+    Math.max(0, taxable - basicBand) * ty.higherRate
+  const ni = Math.max(0, gross - ty.niPrimaryThreshold) * ty.niMainRate
+  const studentLoan =
+    opts.hasStudentLoan && ty.studentLoanThreshold != null
+      ? Math.max(0, gross - ty.studentLoanThreshold) * ty.studentLoanRate
+      : 0
+  const pension = opts.hasAutoEnrolPension ? gross * ty.pensionEmployeeRate : 0
+  const net = gross - tax - ni - studentLoan - pension
+  return { gross, tax, ni, studentLoan, pension, net }
+}
+
 export interface StackPoint {
   year: number
   layers: Record<string, number>
@@ -69,7 +230,7 @@ export interface StackPoint {
 
 export function buildStack(
   series: Record<string, Series>,
-  layers: CostLayer[] = COST_LAYERS,
+  layers: CostLayer[] = BASE_LAYERS,
 ): StackPoint[] {
   const driverMaps = new Map<string, Map<number, number>>()
   for (const layer of layers) {
@@ -85,7 +246,6 @@ export function buildStack(
     if (m && ref && ref !== 0) refValues.set(layer.id, ref)
   }
 
-  // Yearly grid: every year for which we have ALL drivers.
   const years = new Set<number>()
   let first = true
   for (const layer of layers) {
@@ -120,9 +280,24 @@ export function buildStack(
   return out
 }
 
+// Net-of-deductions wage line for a given persona. Replaces the old
+// flat `gross × 0.78` proxy with year-aware tax/NI/SL/pension.
+export function netWageLine(
+  wage: Series,
+  opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean } = {},
+): Array<{ year: number; value: number; breakdown: NetPayBreakdown }> {
+  return wage.points.map((p) => {
+    const b = netPayDetail(p.value, p.year, opts)
+    return { year: p.year, value: b.net, breakdown: b }
+  })
+}
+
+// Back-compat alias used by old callers — keep so any other code path
+// still resolves. Equivalent to settled-persona net.
 export function wageLine(
   wage: Series,
-  netFactor = 0.78,
 ): Array<{ year: number; value: number }> {
-  return wage.points.map((p) => ({ year: p.year, value: p.value * netFactor }))
+  return netWageLine(wage, { hasStudentLoan: false, hasAutoEnrolPension: false }).map(
+    (p) => ({ year: p.year, value: p.value }),
+  )
 }

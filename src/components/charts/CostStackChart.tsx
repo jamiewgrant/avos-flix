@@ -6,11 +6,12 @@ import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { line as d3Line, area as d3Area, curveMonotoneX } from "d3-shape"
 import type { Series } from "../../types/series"
-import { COST_LAYERS, buildStack, wageLine } from "../../lib/costBasket"
+import { buildStack, netWageLine, type Persona } from "../../lib/costBasket"
 
 interface Props {
   series: Record<string, Series>
   wage: Series
+  persona: Persona
 }
 
 const MUTED = "#9ca3af"
@@ -20,11 +21,14 @@ const SURFACE = "#16171d"
 const BORDER = "#2e303a"
 const WAGE = "#ffffff"
 
-export function CostStackChart({ series, wage }: Props) {
+export function CostStackChart({ series, wage, persona }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
 
-  const stack = useMemo(() => buildStack(series), [series])
-  const wageData = useMemo(() => wageLine(wage), [wage])
+  const stack = useMemo(() => buildStack(series, persona.layers), [series, persona])
+  const wageData = useMemo(
+    () => netWageLine(wage, { hasStudentLoan: persona.hasStudentLoan, hasAutoEnrolPension: persona.hasAutoEnrolPension }),
+    [wage, persona],
+  )
 
   const yearRange = useMemo<[number, number] | null>(() => {
     if (stack.length === 0) return null
@@ -57,11 +61,10 @@ export function CostStackChart({ series, wage }: Props) {
         const yMax = Math.max(maxStack, maxWage) * 1.05
         const yScale = scaleLinear<number>({ domain: [0, yMax], range: [innerH, 0], nice: true })
 
-        // Build cumulative offsets per year per layer for stacking.
         const stacked = stack.map((p) => {
           let acc = 0
           const cums: Record<string, [number, number]> = {}
-          for (const layer of COST_LAYERS) {
+          for (const layer of persona.layers) {
             const v = p.layers[layer.id] ?? 0
             cums[layer.id] = [acc, acc + v]
             acc += v
@@ -92,6 +95,8 @@ export function CostStackChart({ series, wage }: Props) {
 
         const hoverStack = hovered === null ? null : stack.find((p) => p.year === hovered)
         const hoverWage = hovered === null ? null : wageData.find((p) => p.year === hovered)
+        const tooltipRows = persona.layers.length + (persona.hasStudentLoan ? 1 : 0) + (persona.hasAutoEnrolPension ? 1 : 0)
+        const tooltipH = 24 + tooltipRows * 16 + 44
 
         return (
           <svg width={width} height={height} role="img" aria-label="Cost-of-living basket stacked, with median net wage overlay">
@@ -116,7 +121,7 @@ export function CostStackChart({ series, wage }: Props) {
                 tickLabelProps={{ fill: MUTED, fontSize: 11, dx: -4, dy: 4, textAnchor: "end" }}
               />
 
-              {COST_LAYERS.map((layer) => (
+              {persona.layers.map((layer) => (
                 <path
                   key={layer.id}
                   d={areaForLayer(layer.id)}
@@ -127,7 +132,6 @@ export function CostStackChart({ series, wage }: Props) {
                 />
               ))}
 
-              <path d={wagePath} stroke={WAGE} strokeWidth={2.5} fill="none" />
               <path d={wagePath} stroke="#000" strokeWidth={4} fill="none" opacity={0.3} style={{ filter: "blur(2px)" }} />
               <path d={wagePath} stroke={WAGE} strokeWidth={2.5} fill="none" />
 
@@ -152,14 +156,14 @@ export function CostStackChart({ series, wage }: Props) {
                     />
                   )}
                   <g
-                    transform={`translate(${Math.min(xScale(hoverStack.year) + 12, innerW - 220)}, 8)`}
+                    transform={`translate(${Math.min(xScale(hoverStack.year) + 12, innerW - 232)}, 8)`}
                     pointerEvents="none"
                   >
-                    <rect width={216} height={20 + COST_LAYERS.length * 16 + 28} rx={8} fill={SURFACE} stroke={BORDER} />
+                    <rect width={228} height={tooltipH} rx={8} fill={SURFACE} stroke={BORDER} />
                     <text x={10} y={16} fill={TEXT} fontSize={12} fontWeight={700}>
                       {hoverStack.year}
                     </text>
-                    {COST_LAYERS.map((layer, i) => {
+                    {persona.layers.map((layer, i) => {
                       const v = hoverStack.layers[layer.id] ?? 0
                       const pct = (v / hoverStack.total) * 100
                       return (
@@ -168,26 +172,26 @@ export function CostStackChart({ series, wage }: Props) {
                           <text x={14} y={0} fill={MUTED} fontSize={10}>
                             {layer.label.replace(/\(.+?\)/, "").trim()}
                           </text>
-                          <text x={210 - 10} y={0} fill={TEXT} fontSize={10} fontWeight={600} textAnchor="end">
+                          <text x={210} y={0} fill={TEXT} fontSize={10} fontWeight={600} textAnchor="end">
                             £{Math.round(v).toLocaleString("en-GB")} ({pct.toFixed(0)}%)
                           </text>
                         </g>
                       )
                     })}
-                    <line x1={10} x2={206} y1={32 + COST_LAYERS.length * 16} y2={32 + COST_LAYERS.length * 16} stroke={BORDER} />
-                    <text x={10} y={32 + COST_LAYERS.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700}>
+                    <line x1={10} x2={218} y1={32 + persona.layers.length * 16} y2={32 + persona.layers.length * 16} stroke={BORDER} />
+                    <text x={10} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700}>
                       Total basket
                     </text>
-                    <text x={206} y={32 + COST_LAYERS.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700} textAnchor="end">
+                    <text x={218} y={32 + persona.layers.length * 16 + 14} fill={WAGE} fontSize={11} fontWeight={700} textAnchor="end">
                       £{Math.round(hoverStack.total).toLocaleString("en-GB")}
                     </text>
                     {hoverWage && (
                       <>
-                        <text x={10} y={32 + COST_LAYERS.length * 16 + 28} fill={MUTED} fontSize={10}>
-                          Median net wage
+                        <text x={10} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10}>
+                          Take-home pay
                         </text>
-                        <text x={206} y={32 + COST_LAYERS.length * 16 + 28} fill={MUTED} fontSize={10} textAnchor="end">
-                          £{Math.round(hoverWage.value).toLocaleString("en-GB")}
+                        <text x={218} y={32 + persona.layers.length * 16 + 30} fill={MUTED} fontSize={10} textAnchor="end">
+                          £{Math.round(hoverWage.value).toLocaleString("en-GB")} of £{Math.round(hoverWage.breakdown.gross).toLocaleString("en-GB")}
                         </text>
                       </>
                     )}
