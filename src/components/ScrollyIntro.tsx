@@ -36,9 +36,16 @@ const SCENES: Scene[] = [
   {
     id: "rest",
     headline: "And so did the rest.",
-    body: "Rent, energy bills, the general price level — all moved against you. Scroll on for the full set; the chart below is interactive.",
+    body: "Rent, energy bills, the general price level — all moved against you.",
     visibleIds: ["median-wage", "house-price-nationwide", "rent-index", "cpih", "energy-cost"],
     baseYear: 1995,
+  },
+  {
+    id: "tuition",
+    headline: "Then they added bills that didn't exist.",
+    body: "A degree cost £0 a year in 1997 and £9,535 by 2025. Today's graduates walk into work owing ~£47,000 before they earn a pound. There's no equivalent line on a boomer's chart.",
+    visibleIds: ["tuition-uk", "student-debt", "median-wage"],
+    baseYear: 1997,
   },
 ]
 
