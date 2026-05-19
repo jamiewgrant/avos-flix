@@ -5,6 +5,9 @@ import { useUrlState } from "./data/useUrlState"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { MortgageChart } from "./components/charts/MortgageChart"
+import { RentToIncomeChart } from "./components/charts/RentToIncomeChart"
+import { WhatIfChart } from "./components/charts/WhatIfChart"
+import { RealTakeHomeChart } from "./components/charts/RealTakeHomeChart"
 import { StatCallouts } from "./components/StatCallouts"
 import { AvosToastCalculator } from "./components/AvosToastCalculator"
 import { GenerationView } from "./components/GenerationView"
@@ -428,6 +431,48 @@ function App() {
           </p>
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
             <MortgageChart housePrice={housePriceNationwide!} wage={wage!} boeRate={boeRate!} />
+          </div>
+        </section>
+      )}
+
+      {!embedMode && data?.series["rent-index"] && wage && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            "Just buy instead of renting."
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Rent on a typical UK 2-bed flat as a share of median take-home pay. The 30% line is the ceiling banks and benefit calculators traditionally call "affordable" — the line has lived above it for most of the last decade.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <RentToIncomeChart rentIndex={data.series["rent-index"]} wage={wage} />
+          </div>
+        </section>
+      )}
+
+      {!embedMode && housePriceNationwide && wage && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            What if houses had grown at wage rate?
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Take the 1995 house price. Grow it each year by the same percentage wages grew. The dashed line is the parallel universe where buying a house tracked the paycheque. The gap is what you actually owe the bank.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <WhatIfChart housePrice={housePriceNationwide} wage={wage} />
+          </div>
+        </section>
+      )}
+
+      {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            What actually lands in your bank.
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Median full-time gross pay, minus income tax and employee NI, then deflated by CPIH to today's money. The line of "what you can actually spend" has barely moved since the financial crisis.
+          </p>
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+            <RealTakeHomeChart wage={wage} taxBurden={data.series["tax-burden-median"]} cpih={cpihSeries} />
           </div>
         </section>
       )}
