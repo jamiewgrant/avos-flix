@@ -25,6 +25,7 @@ import { fetchSeries as fetchHomeownership } from "./sources/homeownership.ts"
 import { fetchSeries as fetchFtbAge } from "./sources/ftb-age.ts"
 import { fetchSeries as fetchTaxBurden } from "./sources/tax-burden.ts"
 import { fetchSeries as fetchGradSalary } from "./sources/grad-salary.ts"
+import { fetchSeries as fetchFoodCpi } from "./sources/food-cpi.ts"
 
 // Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
 type SourceFn = () => Promise<Series | Series[]>
@@ -53,6 +54,7 @@ const SOURCES: SourceFn[] = [
   fetchFtbAge,
   fetchTaxBurden,
   fetchGradSalary,
+  fetchFoodCpi,
 ]
 
 const OUT_DIR = resolve("public", "data")
