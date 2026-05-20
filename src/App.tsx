@@ -24,6 +24,12 @@ const TodaysMoneyLazy = lazy(() =>
 const AvosToastCalculatorLazy = lazy(() =>
   import("./components/AvosToastCalculator").then((m) => ({ default: m.AvosToastCalculator })),
 )
+const BoomerVsMillennialLazy = lazy(() =>
+  import("./components/BoomerVsMillennial").then((m) => ({ default: m.BoomerVsMillennial })),
+)
+const DepositTimelineSectionLazy = lazy(() =>
+  import("./components/DepositTimelineSection").then((m) => ({ default: m.DepositTimelineSection })),
+)
 
 const ChartFallback = () => (
   <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
@@ -596,6 +602,12 @@ function App() {
         </section>
       )}
 
+      {!embedMode && housePriceNationwide && wage && (
+        <Suspense fallback={<ChartFallback />}>
+          <DepositTimelineSectionLazy housePrice={housePriceNationwide} wage={wage} />
+        </Suspense>
+      )}
+
       {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
         <section className="mb-20">
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
@@ -616,6 +628,12 @@ function App() {
         <section className="mb-20">
           <GenerationView data={data} />
         </section>
+      )}
+
+      {!embedMode && data && (
+        <Suspense fallback={<ChartFallback />}>
+          <BoomerVsMillennialLazy data={data} />
+        </Suspense>
       )}
 
       {!embedMode && housePriceNationwide && (
