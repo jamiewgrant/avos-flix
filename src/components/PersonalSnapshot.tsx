@@ -43,20 +43,15 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
   const [tooltip, setTooltip] = useState<{ seg: (typeof SEGMENTS)[0]; x: number; y: number } | null>(null)
   const barRef = useRef<HTMLDivElement>(null)
 
-  const gross = breakdown.grossSalary
   const displayDisposable = Math.max(0, breakdown.disposable)
 
-  // Compute raw display values (disposable clamped to 0 in deficit)
   const rawDisplayValues = SEGMENTS.map((seg) =>
     seg.key === "disposable" ? displayDisposable : Math.max(0, breakdown[seg.key] as number),
   )
-  const positiveTotal = rawDisplayValues.reduce((a, b) => a + b, 0)
-  // If costs exceed gross (deficit), scale all segments proportionally to fit
-  const scale = positiveTotal > gross && gross > 0 ? gross / positiveTotal : 1
 
   const segsWithPct = SEGMENTS.map((seg, i) => ({
     ...seg,
-    width: gross > 0 ? (rawDisplayValues[i] / gross) * 100 * scale : 0,
+    flexVal: rawDisplayValues[i],
     raw: breakdown[seg.key] as number,
   }))
 
@@ -75,18 +70,17 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
       <div
         ref={barRef}
         className="relative h-8 flex rounded overflow-hidden"
-        style={{ background: "var(--color-surface-2)" }}
+        style={{ background: "var(--color-surface-2)", gap: "1px" }}
         onMouseLeave={() => setTooltip(null)}
       >
         {segsWithPct.map((seg) =>
-          seg.width <= 0 ? null : (
+          seg.flexVal <= 0 ? null : (
             <div
               key={seg.key as string}
               style={{
-                width: `${seg.width}%`,
+                flex: seg.flexVal,
+                minWidth: 0,
                 background: seg.color,
-                marginRight: "1px",
-                flexShrink: 0,
               }}
               onMouseMove={(e) => handleMouseMove(seg, e)}
               title={`${seg.label}: ${fmt(seg.raw)}`}
@@ -116,11 +110,15 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
       <div className="text-xs mt-1" style={{ color: "var(--color-accent)" }}>
         {fmt(breakdown.disposable / 12)} / mo disposable
         {breakdown.disposable < 0 && (
-          <span className="text-(--color-danger) ml-2">(deficit)</span>
+          <span className="ml-2" style={{ color: "var(--color-danger, #ef4444)" }}>
+            costs exceed income by {fmt(Math.abs(breakdown.disposable) / 12)}/mo
+          </span>
         )}
-        <span className="text-(--color-muted) ml-2">
-          ({pct(breakdown.disposablePct)} of gross)
-        </span>
+        {breakdown.disposable >= 0 && (
+          <span className="text-(--color-muted) ml-2">
+            ({pct(breakdown.disposablePct)} of gross)
+          </span>
+        )}
       </div>
     </div>
   )
