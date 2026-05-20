@@ -173,11 +173,11 @@ export function computeSnapshot(
   const todayEnergy = latestValue(series["energy-cost"]) ?? 2500
   const foodCpiNow = latestValue(series["food-cpi"]) ?? 100
   const todayGroceries = 5200 * (foodCpiNow / 100) + 1000 * inputs.children
-  const childcareWeekly = latestValue(series["childcare-cost"])
+  const childcareAnnual = latestValue(series["childcare-cost"])
   const todayChildcare =
     inputs.children > 0
-      ? childcareWeekly != null
-        ? childcareWeekly * 50 * Math.min(inputs.children, 2)
+      ? childcareAnnual != null
+        ? childcareAnnual * Math.min(inputs.children, 2)
         : 15000 * Math.min(inputs.children, 2)
       : 0
   const todayCouncilTax = latestValue(series["council-tax"]) ?? 1800
@@ -237,8 +237,13 @@ export function computeSnapshot(
   // Historical housing
   let historicalHousing = 0
   if (inputs.housingType === "mortgage") {
-    const synth = syntheticMortgagePayment(series, compareYear)
-    historicalHousing = synth ?? 0
+    const synthToday = syntheticMortgagePayment(series, currentYear)
+    const synthHistorical = syntheticMortgagePayment(series, compareYear)
+    if (synthToday != null && synthHistorical != null && synthToday > 0) {
+      historicalHousing = (synthHistorical / synthToday) * (inputs.monthlyHousing * 12)
+    } else {
+      historicalHousing = synthHistorical ?? 0
+    }
   } else if (inputs.housingType === "rent") {
     const rentNow = latestValue(series["rent-index"])
     const rentThen = valueAtYear(series["rent-index"], compareYear)
@@ -259,7 +264,7 @@ export function computeSnapshot(
   if (inputs.children > 0) {
     const ccThen = valueAtYear(series["childcare-cost"], compareYear)
     if (ccThen != null) {
-      histChildcare = ccThen * 50 * Math.min(inputs.children, 2)
+      histChildcare = ccThen * Math.min(inputs.children, 2)
     } else if (todayChildcare > 0 && foodCpiNow > 0) {
       histChildcare = todayChildcare * (foodCpiThen / foodCpiNow)
     }
