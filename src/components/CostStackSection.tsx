@@ -156,7 +156,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
     <section className="mb-20">
       {!embedMode && (
         <>
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             The bill, stacked.
           </h2>
           <p className="text-(--color-muted) mb-6 max-w-2xl text-lg leading-relaxed">
@@ -174,7 +174,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
           onClick={downloadSnapshot}
           disabled={snapshotting}
           aria-label="Download cost stack as PNG"
-          className="absolute top-4 right-4 px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50 z-10"
+          className="absolute top-4 right-4 px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-(--color-text) transition disabled:opacity-50 z-10"
           title="Download this card as a PNG"
         >
           {snapshotting ? "saving…" : "↓ PNG"}
@@ -313,7 +313,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
         active
           ? "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
-          : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-white"
+          : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-(--color-text)"
       }`}
     >
       {children}

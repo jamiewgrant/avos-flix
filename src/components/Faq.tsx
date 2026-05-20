@@ -37,7 +37,7 @@ export function Faq() {
 
   return (
     <section className="mb-20">
-      <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">The usual rebuttals.</h2>
+      <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">The usual rebuttals.</h2>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
         Every dinner-party objection, pre-answered.
       </p>
@@ -49,12 +49,12 @@ export function Faq() {
               <button
                 onClick={() => setOpenIdx(open ? null : i)}
                 aria-expanded={open}
-                className="w-full text-left px-5 py-4 flex items-start gap-3 hover:bg-(--color-bg) transition"
+                className="w-full text-left px-5 py-4 flex items-start gap-3 hover:bg-(--color-surface-2) transition"
               >
                 <span className={`text-(--color-accent) text-xl leading-none transition-transform ${open ? "rotate-45" : ""}`}>
                   +
                 </span>
-                <span className="text-white font-medium flex-1">{qa.q}</span>
+                <span className="text-(--color-text) font-medium flex-1">{qa.q}</span>
               </button>
               {open && (
                 <div className="px-5 pb-5 pl-12 text-(--color-muted) text-sm leading-relaxed">

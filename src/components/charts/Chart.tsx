@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import { useChartColors } from "../../lib/useChartColors"
 import { motion, AnimatePresence } from "framer-motion"
 import { Group } from "@visx/group"
 import { LinePath } from "@visx/shape"
@@ -25,11 +26,7 @@ interface ChartProps {
   spotlightId?: string | null
 }
 
-const MUTED = "#9ca3af"
-const GRID = "#2a2c36"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
-const TEXT = "#e8e6e3"
+// Colors injected via useChartColors at the component level
 
 type LinearScale = (n: number) => number
 
@@ -98,6 +95,7 @@ function IndexedView({
   annotations?: Annotation[]
   spotlightId?: string | null
 }) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
   const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
   const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
   const [pinned, setPinned] = useState<number | null>(null)
@@ -489,6 +487,7 @@ function UnitPanel({
   onHover: (year: number | null) => void
   spotlightId?: string | null
 }) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
   return (
     <div>
       <div className="flex items-center justify-between mb-2 px-1">
@@ -697,6 +696,7 @@ function AnnotationTooltip({
   innerW: number
   innerH: number
 }) {
+  const { muted: MUTED, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const w = 240
   const flipLeft = anchorX + w + 12 > innerW
   const x = flipLeft ? anchorX - w - 10 : anchorX + 10
@@ -752,6 +752,7 @@ function TooltipBox({
   compact?: boolean
   pinned?: boolean
 }) {
+  const { surface: SURFACE, border: BORDER, text: TEXT, muted: MUTED } = useChartColors()
   const rowH = compact ? 16 : 18
   const padding = 10
   const headerH = compact ? 18 : 22

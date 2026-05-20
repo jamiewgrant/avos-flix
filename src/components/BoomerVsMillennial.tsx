@@ -94,7 +94,7 @@ export function BoomerVsMillennial({ data }: Props) {
 
   return (
     <section className="mb-20">
-      <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+      <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
         Same age, different economy.
       </h2>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">

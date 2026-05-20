@@ -6,6 +6,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
+import { useChartColors } from "../../lib/useChartColors"
 import type { Series, YearValue } from "../../types/series"
 import { formatValue } from "../../types/series"
 
@@ -17,13 +18,9 @@ interface Props {
 
 const ACTUAL = "#a78bfa"
 const COUNTERFACTUAL = "#34d399"
-const MUTED = "#9ca3af"
-const GRID = "#2a2c36"
-const TEXT = "#e8e6e3"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
 
 export function WhatIfChart({ housePrice, wage, baseYear = 1995 }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const [hovered, setHovered] = useState<number | null>(null)
 
   const data = useMemo(() => {
@@ -55,7 +52,7 @@ export function WhatIfChart({ housePrice, wage, baseYear = 1995 }: Props) {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="rounded-xl bg-(--color-bg) border border-(--color-border) p-3">
           <div className="text-xs text-(--color-muted) mb-1">Actual {latest.year}</div>
-          <div className="text-xl font-semibold text-white tabular-nums">{formatValue(latest.value, "GBP")}</div>
+          <div className="text-xl font-semibold text-(--color-text) tabular-nums">{formatValue(latest.value, "GBP")}</div>
         </div>
         <div className="rounded-xl bg-(--color-bg) border border-(--color-border) p-3">
           <div className="text-xs text-(--color-muted) mb-1">If grown at wage rate</div>
@@ -65,7 +62,7 @@ export function WhatIfChart({ housePrice, wage, baseYear = 1995 }: Props) {
         </div>
         <div className="rounded-xl bg-(--color-bg) border border-(--color-border) p-3">
           <div className="text-xs text-(--color-muted) mb-1">Gap</div>
-          <div className="text-xl font-semibold text-white tabular-nums">{formatValue(gap, "GBP")}</div>
+          <div className="text-xl font-semibold text-(--color-text) tabular-nums">{formatValue(gap, "GBP")}</div>
         </div>
       </div>
 

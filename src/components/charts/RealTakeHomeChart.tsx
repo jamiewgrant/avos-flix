@@ -6,6 +6,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
+import { useChartColors } from "../../lib/useChartColors"
 import type { Series, YearValue } from "../../types/series"
 
 interface Props {
@@ -16,13 +17,9 @@ interface Props {
 
 const NOMINAL = "#9ca3af"
 const REAL = "#c084fc"
-const GRID = "#2a2c36"
-const MUTED = "#9ca3af"
-const TEXT = "#e8e6e3"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
 
 export function RealTakeHomeChart({ wage, taxBurden, cpih }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const [hovered, setHovered] = useState<number | null>(null)
 
   const data = useMemo(() => {

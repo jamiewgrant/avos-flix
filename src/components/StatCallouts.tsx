@@ -105,7 +105,7 @@ export function StatCallouts({ series, baseYear, endYear }: Props) {
           key={i}
           className="rounded-xl bg-(--color-bg) border border-(--color-border) p-4 transition-colors hover:border-(--color-accent-border)"
         >
-          <div className="text-2xl md:text-3xl font-semibold text-white tabular-nums tracking-tight">
+          <div className="text-2xl md:text-3xl font-semibold text-(--color-text) tabular-nums tracking-tight">
             {s.headline}
           </div>
           <div className="text-xs text-(--color-muted) mt-1 leading-snug">{s.caption}</div>

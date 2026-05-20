@@ -6,6 +6,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
+import { useChartColors } from "../../lib/useChartColors"
 import type { Series, YearValue } from "../../types/series"
 
 interface Props {
@@ -15,17 +16,13 @@ interface Props {
 
 const ACCENT = "#fb923c"
 const REF = "#9ca3af"
-const GRID = "#2a2c36"
-const TEXT = "#e8e6e3"
-const MUTED = "#9ca3af"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
 
 const RENT_REF_YEAR = 2015
 const RENT_REF_MONTHLY = 750
 const NET_FACTOR = 0.78
 
 export function RentToIncomeChart({ rentIndex, wage }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const [hovered, setHovered] = useState<number | null>(null)
 
   const ratio = useMemo<YearValue[]>(() => {

@@ -84,7 +84,7 @@ export function GenerationView({ data }: Props) {
       <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
         Generation view
       </div>
-      <h3 className="text-2xl md:text-3xl font-semibold text-white">
+      <h3 className="text-2xl md:text-3xl font-semibold text-(--color-text)">
         Born in{" "}
         <select
           value={birthYear}

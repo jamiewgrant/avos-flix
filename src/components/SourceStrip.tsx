@@ -48,7 +48,7 @@ export function SourceStrip({ series }: Props) {
             href={d.url}
             target="_blank"
             rel="noreferrer"
-            className="hover:text-white underline-offset-2 hover:underline"
+            className="hover:text-(--color-text) underline-offset-2 hover:underline"
           >
             {d.name}
           </a>

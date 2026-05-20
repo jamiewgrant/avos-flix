@@ -58,7 +58,7 @@ export function AvosToastCalculator({ housePrice }: Props) {
       <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
         Calculator
       </div>
-      <h3 className="text-2xl md:text-3xl font-semibold text-white">
+      <h3 className="text-2xl md:text-3xl font-semibold text-(--color-text)">
         Sacrifice the toast. Save the deposit?
       </h3>
 
