@@ -111,7 +111,7 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
         )}
       </div>
       <div className="text-xs mt-1" style={{ color: "var(--color-accent)" }}>
-        {fmt(breakdown.disposable)} / mo disposable
+        {fmt(breakdown.disposable / 12)} / mo disposable
         {breakdown.disposable < 0 && (
           <span className="text-(--color-danger) ml-2">(deficit)</span>
         )}

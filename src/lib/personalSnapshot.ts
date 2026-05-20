@@ -252,7 +252,7 @@ export function computeSnapshot(
   const histEnergy = valueAtYear(series["energy-cost"], compareYear) ?? todayEnergy * 0.5
   const foodCpiThen = valueAtYear(series["food-cpi"], compareYear) ?? foodCpiNow
   const histGroceries =
-    5200 * (foodCpiThen / foodCpiNow) * (foodCpiNow / 100) + 1000 * inputs.children
+    5200 * (foodCpiThen / 100) + 1000 * inputs.children
 
   // Childcare historical — scale by food-cpi as proxy if no direct data
   let histChildcare = 0
