@@ -25,3 +25,4 @@ scripts/raw/
 *.njsproj
 *.sln
 *.sw?
+.claude/
