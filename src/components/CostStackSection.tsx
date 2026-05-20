@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from "react"
+import { lazy, Suspense, useRef, useMemo, useState } from "react"
+import { toPng } from "html-to-image"
 import type { Series } from "../types/series"
 import {
   PERSONAS,
@@ -19,9 +20,13 @@ const CostStackChart = lazy(() =>
 interface Props {
   series: Record<string, Series>
   wage: Series
+  embedMode?: boolean
 }
 
-export function CostStackSection({ series }: Props) {
+const START_YEAR_OPTIONS = [1995, 2008, 2015] as const
+type StartYear = typeof START_YEAR_OPTIONS[number]
+
+export function CostStackSection({ series, embedMode = false }: Props) {
   const [personaId, setPersonaId] = useState<PersonaId>("young-family")
   const persona = personaById(personaId)
 
@@ -29,7 +34,17 @@ export function CostStackSection({ series }: Props) {
   const [benchmarkId, setBenchmarkId] = useState<WageBenchmarkId>(persona.defaultWageBenchmark)
   const benchmark = wageBenchmarkById(benchmarkId)
 
-  const stack = useMemo(() => buildStack(series, persona.layers), [series, persona])
+  const [housingMode, setHousingMode] = useState<"mortgage" | "rent">("mortgage")
+  const [startYear, setStartYear] = useState<StartYear>(1995)
+
+  const [snapshotting, setSnapshotting] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const stack = useMemo(
+    () => buildStack(series, persona.layers, { housingMode }),
+    [series, persona, housingMode],
+  )
+
   const wageData = useMemo(
     () => resolveWageLine(
       series,
@@ -40,10 +55,16 @@ export function CostStackSection({ series }: Props) {
     [series, benchmark, persona, earners],
   )
 
+  // Filter stack to startYear
+  const filteredStack = useMemo(
+    () => stack.filter((p) => p.year >= startYear),
+    [stack, startYear],
+  )
+
   const headline = useMemo(() => {
-    if (stack.length < 2) return null
-    const first = stack[0]
-    const last = stack[stack.length - 1]
+    if (filteredStack.length < 2) return null
+    const first = filteredStack[0]
+    const last = filteredStack[filteredStack.length - 1]
     const wageAtFirst = wageData.find((p) => p.year === first.year)
     const wageAtLast = wageData.find((p) => p.year === last.year)
     if (!wageAtFirst || !wageAtLast) return null
@@ -66,7 +87,29 @@ export function CostStackSection({ series }: Props) {
     })
 
     return { first: first.year, last: last.year, basketMul, wageMul, firstShare, lastShare, breakdown }
-  }, [stack, wageData, persona])
+  }, [filteredStack, wageData, persona])
+
+  // Comparison stat for the alternate persona
+  const altPersonaId: PersonaId = personaId === "settled" ? "young-family" : "settled"
+  const altPersona = personaById(altPersonaId)
+  const altBenchmark = wageBenchmarkById(altPersona.defaultWageBenchmark)
+
+  const altCompare = useMemo(() => {
+    const altStack = buildStack(series, altPersona.layers, { housingMode })
+    const altWageData = resolveWageLine(
+      series,
+      altBenchmark,
+      { hasStudentLoan: altPersona.hasStudentLoan, hasAutoEnrolPension: altPersona.hasAutoEnrolPension },
+      altPersona.defaultEarners,
+    )
+    const altFiltered = altStack.filter((p) => p.year >= startYear)
+    if (altFiltered.length < 1) return null
+    const last = altFiltered[altFiltered.length - 1]
+    const wageAtLast = altWageData.find((p) => p.year === last.year)
+    if (!wageAtLast) return null
+    const share = Math.round((last.total / wageAtLast.value) * 100)
+    return { personaLabel: altPersona.shortLabel, year: last.year, share }
+  }, [series, altPersona, altBenchmark, housingMode, startYear])
 
   function handlePersonaChange(id: PersonaId) {
     const p = personaById(id)
@@ -75,23 +118,57 @@ export function CostStackSection({ series }: Props) {
     setBenchmarkId(p.defaultWageBenchmark)
   }
 
+  async function downloadSnapshot() {
+    if (!cardRef.current || snapshotting) return
+    setSnapshotting(true)
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        backgroundColor: "#16171d",
+        pixelRatio: 2,
+        style: { borderRadius: "0px" },
+      })
+      const link = document.createElement("a")
+      link.download = `avos-flix-cost-stack-${personaId}.png`
+      link.href = dataUrl
+      link.click()
+    } catch (err) {
+      console.error("Snapshot failed:", err)
+    } finally {
+      setSnapshotting(false)
+    }
+  }
+
   if (!headline) return null
 
   const wageLabel = earners === 2 ? "Combined household pay" : "Take-home pay"
 
   return (
     <section className="mb-20">
-      <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
-        The bill, stacked.
-      </h2>
-      <p className="text-(--color-muted) mb-6 max-w-2xl text-lg leading-relaxed">
-        A typical UK household's annual bill, stacked by category. The white
-        line is household take-home pay after every deduction that hits your
-        payslip — income tax, NI, student loan, and auto-enrolment pension —
-        computed year-by-year using each year's real thresholds and rates.
-      </p>
+      {!embedMode && (
+        <>
+          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+            The bill, stacked.
+          </h2>
+          <p className="text-(--color-muted) mb-6 max-w-2xl text-lg leading-relaxed">
+            A typical UK household's annual bill, stacked by category. The white
+            line is household take-home pay after every deduction that hits your
+            payslip — income tax, NI, student loan, and auto-enrolment pension —
+            computed year-by-year using each year's real thresholds and rates.
+          </p>
+        </>
+      )}
 
-      <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+      <div ref={cardRef} className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6 relative">
+        {/* Download PNG button */}
+        <button
+          onClick={downloadSnapshot}
+          disabled={snapshotting}
+          aria-label="Download cost stack as PNG"
+          className="absolute top-4 right-4 px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50 z-10"
+          title="Download this card as a PNG"
+        >
+          {snapshotting ? "saving…" : "↓ PNG"}
+        </button>
 
         {/* Controls */}
         <div className="mb-5 space-y-2.5">
@@ -116,6 +193,21 @@ export function CostStackSection({ series }: Props) {
               </Chip>
             ))}
           </ControlRow>
+          <ControlRow label="housing type">
+            <Chip active={housingMode === "mortgage"} onClick={() => setHousingMode("mortgage")}>
+              FTB mortgage
+            </Chip>
+            <Chip active={housingMode === "rent"} onClick={() => setHousingMode("rent")}>
+              Private rent
+            </Chip>
+          </ControlRow>
+          <ControlRow label="since">
+            {START_YEAR_OPTIONS.map((y) => (
+              <Chip key={y} active={startYear === y} onClick={() => setStartYear(y)}>
+                {y}
+              </Chip>
+            ))}
+          </ControlRow>
           <p className="text-[11px] text-(--color-muted) opacity-70 leading-relaxed pt-0.5">
             <span className="text-white">{persona.shortLabel}:</span> {persona.description}&ensp;
             <span className="text-white">{benchmark.shortLabel}:</span> {benchmark.description}
@@ -135,8 +227,25 @@ export function CostStackSection({ series }: Props) {
           <Stat headline={`${Math.round(headline.lastShare * 100)}%`} caption={`of pay in ${headline.last}`} hint="goes on the basket" accent />
         </div>
 
+        {altCompare && (
+          <p className="text-[11px] text-(--color-muted) opacity-80 mb-4 font-mono">
+            For comparison,{" "}
+            <span className="text-white">{altCompare.personaLabel}</span>
+            : basket = <span className="text-(--color-accent) font-semibold">{altCompare.share}%</span>{" "}
+            of take-home in {altCompare.year}.
+          </p>
+        )}
+
         <Suspense fallback={<div className="h-[380px] grid place-items-center text-(--color-muted) text-xs font-mono">loading basket…</div>}>
-          <CostStackChart series={series} persona={persona} wageData={wageData} earners={earners} benchmark={benchmark} />
+          <CostStackChart
+            series={series}
+            persona={persona}
+            wageData={wageData}
+            earners={earners}
+            benchmark={benchmark}
+            housingMode={housingMode}
+            startYear={startYear}
+          />
         </Suspense>
 
         {/* Layer breakdown */}
@@ -151,9 +260,11 @@ export function CostStackSection({ series }: Props) {
           ))}
         </div>
 
-        <p className="mt-5 text-[11px] text-(--color-muted) font-mono opacity-70 leading-relaxed">
-          Calibration: basket £ values anchored to middle-quintile in {REFERENCE_YEAR}, rescaled by underlying series each year (mortgage: Land Registry + Bank Rate; energy: Ofgem cap; council tax: ONS; rail: ORR index; CPIH for water, broadband, groceries; Coram for childcare). Deduction model uses each year's real PA, basic rate, NI thresholds, Plan 2 SL threshold (9%), and phased pension auto-enrol (0%→5%). GDHI is already post-tax disposable; deductions not re-applied. Car insurance (spiked far faster than CPIH) and private healthcare excluded — no clean public series.
-        </p>
+        {!embedMode && (
+          <p className="mt-5 text-[11px] text-(--color-muted) font-mono opacity-70 leading-relaxed">
+            Calibration: basket £ values anchored to middle-quintile in {REFERENCE_YEAR}, rescaled by underlying series each year (mortgage: Land Registry + Bank Rate; energy: Ofgem cap; council tax: ONS; rail: ORR index; CPIH for water, broadband, groceries; Coram for childcare). Deduction model uses each year's real PA, basic rate, NI thresholds, Plan 2 SL threshold (9%), and phased pension auto-enrol (0%→5%). GDHI is already post-tax disposable; deductions not re-applied. Car insurance (spiked far faster than CPIH) and private healthcare excluded — no clean public series.
+          </p>
+        )}
       </div>
     </section>
   )

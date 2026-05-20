@@ -333,12 +333,29 @@ function syntheticMortgageFtb(series: Record<string, Series>): Series | null {
 export function buildStack(
   rawSeries: Record<string, Series>,
   layers: CostLayer[] = BASE_LAYERS,
+  opts: { housingMode?: "mortgage" | "rent" } = {},
 ): StackPoint[] {
   // Inject synthesized drivers if any layer needs them.
   const series: Record<string, Series> = { ...rawSeries }
   if (!series["mortgage-payment-ftb"]) {
     const m = syntheticMortgageFtb(rawSeries)
     if (m) series["mortgage-payment-ftb"] = m
+  }
+
+  // Apply housing mode override — swap mortgage driver for rent index.
+  if (opts.housingMode === "rent") {
+    layers = layers.map((layer) => {
+      if (layer.id === "housing") {
+        return {
+          ...layer,
+          label: "Housing — private rental",
+          driverId: "rent-index",
+          // refValue stays at 9000 — both mortgage payment and private rent
+          // were ~£9k/yr in 2015.
+        }
+      }
+      return layer
+    })
   }
 
   const driverMaps = new Map<string, Map<number, number>>()
