@@ -103,12 +103,12 @@ export function StatCallouts({ series, baseYear, endYear }: Props) {
       {visible.map((s, i) => (
         <div
           key={i}
-          className="rounded-xl bg-(--color-bg) border border-(--color-border) p-4 transition-colors hover:border-(--color-accent-border)"
+          className="card card-hover rounded-xl p-4"
         >
-          <div className="text-2xl md:text-3xl font-semibold text-(--color-text) tabular-nums tracking-tight">
+          <div className="text-2xl md:text-3xl font-semibold text-(--color-accent) tabular-nums tracking-tight stat-value">
             {s.headline}
           </div>
-          <div className="text-xs text-(--color-muted) mt-1 leading-snug">{s.caption}</div>
+          <div className="text-xs text-(--color-text) mt-1.5 leading-snug font-medium">{s.caption}</div>
           {s.hint && (
             <div className="text-[10px] text-(--color-muted) opacity-60 mt-1 font-mono">
               {s.hint}

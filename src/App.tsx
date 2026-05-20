@@ -730,6 +730,15 @@ function App() {
 
       {!embedMode && <About />}
 
+      {!embedMode && (
+        <footer className="mt-4 mb-8 pt-8 border-t border-(--color-border) flex items-center justify-between text-xs text-(--color-muted) font-mono">
+          <span>avos<span className="text-(--color-accent)">+</span>flix · UK economic data dashboard</span>
+          <button onClick={toggleTheme} className="hover:text-(--color-text) transition flex items-center gap-1.5">
+            {theme === "dark" ? "☀ light" : "◑ dark"}
+          </button>
+        </footer>
+      )}
+
       {!embedMode && data && (
         <details className="mt-8 text-xs text-(--color-muted) font-mono">
           <summary className="cursor-pointer hover:text-(--color-text)">Sources & methodology</summary>

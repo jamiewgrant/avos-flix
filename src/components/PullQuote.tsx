@@ -53,10 +53,10 @@ export function PullQuote({ series, baseYear, endYear }: Props) {
 
   return (
     <div className="mb-6 rounded-2xl border border-(--color-border) bg-(--color-surface) px-5 py-5 md:px-8 md:py-6">
-      <p className="text-lg md:text-xl text-white leading-relaxed tabular-nums">
+      <p className="text-lg md:text-xl text-(--color-text) leading-relaxed tabular-nums">
         Since <span className="font-mono">{sentence.baseYear}</span>:{" "}
         houses <span className="text-(--color-accent) font-semibold">{sentence.house}</span>,{" "}
-        wages <span className="text-white font-semibold">{sentence.wage}</span>
+        wages <span className="text-(--color-text) font-semibold">{sentence.wage}</span>
         {sentence.cpih && (
           <>
             , general inflation <span className="text-(--color-muted) font-semibold">{sentence.cpih}</span>

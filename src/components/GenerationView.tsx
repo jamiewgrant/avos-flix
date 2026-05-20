@@ -119,7 +119,7 @@ export function GenerationView({ data }: Props) {
               </div>
             </div>
             <div>
-              <div className="text-white font-semibold">{milestone.label}</div>
+              <div className="text-(--color-text) font-semibold">{milestone.label}</div>
               <div className="text-(--color-muted) text-sm leading-snug">
                 {milestone.description}
               </div>

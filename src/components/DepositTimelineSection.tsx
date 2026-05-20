@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import { useChartColors } from "../lib/useChartColors"
 import { Group } from "@visx/group"
 import { scaleLinear } from "@visx/scale"
 import { AxisBottom, AxisLeft } from "@visx/axis"
@@ -14,9 +15,6 @@ interface Props {
   wage: Series
 }
 
-const MUTED = "#9ca3af"
-const GRID = "#2a2c36"
-const SURFACE = "#16171d"
 const ACCENT = "#c084fc"
 const DANGER = "#ef4444"
 
@@ -27,6 +25,7 @@ type SavingRate = typeof SAVING_RATES[number]
 type DepositPct = typeof DEPOSIT_PCTS[number]
 
 export function DepositTimelineSection({ housePrice, wage }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE } = useChartColors()
   const [savingRate, setSavingRate] = useState<SavingRate>(10)
   const [depositPct, setDepositPct] = useState<DepositPct>(10)
 

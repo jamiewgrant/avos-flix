@@ -69,7 +69,7 @@ export function ThenVsNow({ series }: Props) {
         <select
           value={yearA}
           onChange={(e) => setYearA(Number(e.target.value))}
-          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-(--color-accent)"
+          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-(--color-text) focus:outline-none focus:border-(--color-accent)"
         >
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
@@ -77,7 +77,7 @@ export function ThenVsNow({ series }: Props) {
         <select
           value={yearB}
           onChange={(e) => setYearB(Number(e.target.value))}
-          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-(--color-accent)"
+          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-(--color-text) focus:outline-none focus:border-(--color-accent)"
         >
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
@@ -91,7 +91,7 @@ export function ThenVsNow({ series }: Props) {
           >
             <span className="size-2.5 rounded-full shrink-0" style={{ background: r.color }} />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-white truncate">{r.name}</div>
+              <div className="text-xs text-(--color-text) truncate">{r.name}</div>
               <div className="text-[10px] text-(--color-muted) font-mono tabular-nums">
                 {formatValue(r.aValue, r.unit)} → {formatValue(r.bValue, r.unit)}
               </div>
