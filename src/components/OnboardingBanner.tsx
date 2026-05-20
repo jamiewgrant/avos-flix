@@ -41,7 +41,7 @@ export function OnboardingBanner() {
           </div>
           <button
             onClick={dismiss}
-            className="text-(--color-muted) hover:text-white px-2 py-0.5 leading-none text-lg"
+            className="text-(--color-muted) hover:text-(--color-text) px-2 py-0.5 leading-none text-lg"
             aria-label="Dismiss"
           >
             ×

@@ -5,6 +5,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { line as d3Line, area as d3Area, curveMonotoneX } from "d3-shape"
+import { useChartColors } from "../../lib/useChartColors"
 import type { Series } from "../../types/series"
 import { buildStack, type MortgageRegion, type Persona, type WageBenchmark, type WagePoint } from "../../lib/costBasket"
 
@@ -22,15 +23,11 @@ interface Props {
   cpihRef?: number
 }
 
-const MUTED = "#9ca3af"
-const GRID = "#2a2c36"
-const TEXT = "#e8e6e3"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
 const WAGE = "#ffffff"
 const ACCENT = "#c084fc"
 
 export function CostStackChart({ series, persona, wageData, earners, benchmark, housingMode = "mortgage", mortgageRegion = "national", startYear = 1995, realTerms = false, cpihMap, cpihRef = 1 }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const [hovered, setHovered] = useState<number | null>(null)
   const [pinnedYear, setPinnedYear] = useState<number | null>(null)
 

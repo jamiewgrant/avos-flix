@@ -179,7 +179,7 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
             <button
               key={p.label}
               onClick={() => onChange(p.range)}
-              className="px-2.5 py-1 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+              className="px-2.5 py-1 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-(--color-text) transition"
             >
               {p.label}
             </button>

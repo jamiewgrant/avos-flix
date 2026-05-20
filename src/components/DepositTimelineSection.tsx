@@ -50,7 +50,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
 
   return (
     <section className="mb-20">
-      <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+      <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
         How long does the deposit take?
       </h2>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -72,7 +72,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   savingRate === r
                     ? "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
-                    : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-white"
+                    : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-(--color-text)"
                 }`}
               >
                 {r}% of take-home
@@ -90,7 +90,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   depositPct === d
                     ? "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
-                    : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-white"
+                    : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-(--color-text)"
                 }`}
               >
                 {d}%
@@ -102,7 +102,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
         {firstPoint && lastPoint && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-5">
             <div className="rounded-xl border border-(--color-border) bg-(--color-bg) p-4">
-              <div className="text-2xl font-semibold text-white tabular-nums">
+              <div className="text-2xl font-semibold text-(--color-text) tabular-nums">
                 {firstPoint.yearsToSave.toFixed(1)}y
               </div>
               <div className="text-xs text-(--color-muted) mt-1">Years to save in {firstPoint.year}</div>
@@ -114,7 +114,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
               <div className="text-xs text-(--color-muted) mt-1">Years to save in {lastPoint.year}</div>
             </div>
             <div className="rounded-xl border border-(--color-border) bg-(--color-bg) p-4">
-              <div className="text-2xl font-semibold text-white tabular-nums">
+              <div className="text-2xl font-semibold text-(--color-text) tabular-nums">
                 {(lastPoint.yearsToSave / firstPoint.yearsToSave).toFixed(1)}×
               </div>
               <div className="text-xs text-(--color-muted) mt-1">Longer than it used to be</div>

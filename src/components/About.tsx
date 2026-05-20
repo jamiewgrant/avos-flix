@@ -1,7 +1,7 @@
 export function About() {
   return (
     <section className="mb-20 border-t border-(--color-border) pt-12">
-      <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
+      <h2 className="text-2xl md:text-3xl font-semibold text-(--color-text) mb-4">
         About this project
       </h2>
       <div className="text-(--color-muted) max-w-2xl space-y-4 leading-relaxed">
@@ -25,7 +25,7 @@ export function About() {
           Built openly: the code, the ETL pipeline, and every seed file is at{" "}
           <a
             href="https://github.com/jamiewgrant/avos-flix"
-            className="underline hover:text-white"
+            className="underline hover:text-(--color-text)"
             target="_blank"
             rel="noreferrer"
           >

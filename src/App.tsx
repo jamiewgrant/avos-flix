@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { toPng } from "html-to-image"
 import { useSeries } from "./data/useSeries"
 import { useUrlState } from "./data/useUrlState"
+import { useTheme } from "./lib/useTheme"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { MortgageChart } from "./components/charts/MortgageChart"
@@ -69,6 +70,7 @@ const DEFAULT_VISIBLE_IDS = new Set([
 ])
 
 function App() {
+  const { theme, toggle: toggleTheme } = useTheme()
   const { data, loading, error } = useSeries()
   const allSeries = useMemo<Series[]>(
     () => (data ? Object.values(data.series) : []),
@@ -220,28 +222,95 @@ function App() {
   }, [embedMode])
 
   return (
-    <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
+    <>
       {!embedMode && (
-        <header className="text-center mb-24">
-          <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-white">
-            avos<span className="text-(--color-accent)">+</span>flix
-          </h1>
-          <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto">
-            The numbers behind the avocado-toast argument.
-          </p>
-          <div className="mt-12 text-xs text-(--color-muted) opacity-70 font-mono">
-            ↓ scroll
+        <header
+          className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-bg)/90"
+          style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+        >
+          <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+            <a
+              href="#"
+              className="text-base font-semibold tracking-tight text-(--color-text) hover:text-(--color-accent) transition-colors"
+            >
+              avos<span className="text-(--color-accent)">+</span>flix
+            </a>
+            <nav className="hidden md:flex items-center gap-1 text-xs text-(--color-muted)">
+              <a href="#explore" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Explore</a>
+              <a href="#costs" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Costs</a>
+              <a href="#housing" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Housing</a>
+              <a href="#faq" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">FAQ</a>
+            </nav>
+            <button
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+            >
+              {theme === "dark" ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )}
+            </button>
           </div>
         </header>
       )}
 
+    <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
+      {!embedMode && (
+        <section className="text-center pt-12 pb-24">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-(--color-border) bg-(--color-surface) text-xs text-(--color-muted) mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-(--color-success) inline-block" />
+            Data updated {data ? new Date(data.metadata.generatedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "…"}
+          </div>
+          <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-(--color-text)">
+            avos<span className="text-(--color-accent)">+</span>flix
+          </h1>
+          <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto leading-relaxed">
+            The numbers behind the avocado-toast argument. UK wages, house prices, and the real cost of living — indexed, honest, undeniable.
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <a
+              href="#explore"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-(--color-accent) text-white text-sm font-medium hover:opacity-90 transition"
+              style={{ color: "#fff" }}
+            >
+              Explore the data
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            </a>
+            <a
+              href="#faq"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-(--color-border) text-(--color-muted) text-sm hover:text-(--color-text) hover:border-(--color-muted) transition"
+            >
+              Why this site?
+            </a>
+          </div>
+          <div className="mt-16 text-xs text-(--color-muted) opacity-50 font-mono tracking-widest animate-bounce">
+            ↓
+          </div>
+        </section>
+      )}
+
       {!embedMode && data && <ScrollyIntro data={data} />}
 
-      <section className={embedMode ? "" : "mb-20"} id="explore">
+      <section className={embedMode ? "" : "mb-20"} id="explore" style={{ scrollMarginTop: "4rem" }}>
         {!embedMode && <OnboardingBanner />}
 
         {!embedMode && (
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             Explore the whole set.
           </h2>
         )}
@@ -314,8 +383,8 @@ function App() {
                         onClick={() => setState((p) => ({ ...p, mode: m }))}
                         className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
                           mode === m
-                            ? "bg-(--color-accent) text-black"
-                            : "bg-(--color-bg) hover:text-white"
+                            ? "bg-(--color-accent) text-white"
+                            : "bg-(--color-surface-2) hover:text-(--color-text)"
                         }`}
                       >
                         {m === "indexed" ? "Indexed" : "Raw"}
@@ -334,8 +403,8 @@ function App() {
                           onClick={() => setState((p) => ({ ...p, baseYear: y }))}
                           className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
                             baseYear === y
-                              ? "bg-(--color-accent) text-black"
-                              : "bg-(--color-bg) hover:text-white"
+                              ? "bg-(--color-accent) text-white"
+                              : "bg-(--color-surface-2) hover:text-(--color-text)"
                           }`}
                         >
                           {y}
@@ -354,8 +423,8 @@ function App() {
                         onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
                         className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
                           (v === "real") === realTerms
-                            ? "bg-(--color-accent) text-black"
-                            : "bg-(--color-bg) hover:text-white"
+                            ? "bg-(--color-accent) text-white"
+                            : "bg-(--color-surface-2) hover:text-(--color-text)"
                         }`}
                         title={
                           v === "nominal"
@@ -374,7 +443,7 @@ function App() {
                   <button
                     onClick={() => setShowAnnotations((v) => !v)}
                     className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
-                      showAnnotations ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                      showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Show/hide historical event markers"
                   >
@@ -387,7 +456,7 @@ function App() {
                   <button
                     onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
                     className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
-                      palette === "cb" ? "bg-(--color-accent) text-black" : "bg-(--color-bg) hover:text-white"
+                      palette === "cb" ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Swap to a colour-blind-safe (Okabe-Ito) palette"
                   >
@@ -399,7 +468,7 @@ function App() {
                   <button
                     onClick={toggleFullscreen}
                     aria-label="Toggle fullscreen for the main chart"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Toggle fullscreen"
                   >
                     ⤢ Full
@@ -407,7 +476,7 @@ function App() {
                   <button
                     onClick={exportCsv}
                     aria-label="Download visible series as CSV"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Download visible series as CSV"
                   >
                     ↓ CSV
@@ -415,7 +484,7 @@ function App() {
                   <button
                     onClick={shareView}
                     aria-label="Copy a link to this exact view"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Copy a link to this exact view"
                   >
                     ↗ Share
@@ -423,7 +492,7 @@ function App() {
                   <button
                     onClick={resetToDefaults}
                     aria-label="Reset all controls to defaults"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Reset all controls to defaults"
                   >
                     ↺ Reset
@@ -432,7 +501,7 @@ function App() {
                     onClick={downloadSnapshot}
                     disabled={snapshotting}
                     aria-label="Download this chart as a PNG"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-white transition disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
                     title="Download this chart as a PNG"
                   >
                     {snapshotting ? "saving…" : "↓ PNG"}
@@ -453,7 +522,7 @@ function App() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Filter series…"
-                    className="flex-1 max-w-xs bg-(--color-bg) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-white placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent)"
+                    className="flex-1 max-w-xs bg-(--color-surface-2) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-(--color-text) placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent) transition"
                   />
                   <span className="text-[10px] text-(--color-muted) font-mono">
                     {visible.length}/{allSeries.length} on · shift-click to spotlight
@@ -461,7 +530,7 @@ function App() {
                   {spotlightId && (
                     <button
                       onClick={() => setSpotlightId(null)}
-                      className="text-[10px] font-mono text-(--color-accent) hover:text-white underline underline-offset-2"
+                      className="text-[10px] font-mono text-(--color-accent) hover:opacity-80 underline underline-offset-2"
                     >
                       clear spotlight
                     </button>
@@ -498,8 +567,8 @@ function App() {
                                 isSpot ? "border-(--color-accent) ring-1 ring-(--color-accent)" : "border-(--color-border)"
                               } ${
                                 isOn && hasData
-                                  ? "bg-(--color-bg) text-white"
-                                  : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-100"
+                                  ? "bg-(--color-surface-2) text-(--color-text)"
+                                  : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-80"
                               } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
                               style={isSpot ? { borderColor: "var(--color-accent)" } : undefined}
                             >
@@ -529,17 +598,19 @@ function App() {
 
       {embedMode && (
         <div className="mt-3 text-[10px] text-(--color-muted) font-mono text-center opacity-70">
-          via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-white">avos-flix.vercel.app</a>
+          via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-(--color-text)">avos-flix.vercel.app</a>
         </div>
       )}
 
       {!embedMode && data && wage && (
-        <CostStackSection series={data.series} wage={wage} />
+        <div id="costs" style={{ scrollMarginTop: "4rem" }}>
+          <CostStackSection series={data.series} wage={wage} />
+        </div>
       )}
 
       {!embedMode && canShowAffordability && (
-        <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+        <section className="mb-20" id="housing" style={{ scrollMarginTop: "4rem" }}>
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             "But interest rates were 15%!"
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -557,7 +628,7 @@ function App() {
 
       {!embedMode && canShowAffordability && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             What the mortgage actually costs.
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -571,7 +642,7 @@ function App() {
 
       {!embedMode && data?.series["rent-index"] && wage && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             "Just buy instead of renting."
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -588,7 +659,7 @@ function App() {
       {!embedMode && housePriceNationwide && wage && (
         <section className="mb-20">
           <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mt-12 mb-3">
             What if houses had grown at wage rate?
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -610,7 +681,7 @@ function App() {
 
       {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
             What actually lands in your bank.
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -655,20 +726,20 @@ function App() {
         </section>
       )}
 
-      {!embedMode && <Faq />}
+      {!embedMode && <div id="faq" style={{ scrollMarginTop: "4rem" }}><Faq /></div>}
 
       {!embedMode && <About />}
 
       {!embedMode && data && (
         <details className="mt-8 text-xs text-(--color-muted) font-mono">
-          <summary className="cursor-pointer hover:text-white">Sources & methodology</summary>
+          <summary className="cursor-pointer hover:text-(--color-text)">Sources & methodology</summary>
           <ul className="mt-3 space-y-1.5">
             {allSeries.map((s) => (
               <li key={s.id}>
                 <span style={{ color: s.color }}>●</span>{" "}
-                <strong className="text-white/80">{s.name}</strong> — {s.description}{" "}
+                <strong className="text-(--color-text) opacity-80">{s.name}</strong> — {s.description}{" "}
                 <a
-                  className="underline hover:text-white"
+                  className="underline hover:text-(--color-text)"
                   href={s.source.url}
                   target="_blank"
                   rel="noreferrer"
@@ -684,6 +755,7 @@ function App() {
         </details>
       )}
     </main>
+    </>
   )
 }
 

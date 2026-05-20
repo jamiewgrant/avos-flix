@@ -6,6 +6,7 @@ import { AxisBottom, AxisLeft, AxisRight } from "@visx/axis"
 import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { curveMonotoneX } from "@visx/curve"
+import { useChartColors } from "../../lib/useChartColors"
 import type { Series, YearValue } from "../../types/series"
 import { splitAtVerified } from "../../lib/splitAtVerified"
 
@@ -17,13 +18,9 @@ interface Props {
 
 const ACCENT = "#c084fc"
 const RATE_COLOR = "#fb923c"
-const MUTED = "#9ca3af"
-const GRID = "#2a2c36"
-const TEXT = "#e8e6e3"
-const SURFACE = "#16171d"
-const BORDER = "#2e303a"
 
 export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
+  const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
   const [hovered, setHovered] = useState<number | null>(null)
 
   const affordability = useMemo<YearValue[]>(() => {
