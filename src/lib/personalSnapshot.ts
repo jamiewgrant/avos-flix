@@ -74,7 +74,8 @@ const HR_THRESHOLD_ANCHORS: Array<[number, number]> = [
 // Compute tax, NI, student loan, pension for an individual earner.
 // pensionPct is an explicit percentage (e.g. 5 means 5%), not auto-enrolment rate.
 // studentLoanPlan is the literal plan string.
-function computeTaxNI(
+// Exported for tests; not part of the public component API.
+export function computeTaxNI(
   gross: number,
   year: number,
   studentLoanPlan: string,
