@@ -31,6 +31,9 @@ const BoomerVsMillennialLazy = lazy(() =>
 const DepositTimelineSectionLazy = lazy(() =>
   import("./components/DepositTimelineSection").then((m) => ({ default: m.DepositTimelineSection })),
 )
+const PersonalSnapshotLazy = lazy(() =>
+  import("./components/PersonalSnapshot").then((m) => ({ default: m.PersonalSnapshot })),
+)
 
 const ChartFallback = () => (
   <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
@@ -239,6 +242,7 @@ function App() {
               <a href="#explore" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Explore</a>
               <a href="#costs" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Costs</a>
               <a href="#housing" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Housing</a>
+              <a href="#your-snapshot" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Snapshot</a>
               <a href="#faq" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">FAQ</a>
             </nav>
             <button
@@ -713,6 +717,12 @@ function App() {
             <AvosToastCalculatorLazy housePrice={housePriceNationwide} />
           </Suspense>
         </section>
+      )}
+
+      {!embedMode && data && (
+        <Suspense fallback={<ChartFallback />}>
+          <PersonalSnapshotLazy series={data.series} />
+        </Suspense>
       )}
 
       {!embedMode && data && cpihSeries && (
