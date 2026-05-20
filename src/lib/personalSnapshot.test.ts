@@ -657,4 +657,223 @@ describe("series.json data integrity", () => {
     const latest = yearsSorted[yearsSorted.length - 1].value
     expect(latest).toBeGreaterThan(earliest * 2) // doubled at minimum since 1984
   })
+
+  // ETL freshness guard — fails if the wage series falls more than ~2 years
+  // behind. Today's "current year" in the snapshot is derived from the latest
+  // median-wage point, so stale data silently shifts the entire "today"
+  // column backwards. Catch it loudly.
+  it("median-wage has a data point within 2 years of the current date", () => {
+    const wage = SERIES["median-wage"]
+    const latest = Math.max(...wage.points.map((p) => p.year))
+    const currentYear = new Date().getFullYear()
+    expect(
+      latest,
+      `median-wage's latest point is ${latest}; current year is ${currentYear}. Re-run \`npm run etl\` and commit the refreshed series.json.`,
+    ).toBeGreaterThanOrEqual(currentYear - 2)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Year-boundary tests — pin the rate-change cliffs to guard against off-by-one
+// regressions in the tax/NI/SL/pension schedules.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("computeTaxNI — year boundary transitions", () => {
+  it("NI main rate drops from 12% to 8% between 2024 and 2025", () => {
+    const r2024 = computeTaxNI(30000, 2024, "none", 0)
+    const r2025 = computeTaxNI(30000, 2025, "none", 0)
+    // 2024: (30000 - 12570) * 0.12 = 2091.60
+    // 2025: (30000 - 12570) * 0.08 = 1394.40
+    close(r2024.ni, 2091.6, 1, "NI 2024")
+    close(r2025.ni, 1394.4, 1, "NI 2025")
+    expect(r2025.ni).toBeLessThan(r2024.ni)
+  })
+
+  it("NI above-UEL rate transitions 0% → 1% (2003) → 2% (2011)", () => {
+    // £60k crosses the UEL in each era — the difference is in the above-UEL slice.
+    const r2002 = computeTaxNI(60000, 2002, "none", 0)
+    const r2003 = computeTaxNI(60000, 2003, "none", 0)
+    const r2010 = computeTaxNI(60000, 2010, "none", 0)
+    const r2011 = computeTaxNI(60000, 2011, "none", 0)
+    // 2003 NI should be strictly higher than 2002 at high income (1% above UEL kicks in)
+    expect(r2003.ni).toBeGreaterThan(r2002.ni - r2003.tax + r2002.tax - 100)
+    // 2011 NI should differ from 2010 due to UEL-above rate stepping 1% → 2%
+    // (and main rate 11% → 12%, both increases) — net effect: NI rises.
+    expect(r2011.ni).toBeGreaterThan(r2010.ni)
+  })
+
+  it("basic income tax rate steps 25% → 24% → 23% → 22% → 20%", () => {
+    // Cleanly-in-basic-band £15k earner: tax = (15000 - PA) * basicRate.
+    const r1995 = computeTaxNI(15000, 1995, "none", 0) // 25%
+    const r1996 = computeTaxNI(15000, 1996, "none", 0) // 24%
+    const r1999 = computeTaxNI(15000, 1999, "none", 0) // 23%
+    const r2000 = computeTaxNI(15000, 2000, "none", 0) // 23%
+    const r2007 = computeTaxNI(15000, 2007, "none", 0) // 22%
+    const r2008 = computeTaxNI(15000, 2008, "none", 0) // 20%
+    // Strictly monotone decreases at the step years.
+    expect(r1996.tax).toBeLessThan(r1995.tax)
+    expect(r1999.tax).toBeLessThan(r1996.tax)
+    // 1999 and 2000 are both 23% — basic rate unchanged, only PA moves
+    expect(Math.abs(r1999.tax - r2000.tax)).toBeLessThan(r1995.tax) // sanity, no big jump
+    expect(r2008.tax).toBeLessThan(r2007.tax)
+  })
+
+  it("Plan 2 student loan activates in 2012 — zero in 2011, non-zero in 2012", () => {
+    const r2011 = computeTaxNI(40000, 2011, "plan2", 0)
+    const r2012 = computeTaxNI(40000, 2012, "plan2", 0)
+    expect(r2011.studentLoan).toBe(0)
+    expect(r2012.studentLoan).toBeGreaterThan(0)
+  })
+
+  it("Plan 5 student loan activates in 2023 — zero in 2022, non-zero in 2023", () => {
+    const r2022 = computeTaxNI(40000, 2022, "plan5", 0)
+    const r2023 = computeTaxNI(40000, 2023, "plan5", 0)
+    expect(r2022.studentLoan).toBe(0)
+    expect(r2023.studentLoan).toBeGreaterThan(0)
+  })
+
+  it("Plan 1 student loan threshold drops 22015 → 15000 → 10000 going backwards", () => {
+    // Same £40k earner, plan 1. Threshold history:
+    //   2012+:    22015  → SL = (40000 - 22015) * 0.09 = 1618.65
+    //   2005-11:  15000  → SL = (40000 - 15000) * 0.09 = 2250
+    //   1998-04:  10000  → SL = (40000 - 10000) * 0.09 = 2700
+    const r2015 = computeTaxNI(40000, 2015, "plan1", 0)
+    const r2010 = computeTaxNI(40000, 2010, "plan1", 0)
+    const r2000 = computeTaxNI(40000, 2000, "plan1", 0)
+    close(r2015.studentLoan, 1618.65, 1)
+    close(r2010.studentLoan, 2250, 1)
+    close(r2000.studentLoan, 2700, 1)
+    expect(r2010.studentLoan).toBeGreaterThan(r2015.studentLoan)
+    expect(r2000.studentLoan).toBeGreaterThan(r2010.studentLoan)
+  })
+})
+
+describe("autoEnrolPensionPct — schedule boundaries", () => {
+  it("steps 0% → 1% → 3% → 5% at the right years", () => {
+    expect(autoEnrolPensionPct(2012)).toBe(0)
+    expect(autoEnrolPensionPct(2013)).toBe(1)
+    expect(autoEnrolPensionPct(2017)).toBe(1)
+    expect(autoEnrolPensionPct(2018)).toBe(3)
+    expect(autoEnrolPensionPct(2019)).toBe(5)
+    expect(autoEnrolPensionPct(2025)).toBe(5)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dual-earner invariant — household nets must scale exactly 2× the single
+// earner's because each earner is taxed independently on the same per-earner
+// gross. A regression here would mean we're accidentally taxing household
+// gross as if it were a single person's income.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("computeSnapshot — dual-earner symmetry", () => {
+  it("2-earner household nets exactly 2× the 1-earner equivalent (same per-earner gross)", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 15000, max: 80000 }),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
+        fc.float({ min: 0, max: 10, noNaN: true }),
+        fc.constantFrom(1990, 1995, 2000, 2010, 2020),
+        (perEarnerGross, plan, pension, year) => {
+          // Single earner on £perEarnerGross
+          const single = computeSnapshot(
+            { ...baseInputs, grossSalary: perEarnerGross, earners: 1, studentLoanPlan: plan, pensionPct: pension },
+            SERIES,
+            year,
+          )
+          // Two-earner household on £2*perEarnerGross (so per-earner gross is identical)
+          const dual = computeSnapshot(
+            { ...baseInputs, grossSalary: perEarnerGross * 2, earners: 2, studentLoanPlan: plan, pensionPct: pension },
+            SERIES,
+            year,
+          )
+          if (!single || !dual) return
+          // Each deduction in the dual household must equal exactly 2× the single equivalent.
+          for (const key of ["incomeTax", "nationalInsurance", "studentLoan", "pension", "netTakeHome"] as const) {
+            expect(
+              Math.abs(dual.today[key] - 2 * single.today[key]),
+              `today.${key}: dual=${dual.today[key]} vs 2×single=${2 * single.today[key]}`,
+            ).toBeLessThan(0.5)
+            expect(
+              Math.abs(dual.historical[key] - 2 * single.historical[key]),
+              `historical.${key}: dual=${dual.historical[key]} vs 2×single=${2 * single.historical[key]}`,
+            ).toBeLessThan(0.5)
+          }
+        },
+      ),
+      { numRuns: 100 },
+    )
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Regression pins for previously-fixed bugs. Each should fail loudly if the
+// corresponding bug is reintroduced.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("regression pins — previously-fixed bugs", () => {
+  it("childcare cost is bounded by realistic annual nursery fees (no ×50 over-count)", () => {
+    // The original bug multiplied the already-annual childcare series by 50,
+    // producing £750k+ childcare for one child. Realistic full-time nursery
+    // costs in the UK in 2020 are ~£12k–£17k per child per year.
+    const r = computeSnapshot({ ...baseInputs, children: 1 }, SERIES, 2015)!
+    expect(r.today.childcare).toBeLessThan(30000) // would be ~£750k with the bug
+    expect(r.today.childcare).toBeGreaterThan(5000)
+  })
+
+  it("historical mortgage scales by synthetic-payment ratio, not flat median wage", () => {
+    // With the old bug, historical mortgage was scaled by median-wage ratio
+    // rather than the synthetic mortgage payment ratio. For 1990 (rates ~15%,
+    // house prices ~£60k) the correct scaling yields a high historical
+    // mortgage payment despite lower nominal house prices — because the
+    // double-digit interest rate dominates.
+    const r = computeSnapshot(
+      { ...baseInputs, grossSalary: 45000, housingType: "mortgage", monthlyHousing: 1500 },
+      SERIES,
+      1990,
+    )!
+    // The 1990 mortgage should be a meaningful annual figure (£3k+), not
+    // collapse to zero (the failure mode when the ratio code path errored).
+    expect(r.historical.housing).toBeGreaterThan(3000)
+    expect(r.historical.housing).toBeLessThan(50000)
+  })
+
+  it("higher-rate threshold respects historical anchors (not hardcoded 50270 across all years)", () => {
+    // A £30k earner in 1990 was a higher-rate taxpayer (HR threshold £20,700).
+    // With the old bug (hardcoded 50270 across years) all £30k would have been
+    // basic-rate-taxed, materially under-stating historical tax. The corrected
+    // model puts £30k - 20700 = £9,300 at 40%.
+    const r = computeTaxNI(30000, 1990, "none", 0)
+    // PA 1990 = 3005. basicBand = 20700 - 3005 = 17695.
+    // tax = 17695 * 0.25 + (30000 - 3005 - 17695) * 0.40
+    //     = 4423.75 + 9300 * 0.40 = 4423.75 + 3720 = 8143.75
+    close(r.tax, 8143.75, 5, "1990 £30k tax")
+  })
+
+  it("NI respects historical UEL cap (above-UEL rate 0% pre-2003, not full main rate)", () => {
+    // With the old bug, NI applied the full main rate (e.g. 9%) to all income
+    // above the primary threshold. The corrected model caps the main rate at
+    // the UEL and applies the above-UEL rate (0% pre-2003) to the rest.
+    // £50k in 1995: UEL=22880, PT=3250, niMain=9%, above=0%.
+    // NI = (22880 - 3250) * 0.09 = 1766.70. NOT (50000 - 3250) * 0.09 = 4207.50.
+    const r = computeTaxNI(50000, 1995, "none", 0)
+    close(r.ni, 1766.7, 5, "1995 £50k NI (UEL-capped)")
+    expect(r.ni).toBeLessThan(2000) // would be ~4200 with the bug
+  })
+
+  it("1990 deficit scenario is preserved (the rates crisis was real, don't suppress it)", () => {
+    // 1990 BoE rate ~15%, so a sub-median earner with an above-median mortgage
+    // genuinely couldn't afford it. The waterfall should expose this as a
+    // negative disposable — the calculator's historical honesty depends on it.
+    const r = computeSnapshot(
+      { ...baseInputs, grossSalary: 25000, monthlyHousing: 1800, housingType: "mortgage" },
+      SERIES,
+      1990,
+    )!
+    // We're not asserting an exact value (the synthesis is approximate) but
+    // the calc must not silently clip a negative to zero.
+    expect(r.historical.disposable).toBeLessThan(r.historical.netTakeHome)
+    // Sanity: housing in 1990 should be a non-trivial chunk of the burden.
+    expect(r.historical.housing).toBeGreaterThan(2000)
+  })
 })

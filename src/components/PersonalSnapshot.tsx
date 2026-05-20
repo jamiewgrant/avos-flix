@@ -5,6 +5,7 @@ import {
   type PersonalInputs,
   type SnapshotBreakdown,
 } from "../lib/personalSnapshot"
+import { fmt, pct } from "../lib/format"
 
 interface Props {
   series: Record<string, Series>
@@ -29,16 +30,6 @@ const SEGMENTS: Array<{
   { key: "childcare", label: "Childcare", color: "#fb923c" },
   { key: "disposable", label: "Disposable", color: "var(--color-accent)" },
 ]
-
-function fmt(n: number): string {
-  const rounded = Math.round(n)
-  if (rounded < 0) return "−£" + Math.abs(rounded).toLocaleString("en-GB")
-  return "£" + rounded.toLocaleString("en-GB")
-}
-
-function pct(n: number): string {
-  return n.toFixed(1) + "%"
-}
 
 // ── Waterfall bar for one snapshot ─────────────────────────────────────────
 function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; label: string }) {
