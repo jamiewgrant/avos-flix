@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useChartColors } from "../lib/useChartColors"
 
 interface Props {
   min: number
@@ -9,13 +10,11 @@ interface Props {
 }
 
 const ACCENT = "#c084fc"
-const BG = "#0a0a0a"
-const BORDER = "#2e303a"
-const MUTED = "#9ca3af"
 const TRACK_HEIGHT = 8
 const HANDLE_R = 11
 
 export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Props) {
+  const { border: BORDER, bg: BG, muted: MUTED } = useChartColors()
   const ref = useRef<SVGSVGElement>(null)
   const [width, setWidth] = useState(0)
   const [drag, setDrag] = useState<"from" | "to" | "window" | null>(null)

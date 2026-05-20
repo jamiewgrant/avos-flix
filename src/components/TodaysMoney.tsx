@@ -35,13 +35,13 @@ export function TodaysMoney({ cpih }: Props) {
           min={1}
           value={amount}
           onChange={(e) => setAmount(Math.max(0, Number(e.target.value) || 0))}
-          className="w-28 bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-white tabular-nums focus:outline-none focus:border-(--color-accent)"
+          className="w-28 bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-(--color-text) tabular-nums focus:outline-none focus:border-(--color-accent)"
         />
         <span className="text-(--color-muted)">in</span>
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-(--color-accent)"
+          className="bg-(--color-bg) border border-(--color-border) rounded-lg px-3 py-1.5 text-(--color-text) focus:outline-none focus:border-(--color-accent)"
         >
           {years.map((y) => (
             <option key={y} value={y}>{y}</option>

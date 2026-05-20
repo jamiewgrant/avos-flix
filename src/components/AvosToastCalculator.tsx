@@ -67,7 +67,7 @@ export function AvosToastCalculator({ housePrice }: Props) {
         <select
           value={sacrificeKey}
           onChange={(e) => setSacrificeKey(e.target.value)}
-          className="bg-(--color-bg) border border-(--color-border) text-white px-3 py-1.5 rounded-md cursor-pointer hover:border-(--color-accent) transition-colors text-base"
+          className="bg-(--color-bg) border border-(--color-border) text-(--color-text) px-3 py-1.5 rounded-md cursor-pointer hover:border-(--color-accent) transition-colors text-base"
         >
           {SACRIFICES.map((s) => (
             <option key={s.key} value={s.key}>
@@ -85,7 +85,7 @@ export function AvosToastCalculator({ housePrice }: Props) {
               onChange={(e) =>
                 setPerWeek(Math.max(1, Math.min(7, Number(e.target.value) || 1)))
               }
-              className="bg-(--color-bg) border border-(--color-border) text-white w-16 px-2 py-1.5 rounded-md text-center text-base"
+              className="bg-(--color-bg) border border-(--color-border) text-(--color-text) w-16 px-2 py-1.5 rounded-md text-center text-base"
             />
             <span>days per week,</span>
           </>

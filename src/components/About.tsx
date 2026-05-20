@@ -6,7 +6,7 @@ export function About() {
       </h2>
       <div className="text-(--color-muted) max-w-2xl space-y-4 leading-relaxed">
         <p>
-          <strong className="text-white">avos+flix</strong> exists to settle one
+          <strong className="text-(--color-text)">avos+flix</strong> exists to settle one
           argument with public data: that younger generations' financial
           struggles aren't down to discretionary spending. Every series on this
           page is sourced from ONS, HM Land Registry, the Bank of England,
@@ -14,7 +14,7 @@ export function About() {
         </p>
         <p>
           The visual rule is simple:{" "}
-          <span className="text-white">solid lines</span> are
+          <span className="text-(--color-text) font-medium">solid lines</span> are
           ONS-published National Statistics or equivalent observed values;{" "}
           <span className="text-(--color-text)">dashed lines</span> are modelled
           estimates, scaled proxies, or hand-curated historical figures. We{" "}

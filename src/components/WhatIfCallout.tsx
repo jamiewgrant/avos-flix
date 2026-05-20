@@ -32,7 +32,7 @@ export function WhatIfCallout({ housePrice, wage, baseYear = 1995 }: Props) {
       <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-4">
         Counterfactual
       </div>
-      <p className="text-xl md:text-2xl text-white leading-relaxed max-w-2xl mx-auto">
+      <p className="text-xl md:text-2xl text-(--color-text) leading-relaxed max-w-2xl mx-auto">
         If UK house prices had grown at <span className="font-semibold">the same rate as wages</span>{" "}
         since {stat.baseYear}, the average home in {stat.year} would cost{" "}
         <span className="text-(--color-accent) font-semibold tabular-nums">
@@ -41,8 +41,8 @@ export function WhatIfCallout({ housePrice, wage, baseYear = 1995 }: Props) {
         .
       </p>
       <p className="mt-3 text-(--color-muted) text-sm">
-        It actually costs <span className="text-white tabular-nums">{formatValue(stat.actual, "GBP")}</span>.
-        That gap — <span className="text-white tabular-nums">{formatValue(stat.gap, "GBP")}</span> —
+        It actually costs <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.actual, "GBP")}</span>.
+        That gap — <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.gap, "GBP")}</span> —
         is what every UK first-time buyer is now borrowing on top of "if things had stayed normal".
       </p>
     </div>

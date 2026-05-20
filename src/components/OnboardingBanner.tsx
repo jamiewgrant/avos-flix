@@ -34,7 +34,7 @@ export function OnboardingBanner() {
         >
           <span className="text-(--color-accent) text-lg leading-none mt-0.5">★</span>
           <div className="flex-1 text-(--color-text) leading-relaxed">
-            <strong className="text-white">First time here?</strong> Hover the
+            <strong className="text-(--color-text)">First time here?</strong> Hover the
             chart to read exact values. Click the series chips below the chart
             to toggle them. Drag the year-range slider to zoom. Every control
             persists in the URL — share a link to share a view.

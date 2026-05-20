@@ -230,8 +230,8 @@ export function CostStackSection({ series, embedMode = false }: Props) {
             ))}
           </ControlRow>
           <p className="text-[11px] text-(--color-muted) opacity-70 leading-relaxed pt-0.5">
-            <span className="text-white">{persona.shortLabel}:</span> {persona.description}&ensp;
-            <span className="text-white">{benchmark.shortLabel}:</span> {benchmark.description}
+            <span className="text-(--color-text)">{persona.shortLabel}:</span> {persona.description}&ensp;
+            <span className="text-(--color-text)">{benchmark.shortLabel}:</span> {benchmark.description}
             {earners === 2 && !benchmark.isAlreadyNet
               ? " Wage line = combined take-home of two earners."
               : earners === 2 && benchmark.isAlreadyNet
@@ -251,7 +251,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
         {altCompare && (
           <p className="text-[11px] text-(--color-muted) opacity-80 mb-4 font-mono">
             For comparison,{" "}
-            <span className="text-white">{altCompare.personaLabel}</span>
+            <span className="text-(--color-text)">{altCompare.personaLabel}</span>
             : basket = <span className="text-(--color-accent) font-semibold">{altCompare.share}%</span>{" "}
             of take-home in {altCompare.year}.
           </p>
@@ -278,7 +278,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
           {headline.breakdown.map((b) => (
             <div key={b.id} className="flex items-center gap-2.5 rounded-lg bg-(--color-bg) border border-(--color-border) px-3 py-2 text-xs">
               <span className="size-3 rounded-sm shrink-0" style={{ background: b.color }} />
-              <span className="flex-1 text-white">{b.label}</span>
+              <span className="flex-1 text-(--color-text)">{b.label}</span>
               <span className="tabular-nums text-(--color-muted)">{b.share.toFixed(0)}%</span>
               <span className="tabular-nums text-(--color-accent) font-semibold">{b.mul.toFixed(1)}×</span>
             </div>
@@ -327,7 +327,7 @@ function Stat({ headline, caption, hint, accent = false }: { headline: string; c
       className={`rounded-xl border p-4 ${accent ? "bg-(--color-bg)" : "border-(--color-border) bg-(--color-bg)"}`}
       style={accent ? { borderColor: "var(--color-accent)" } : undefined}
     >
-      <div className={`text-2xl md:text-3xl font-semibold tabular-nums ${accent ? "text-(--color-accent)" : "text-white"}`}>
+      <div className={`text-2xl md:text-3xl font-semibold tabular-nums ${accent ? "text-(--color-accent)" : "text-(--color-text)"}`}>
         {headline}
       </div>
       <div className="text-xs text-(--color-muted) mt-1 leading-snug">{caption}</div>

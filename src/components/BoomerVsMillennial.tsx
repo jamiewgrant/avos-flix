@@ -126,7 +126,7 @@ export function BoomerVsMillennial({ data }: Props) {
               className="grid md:grid-cols-[1fr_auto_auto] items-center px-5 py-3.5 border-b border-(--color-border) last:border-0"
             >
               <div className="mb-2 md:mb-0">
-                <div className="text-sm text-white font-medium">{row.label}</div>
+                <div className="text-sm text-(--color-text) font-medium">{row.label}</div>
                 <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>{row.hint}</div>
               </div>
               <div className="md:w-36 text-left md:text-right mb-1 md:mb-0">
