@@ -5,6 +5,7 @@ import {
   computeSnapshot,
   type PersonalInputs,
 } from "./personalSnapshot"
+import type { StudentLoanPlan } from "./taxModel"
 import type { Series } from "../types/series"
 import seriesJson from "../../public/data/series.json"
 
@@ -171,7 +172,7 @@ describe("computeTaxNI — invariants over random inputs", () => {
       fc.property(
         fc.integer({ min: 1000, max: 500000 }),
         fc.integer({ min: 1985, max: 2030 }),
-        fc.constantFrom("none", "plan1", "plan2", "plan5"),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
         fc.float({ min: 0, max: 25, noNaN: true }),
         (gross, year, plan, pension) => {
           const r = computeTaxNI(gross, year, plan, pension)
@@ -189,7 +190,7 @@ describe("computeTaxNI — invariants over random inputs", () => {
       fc.property(
         fc.integer({ min: 0, max: 500000 }),
         fc.integer({ min: 1985, max: 2030 }),
-        fc.constantFrom("none", "plan1", "plan2", "plan5"),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
         fc.float({ min: 0, max: 25, noNaN: true }),
         (gross, year, plan, pension) => {
           const r = computeTaxNI(gross, year, plan, pension)
@@ -209,7 +210,7 @@ describe("computeTaxNI — invariants over random inputs", () => {
         fc.integer({ min: 5000, max: 200000 }),
         fc.integer({ min: 100, max: 50000 }),
         fc.integer({ min: 1990, max: 2025 }),
-        fc.constantFrom("none", "plan1", "plan2", "plan5"),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
         (g1, delta, year, plan) => {
           const r1 = computeTaxNI(g1, year, plan, 0)
           const r2 = computeTaxNI(g1 + delta, year, plan, 0)
@@ -331,7 +332,7 @@ describe("computeSnapshot — structural invariants", () => {
         fc.constantFrom("mortgage", "rent", "owned"),
         fc.integer({ min: 0, max: 5000 }),
         fc.integer({ min: 0, max: 3 }),
-        fc.constantFrom("none", "plan1", "plan2", "plan5"),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
         fc.float({ min: 0, max: 15, noNaN: true }),
         fc.constantFrom(1, 2),
         fc.constantFrom(1990, 1995, 2000, 2005, 2010, 2015, 2020),
@@ -393,7 +394,7 @@ describe("computeSnapshot — structural invariants", () => {
         fc.constantFrom("mortgage", "rent", "owned"),
         fc.integer({ min: 0, max: 5000 }),
         fc.integer({ min: 0, max: 4 }),
-        fc.constantFrom("none", "plan1", "plan2", "plan5"),
+        fc.constantFrom<StudentLoanPlan>("none", "plan1", "plan2", "plan5"),
         fc.float({ min: 0, max: 20, noNaN: true }),
         fc.constantFrom(1, 2),
         fc.constantFrom(1990, 1995, 2000, 2005, 2010, 2015, 2020),
@@ -567,6 +568,66 @@ describe("computeSnapshot — historical sanity bounds (grid sweep)", () => {
       })
     }
   }
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// netPayDetail (costBasket) — wrapper consistency with computeTaxNI
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { netPayDetail } from "./costBasket"
+import { autoEnrolPensionPct, defaultGraduatePlan } from "./taxModel"
+
+describe("netPayDetail — wrapper over canonical tax model", () => {
+  it("hasStudentLoan=false, hasAutoEnrolPension=false matches computeTaxNI(plan='none', 0%)", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 10000, max: 200000 }),
+        fc.integer({ min: 1990, max: 2025 }),
+        (gross, year) => {
+          const a = netPayDetail(gross, year, {})
+          const b = computeTaxNI(gross, year, "none", 0)
+          expect(a.tax).toBeCloseTo(b.tax, 5)
+          expect(a.ni).toBeCloseTo(b.ni, 5)
+          expect(a.studentLoan).toBe(0)
+          expect(a.pension).toBe(0)
+          expect(a.net).toBeCloseTo(b.net, 5)
+          expect(a.gross).toBe(gross)
+        },
+      ),
+      { numRuns: 100 },
+    )
+  })
+
+  it("hasAutoEnrolPension=true uses the year's auto-enrol minimum rate", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 15000, max: 80000 }),
+        fc.integer({ min: 1990, max: 2025 }),
+        (gross, year) => {
+          const r = netPayDetail(gross, year, { hasAutoEnrolPension: true })
+          const expectedPct = autoEnrolPensionPct(year)
+          expect(r.pension).toBeCloseTo(gross * (expectedPct / 100), 5)
+        },
+      ),
+      { numRuns: 100 },
+    )
+  })
+
+  it("hasStudentLoan=true uses defaultGraduatePlan(year) threshold", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 30000, max: 80000 }),
+        fc.integer({ min: 1990, max: 2025 }),
+        (gross, year) => {
+          const r = netPayDetail(gross, year, { hasStudentLoan: true })
+          const plan = defaultGraduatePlan(year)
+          const expected = computeTaxNI(gross, year, plan, 0).studentLoan
+          expect(r.studentLoan).toBeCloseTo(expected, 5)
+        },
+      ),
+      { numRuns: 100 },
+    )
+  })
 })
 
 describe("series.json data integrity", () => {

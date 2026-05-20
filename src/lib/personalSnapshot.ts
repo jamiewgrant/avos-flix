@@ -1,4 +1,8 @@
 import type { Series } from "../types/series"
+import { computeTaxNI, type StudentLoanPlan } from "./taxModel"
+
+// Re-export for tests / callers that import from this module.
+export { computeTaxNI } from "./taxModel"
 
 export interface PersonalInputs {
   grossSalary: number
@@ -28,97 +32,6 @@ export interface SnapshotBreakdown {
   housingPct: number
   disposablePct: number
   taxTotalPct: number
-}
-
-// Piecewise-linear interpolation over anchor table — same pattern as costBasket.
-function interp(year: number, anchors: Array<[number, number]>): number {
-  if (year <= anchors[0][0]) return anchors[0][1]
-  if (year >= anchors[anchors.length - 1][0]) return anchors[anchors.length - 1][1]
-  for (let i = 1; i < anchors.length; i++) {
-    const [y1, v1] = anchors[i]
-    if (y1 >= year) {
-      const [y0, v0] = anchors[i - 1]
-      const t = (year - y0) / (y1 - y0)
-      return v0 + (v1 - v0) * t
-    }
-  }
-  return anchors[anchors.length - 1][1]
-}
-
-const PA_ANCHORS: Array<[number, number]> = [
-  [1990, 3005], [1995, 3525], [2000, 4385], [2005, 4895],
-  [2010, 6475], [2014, 10000], [2016, 11000], [2019, 12500],
-  [2021, 12570], [2030, 12570],
-]
-
-const NI_PT_ANCHORS: Array<[number, number]> = [
-  [1990, 2600], [2000, 3900], [2010, 5715], [2015, 8060],
-  [2019, 8632], [2022, 12570], [2030, 12570],
-]
-
-// Upper Earnings Limit — above this the NI rate drops sharply.
-// Pre-2003: 0% above UEL. 2003-2010: 1%. 2011+: 2%.
-const NI_UEL_ANCHORS: Array<[number, number]> = [
-  [1990, 20280], [1995, 22880], [2000, 27820], [2003, 30420],
-  [2010, 43875], [2021, 50270], [2030, 50270],
-]
-
-// Higher-rate income tax threshold (total income, not taxable income).
-// Varied by year; hardcoding today's £50,270 to all years under-estimates historical tax.
-const HR_THRESHOLD_ANCHORS: Array<[number, number]> = [
-  [1990, 20700], [1993, 23700], [1997, 26100], [2000, 28000],
-  [2003, 30500], [2006, 33300], [2010, 37400], [2013, 41450],
-  [2016, 43000], [2018, 46350], [2019, 50000], [2021, 50270], [2030, 50270],
-]
-
-// Compute tax, NI, student loan, pension for an individual earner.
-// pensionPct is an explicit percentage (e.g. 5 means 5%), not auto-enrolment rate.
-// studentLoanPlan is the literal plan string.
-// Exported for tests; not part of the public component API.
-export function computeTaxNI(
-  gross: number,
-  year: number,
-  studentLoanPlan: string,
-  pensionPct: number,
-): { tax: number; ni: number; studentLoan: number; pension: number; net: number } {
-  const personalAllowance = interp(year, PA_ANCHORS)
-  const basicRate =
-    year < 1996 ? 0.25 : year < 1997 ? 0.24 : year < 2000 ? 0.23 : year < 2008 ? 0.22 : 0.20
-  const niMainRate =
-    year < 2003 ? 0.09
-    : year < 2011 ? 0.11
-    : year < 2025 ? 0.12
-    : 0.08
-  const niPT = interp(year, NI_PT_ANCHORS)
-  const niUEL = interp(year, NI_UEL_ANCHORS)
-  const niAboveUELRate = year < 2003 ? 0 : year < 2011 ? 0.01 : 0.02
-
-  const taxable = Math.max(0, gross - personalAllowance)
-  const hrThreshold = interp(year, HR_THRESHOLD_ANCHORS)
-  const basicBand = Math.max(0, hrThreshold - personalAllowance)
-  const tax =
-    Math.min(taxable, basicBand) * basicRate +
-    Math.max(0, taxable - basicBand) * 0.40
-  const ni =
-    Math.max(0, Math.min(gross, niUEL) - niPT) * niMainRate +
-    Math.max(0, gross - niUEL) * niAboveUELRate
-
-  // Student loan thresholds by plan
-  let slThreshold: number | null = null
-  if (studentLoanPlan === "plan1" && year >= 1998) {
-    slThreshold = year < 2005 ? 10000 : year < 2012 ? 15000 : 22015
-  } else if (studentLoanPlan === "plan2" && year >= 2012) {
-    slThreshold = year < 2016 ? 21000 : year < 2022 ? 25000 : 27295
-  } else if (studentLoanPlan === "plan5" && year >= 2023) {
-    slThreshold = 25000
-  }
-  const studentLoan =
-    slThreshold !== null ? Math.max(0, gross - slThreshold) * 0.09 : 0
-
-  const pension = gross * (pensionPct / 100)
-  const net = gross - tax - ni - studentLoan - pension
-
-  return { tax, ni, studentLoan, pension, net }
 }
 
 function latestValue(series: Series | undefined): number | null {
@@ -239,7 +152,7 @@ export function computeSnapshot(
     inputs.pensionPct > 0 && compareYear >= 2013 ? inputs.pensionPct : 0
 
   // Student loan: active only if the plan existed in the compare year
-  let historicalSlPlan = "none"
+  let historicalSlPlan: StudentLoanPlan = "none"
   if (inputs.studentLoanPlan === "plan1" && compareYear >= 1998) historicalSlPlan = "plan1"
   if (inputs.studentLoanPlan === "plan2" && compareYear >= 2012) historicalSlPlan = "plan2"
   if (inputs.studentLoanPlan === "plan5" && compareYear >= 2023) historicalSlPlan = "plan5"

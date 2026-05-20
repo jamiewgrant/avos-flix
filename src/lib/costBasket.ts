@@ -1,4 +1,5 @@
 import type { Series } from "../types/series"
+import { computeTaxNI, autoEnrolPensionPct, defaultGraduatePlan } from "./taxModel"
 
 // A "typical UK household basket" of cost categories. £ values for the
 // REFERENCE_YEAR are calibrated to roughly match an ONS Family Spending
@@ -180,83 +181,10 @@ export function personaById(id: PersonaId): Persona {
   return PERSONAS.find((p) => p.id === id) ?? PERSONAS[0]
 }
 
-// ---------- UK tax / NI / SL / pension model (approximate, year-aware) ----------
-
-interface TaxYear {
-  personalAllowance: number
-  basicRate: number
-  basicBandTop: number
-  higherRate: number
-  niPrimaryThreshold: number
-  niMainRate: number
-  studentLoanThreshold: number | null
-  studentLoanRate: number
-  pensionEmployeeRate: number
-}
-
-// Piecewise-linear interpolation over an anchor table.
-function interp(year: number, anchors: Array<[number, number]>): number {
-  if (year <= anchors[0][0]) return anchors[0][1]
-  if (year >= anchors[anchors.length - 1][0]) return anchors[anchors.length - 1][1]
-  for (let i = 1; i < anchors.length; i++) {
-    const [y1, v1] = anchors[i]
-    if (y1 >= year) {
-      const [y0, v0] = anchors[i - 1]
-      const t = (year - y0) / (y1 - y0)
-      return v0 + (v1 - v0) * t
-    }
-  }
-  return anchors[anchors.length - 1][1]
-}
-
-const PA_ANCHORS: Array<[number, number]> = [
-  [1990, 3005], [1995, 3525], [2000, 4385], [2005, 4895],
-  [2010, 6475], [2014, 10000], [2016, 11000], [2019, 12500],
-  [2021, 12570], [2030, 12570],
-]
-
-const NI_PT_ANCHORS: Array<[number, number]> = [
-  [1990, 2600], [2000, 3900], [2010, 5715], [2015, 8060],
-  [2019, 8632], [2022, 12570], [2030, 12570],
-]
-
-function taxYear(year: number): TaxYear {
-  const personalAllowance = interp(year, PA_ANCHORS)
-  // Basic rate: 25% → 24% → 23% → 22% → 20%
-  const basicRate =
-    year < 1996 ? 0.25 : year < 1997 ? 0.24 : year < 2000 ? 0.23 : year < 2008 ? 0.22 : 0.20
-  // NI main rate: 9% historically → 11% in 2003 → 12% in 2011 → 13.25% briefly → back to 12% → 10% → 8%
-  const niMainRate =
-    year < 2003 ? 0.09
-    : year < 2011 ? 0.11
-    : year < 2022 ? 0.12
-    : year < 2024 ? 0.12
-    : year < 2025 ? 0.10
-    : 0.08
-  // Student loan: Plan 1 threshold from 1998 (~£10k rising), Plan 2 from 2012 (£21k rising to £27,295).
-  const studentLoanThreshold =
-    year < 1998 ? null
-    : year < 2005 ? 10000
-    : year < 2012 ? 15000
-    : year < 2016 ? 21000
-    : year < 2022 ? 25000
-    : 27295
-  // Pension auto-enrolment: 0% before Oct 2012, 1% then, 3% from Apr 2018, 5% from Apr 2019.
-  const pensionEmployeeRate =
-    year < 2013 ? 0 : year < 2018 ? 0.01 : year < 2019 ? 0.03 : 0.05
-
-  return {
-    personalAllowance,
-    basicRate,
-    basicBandTop: 50270,
-    higherRate: 0.40,
-    niPrimaryThreshold: interp(year, NI_PT_ANCHORS),
-    niMainRate,
-    studentLoanThreshold,
-    studentLoanRate: 0.09,
-    pensionEmployeeRate,
-  }
-}
+// ---------- UK tax / NI / SL / pension model ----------
+// The canonical implementation lives in ./taxModel.ts. This module exposes
+// a thin wrapper that maps the boolean has-loan / has-auto-enrol options
+// used by the chart views to the parameters taxModel.computeTaxNI expects.
 
 export interface NetPayBreakdown {
   gross: number
@@ -272,20 +200,10 @@ export function netPayDetail(
   year: number,
   opts: { hasStudentLoan?: boolean; hasAutoEnrolPension?: boolean },
 ): NetPayBreakdown {
-  const ty = taxYear(year)
-  const taxable = Math.max(0, gross - ty.personalAllowance)
-  const basicBand = Math.max(0, ty.basicBandTop - ty.personalAllowance)
-  const tax =
-    Math.min(taxable, basicBand) * ty.basicRate +
-    Math.max(0, taxable - basicBand) * ty.higherRate
-  const ni = Math.max(0, gross - ty.niPrimaryThreshold) * ty.niMainRate
-  const studentLoan =
-    opts.hasStudentLoan && ty.studentLoanThreshold != null
-      ? Math.max(0, gross - ty.studentLoanThreshold) * ty.studentLoanRate
-      : 0
-  const pension = opts.hasAutoEnrolPension ? gross * ty.pensionEmployeeRate : 0
-  const net = gross - tax - ni - studentLoan - pension
-  return { gross, tax, ni, studentLoan, pension, net }
+  const plan = opts.hasStudentLoan ? defaultGraduatePlan(year) : "none"
+  const pensionPct = opts.hasAutoEnrolPension ? autoEnrolPensionPct(year) : 0
+  const r = computeTaxNI(gross, year, plan, pensionPct)
+  return { gross, ...r }
 }
 
 export interface StackPoint {
