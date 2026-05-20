@@ -31,11 +31,13 @@ const SEGMENTS: Array<{
 ]
 
 function fmt(n: number): string {
-  return "£" + Math.round(Math.abs(n)).toLocaleString("en-GB")
+  const rounded = Math.round(n)
+  if (rounded < 0) return "−£" + Math.abs(rounded).toLocaleString("en-GB")
+  return "£" + rounded.toLocaleString("en-GB")
 }
 
 function pct(n: number): string {
-  return Math.abs(n).toFixed(1) + "%"
+  return n.toFixed(1) + "%"
 }
 
 // ── Waterfall bar for one snapshot ─────────────────────────────────────────
@@ -107,16 +109,19 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
           </div>
         )}
       </div>
-      <div className="text-xs mt-1" style={{ color: "var(--color-accent)" }}>
-        {fmt(breakdown.disposable / 12)} / mo disposable
-        {breakdown.disposable < 0 && (
-          <span className="ml-2" style={{ color: "var(--color-danger, #ef4444)" }}>
-            costs exceed income by {fmt(Math.abs(breakdown.disposable) / 12)}/mo
-          </span>
-        )}
-        {breakdown.disposable >= 0 && (
-          <span className="text-(--color-muted) ml-2">
-            ({pct(breakdown.disposablePct)} of gross)
+      <div className="text-xs mt-1">
+        {breakdown.disposable >= 0 ? (
+          <>
+            <span style={{ color: "var(--color-accent)" }}>
+              {fmt(breakdown.disposable / 12)} / mo disposable
+            </span>
+            <span className="text-(--color-muted) ml-2">
+              ({pct(breakdown.disposablePct)} of gross)
+            </span>
+          </>
+        ) : (
+          <span style={{ color: "var(--color-danger, #ef4444)" }}>
+            Deficit of {fmt(Math.abs(breakdown.disposable / 12))} / mo — costs exceed take-home pay
           </span>
         )}
       </div>
