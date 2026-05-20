@@ -6,7 +6,7 @@ import { GridRows } from "@visx/grid"
 import { ParentSize } from "@visx/responsive"
 import { line as d3Line, area as d3Area, curveMonotoneX } from "d3-shape"
 import type { Series } from "../../types/series"
-import { buildStack, type Persona, type WageBenchmark, type WagePoint } from "../../lib/costBasket"
+import { buildStack, type MortgageRegion, type Persona, type WageBenchmark, type WagePoint } from "../../lib/costBasket"
 
 interface Props {
   series: Record<string, Series>
@@ -15,7 +15,11 @@ interface Props {
   earners: 1 | 2
   benchmark: WageBenchmark
   housingMode?: "mortgage" | "rent"
+  mortgageRegion?: MortgageRegion
   startYear?: number
+  realTerms?: boolean
+  cpihMap?: Map<number, number>
+  cpihRef?: number
 }
 
 const MUTED = "#9ca3af"
@@ -26,11 +30,24 @@ const BORDER = "#2e303a"
 const WAGE = "#ffffff"
 const ACCENT = "#c084fc"
 
-export function CostStackChart({ series, persona, wageData, earners, benchmark, housingMode = "mortgage", startYear = 1995 }: Props) {
+export function CostStackChart({ series, persona, wageData, earners, benchmark, housingMode = "mortgage", mortgageRegion = "national", startYear = 1995, realTerms = false, cpihMap, cpihRef = 1 }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
   const [pinnedYear, setPinnedYear] = useState<number | null>(null)
 
-  const stack = useMemo(() => buildStack(series, persona.layers, { housingMode }), [series, persona, housingMode])
+  const stack = useMemo(
+    () => buildStack(series, persona.layers, { housingMode, mortgageRegion }),
+    [series, persona, housingMode, mortgageRegion],
+  )
+
+  // Deflation helper: when realTerms=true, scale values to cpihRef money.
+  const deflate = useMemo(() => {
+    if (!realTerms || !cpihMap) return (v: number, _year: number) => v
+    return (v: number, year: number) => {
+      const idx = cpihMap.get(year)
+      if (!idx || idx === 0) return v
+      return v * (cpihRef / idx)
+    }
+  }, [realTerms, cpihMap, cpihRef])
 
   const filteredStack = useMemo(
     () => stack.filter((p) => p.year >= startYear),
@@ -63,12 +80,29 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
         const innerH = height - margin.top - margin.bottom
 
         const xScale = scaleLinear<number>({ domain: [yearFrom, yearTo], range: [0, innerW] })
-        const maxStack = Math.max(...filteredStack.map((p) => p.total))
-        const maxWage = Math.max(...wageInRange.map((p) => p.value))
+
+        // Apply real-terms deflation to stacked and wage data.
+        const deflatedStack = filteredStack.map((p) => {
+          const layerVals: Record<string, number> = {}
+          let total = 0
+          for (const layer of persona.layers) {
+            const v = deflate(p.layers[layer.id] ?? 0, p.year)
+            layerVals[layer.id] = v
+            total += v
+          }
+          return { year: p.year, layers: layerVals, total }
+        })
+        const deflatedWage = wageInRange.map((p) => ({
+          ...p,
+          value: deflate(p.value, p.year),
+        }))
+
+        const maxStack = Math.max(...deflatedStack.map((p) => p.total))
+        const maxWage = Math.max(...deflatedWage.map((p) => p.value))
         const yMax = Math.max(maxStack, maxWage) * 1.05
         const yScale = scaleLinear<number>({ domain: [0, yMax], range: [innerH, 0], nice: true })
 
-        const stacked = filteredStack.map((p) => {
+        const stacked = deflatedStack.map((p) => {
           let acc = 0
           const cums: Record<string, [number, number]> = {}
           for (const layer of persona.layers) {
@@ -87,10 +121,10 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
             .curve(curveMonotoneX)(stacked) ?? ""
 
         const wagePath =
-          d3Line<WagePoint>()
+          d3Line<{ year: number; value: number }>()
             .x((p) => xScale(p.year))
             .y((p) => yScale(p.value))
-            .curve(curveMonotoneX)(wageInRange) ?? ""
+            .curve(curveMonotoneX)(deflatedWage) ?? ""
 
         function handleMove(e: React.PointerEvent<SVGRectElement>) {
           if (e.pointerType === "touch") return
@@ -120,8 +154,11 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
         }
 
         const activeYear = pinnedYear ?? hovered
-        const hoverStack = activeYear === null ? null : filteredStack.find((p) => p.year === activeYear)
-        const hoverWage = activeYear === null ? null : wageData.find((p) => p.year === activeYear)
+        const hoverStack = activeYear === null ? null : deflatedStack.find((p) => p.year === activeYear)
+        const hoverWageRaw = activeYear === null ? null : wageData.find((p) => p.year === activeYear)
+        const hoverWage = hoverWageRaw
+          ? { ...hoverWageRaw, value: deflate(hoverWageRaw.value, hoverWageRaw.year) }
+          : null
         const shareOfWage = hoverStack && hoverWage ? Math.round((hoverStack.total / hoverWage.value) * 100) : null
         const tooltipRows = persona.layers.length + 3
         const tooltipH = 24 + tooltipRows * 16 + 48
@@ -178,7 +215,7 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
               <AxisLeft
                 scale={yScale}
                 numTicks={5}
-                tickFormat={(v) => `£${Math.round((v as number) / 1000)}k`}
+                tickFormat={(v) => `£${Math.round((v as number) / 1000)}k${realTerms ? " (real)" : ""}`}
                 stroke={GRID}
                 tickStroke={GRID}
                 tickLabelProps={{ fill: MUTED, fontSize: 11, dx: -4, dy: 4, textAnchor: "end" }}
@@ -200,8 +237,8 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
               <path d={wagePath} stroke={WAGE} strokeWidth={2.5} fill="none" />
 
               {/* Wage line label at right edge */}
-              {wageInRange.length > 0 && (() => {
-                const last = wageInRange[wageInRange.length - 1]
+              {deflatedWage.length > 0 && (() => {
+                const last = deflatedWage[deflatedWage.length - 1]
                 const ly = yScale(last.value)
                 return (
                   <text

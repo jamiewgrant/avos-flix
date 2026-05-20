@@ -9,6 +9,7 @@ import {
   personaById,
   resolveWageLine,
   wageBenchmarkById,
+  type MortgageRegion,
   type PersonaId,
   type WageBenchmarkId,
 } from "../lib/costBasket"
@@ -35,14 +36,23 @@ export function CostStackSection({ series, embedMode = false }: Props) {
   const benchmark = wageBenchmarkById(benchmarkId)
 
   const [housingMode, setHousingMode] = useState<"mortgage" | "rent">("mortgage")
+  const [mortgageRegion, setMortgageRegion] = useState<MortgageRegion>("national")
   const [startYear, setStartYear] = useState<StartYear>(1995)
+  const [realTerms, setRealTerms] = useState(false)
 
   const [snapshotting, setSnapshotting] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
+  const cpih = series["cpih"]
+  const cpihMap = useMemo(() => new Map((cpih?.points ?? []).map((p) => [p.year, p.value])), [cpih])
+  const cpihRef = useMemo(() => {
+    if (!cpih || cpih.points.length === 0) return 1
+    return cpih.points[cpih.points.length - 1].value
+  }, [cpih])
+
   const stack = useMemo(
-    () => buildStack(series, persona.layers, { housingMode }),
-    [series, persona, housingMode],
+    () => buildStack(series, persona.layers, { housingMode, mortgageRegion }),
+    [series, persona, housingMode, mortgageRegion],
   )
 
   const wageData = useMemo(
@@ -95,7 +105,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
   const altBenchmark = wageBenchmarkById(altPersona.defaultWageBenchmark)
 
   const altCompare = useMemo(() => {
-    const altStack = buildStack(series, altPersona.layers, { housingMode })
+    const altStack = buildStack(series, altPersona.layers, { housingMode, mortgageRegion })
     const altWageData = resolveWageLine(
       series,
       altBenchmark,
@@ -201,6 +211,17 @@ export function CostStackSection({ series, embedMode = false }: Props) {
               Private rent
             </Chip>
           </ControlRow>
+          {housingMode === "mortgage" && (
+            <ControlRow label="region">
+              <Chip active={mortgageRegion === "national"} onClick={() => setMortgageRegion("national")}>National</Chip>
+              <Chip active={mortgageRegion === "london"} onClick={() => setMortgageRegion("london")}>London</Chip>
+              <Chip active={mortgageRegion === "northeast"} onClick={() => setMortgageRegion("northeast")}>North East</Chip>
+            </ControlRow>
+          )}
+          <ControlRow label="view">
+            <Chip active={!realTerms} onClick={() => setRealTerms(false)}>Nominal £</Chip>
+            <Chip active={realTerms} onClick={() => setRealTerms(true)}>Real terms</Chip>
+          </ControlRow>
           <ControlRow label="since">
             {START_YEAR_OPTIONS.map((y) => (
               <Chip key={y} active={startYear === y} onClick={() => setStartYear(y)}>
@@ -244,7 +265,11 @@ export function CostStackSection({ series, embedMode = false }: Props) {
             earners={earners}
             benchmark={benchmark}
             housingMode={housingMode}
+            mortgageRegion={mortgageRegion}
             startYear={startYear}
+            realTerms={realTerms}
+            cpihMap={cpihMap}
+            cpihRef={cpihRef}
           />
         </Suspense>
 
@@ -262,7 +287,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
 
         {!embedMode && (
           <p className="mt-5 text-[11px] text-(--color-muted) font-mono opacity-70 leading-relaxed">
-            Calibration: basket £ values anchored to middle-quintile in {REFERENCE_YEAR}, rescaled by underlying series each year (mortgage: Land Registry + Bank Rate; energy: Ofgem cap; council tax: ONS; rail: ORR index; CPIH for water, broadband, groceries; Coram for childcare). Deduction model uses each year's real PA, basic rate, NI thresholds, Plan 2 SL threshold (9%), and phased pension auto-enrol (0%→5%). GDHI is already post-tax disposable; deductions not re-applied. Car insurance (spiked far faster than CPIH) and private healthcare excluded — no clean public series.
+            Calibration: basket £ values anchored to middle-quintile in {REFERENCE_YEAR}, rescaled by underlying series each year (mortgage: Land Registry + Bank Rate; energy: Ofgem cap; council tax: ONS; rail: ORR index; food CPI sub-index for groceries; CPIH for water and broadband; Coram for childcare). Deduction model uses each year's real PA, basic rate, NI thresholds, Plan 2 SL threshold (9%), and phased pension auto-enrol (0%→5%). GDHI is already post-tax disposable; deductions not re-applied. Real terms deflates by CPIH to the most recent year's money. Car insurance (spiked far faster than CPIH) and private healthcare excluded — no clean public series.
           </p>
         )}
       </div>

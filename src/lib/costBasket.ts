@@ -74,8 +74,8 @@ const BASE_LAYERS: CostLayer[] = [
     label: "Groceries + everyday goods",
     color: "#eab308",
     refValue: 5200,
-    driverId: "cpih",
-    hint: "Food, household goods, clothing. Scaled by CPIH — food prices specifically rose 20%+ in 2022-23 alone, so this is conservative.",
+    driverId: "food-cpi",
+    hint: "Food and household goods. Driven by the ONS CPIH food & non-alcoholic beverages sub-index — food rose ~39% from 2015 to 2023, vs 29% for headline CPIH. The 2022-23 spike is now properly captured.",
   },
 ]
 
@@ -294,13 +294,15 @@ export interface StackPoint {
   total: number
 }
 
-// Synthesize a first-time-buyer mortgage payment series from house
-// prices + Bank Rate. Assumes 15% deposit, 25-year term, mortgage rate
-// = Bank Rate + 1.5pp margin. This captures the combined effect of
-// rising house prices AND rising interest rates — the actual mortgage
-// squeeze, which the rent index alone misses.
-function syntheticMortgageFtb(series: Record<string, Series>): Series | null {
-  const hp = series["house-price-landreg"] || series["house-price-nationwide"]
+export type MortgageRegion = "national" | "london" | "northeast"
+
+// Synthesize a first-time-buyer mortgage payment series from a chosen house
+// price series + Bank Rate. Assumes 15% deposit, 25-year term, rate = Bank Rate + 1.5pp.
+function syntheticMortgageFtb(
+  series: Record<string, Series>,
+  hpSeriesId = "house-price-landreg",
+): Series | null {
+  const hp = series[hpSeriesId] || series["house-price-nationwide"]
   const rate = series["boe-rate"]
   if (!hp || !rate) return null
   const rateMap = new Map(rate.points.map((p) => [p.year, p.value]))
@@ -330,20 +332,27 @@ function syntheticMortgageFtb(series: Record<string, Series>): Series | null {
   }
 }
 
+const REGION_HP_SERIES: Record<MortgageRegion, string> = {
+  national: "house-price-landreg",
+  london: "house-price-london",
+  northeast: "house-price-northeast",
+}
+
 export function buildStack(
   rawSeries: Record<string, Series>,
   layers: CostLayer[] = BASE_LAYERS,
-  opts: { housingMode?: "mortgage" | "rent" } = {},
+  opts: { housingMode?: "mortgage" | "rent"; mortgageRegion?: MortgageRegion } = {},
 ): StackPoint[] {
-  // Inject synthesized drivers if any layer needs them.
+  const { housingMode = "mortgage", mortgageRegion = "national" } = opts
   const series: Record<string, Series> = { ...rawSeries }
-  if (!series["mortgage-payment-ftb"]) {
-    const m = syntheticMortgageFtb(rawSeries)
-    if (m) series["mortgage-payment-ftb"] = m
-  }
+
+  // Synthesize the appropriate mortgage series based on region.
+  const hpSeriesId = REGION_HP_SERIES[mortgageRegion]
+  const mortgage = syntheticMortgageFtb(rawSeries, hpSeriesId)
+  if (mortgage) series["mortgage-payment-ftb"] = mortgage
 
   // Apply housing mode override — swap mortgage driver for rent index.
-  if (opts.housingMode === "rent") {
+  if (housingMode === "rent") {
     layers = layers.map((layer) => {
       if (layer.id === "housing") {
         return {
