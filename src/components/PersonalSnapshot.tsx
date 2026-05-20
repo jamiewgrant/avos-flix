@@ -44,18 +44,21 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
   const barRef = useRef<HTMLDivElement>(null)
 
   const gross = breakdown.grossSalary
-  // Clamp disposable to 0 minimum for display purposes (can be negative)
   const displayDisposable = Math.max(0, breakdown.disposable)
 
-  // Build segment widths as % of gross — note disposable uses clamped value
-  const segsWithPct = SEGMENTS.map((seg) => {
-    const raw =
-      seg.key === "disposable"
-        ? displayDisposable
-        : (breakdown[seg.key] as number)
-    const width = gross > 0 ? Math.max(0, (raw / gross) * 100) : 0
-    return { ...seg, width, raw: breakdown[seg.key] as number }
-  })
+  // Compute raw display values (disposable clamped to 0 in deficit)
+  const rawDisplayValues = SEGMENTS.map((seg) =>
+    seg.key === "disposable" ? displayDisposable : Math.max(0, breakdown[seg.key] as number),
+  )
+  const positiveTotal = rawDisplayValues.reduce((a, b) => a + b, 0)
+  // If costs exceed gross (deficit), scale all segments proportionally to fit
+  const scale = positiveTotal > gross && gross > 0 ? gross / positiveTotal : 1
+
+  const segsWithPct = SEGMENTS.map((seg, i) => ({
+    ...seg,
+    width: gross > 0 ? (rawDisplayValues[i] / gross) * 100 * scale : 0,
+    raw: breakdown[seg.key] as number,
+  }))
 
   const handleMouseMove = useCallback(
     (seg: (typeof SEGMENTS)[0], e: React.MouseEvent) => {

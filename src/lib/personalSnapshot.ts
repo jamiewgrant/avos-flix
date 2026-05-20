@@ -56,6 +56,21 @@ const NI_PT_ANCHORS: Array<[number, number]> = [
   [2019, 8632], [2022, 12570], [2030, 12570],
 ]
 
+// Upper Earnings Limit — above this the NI rate drops sharply.
+// Pre-2003: 0% above UEL. 2003-2010: 1%. 2011+: 2%.
+const NI_UEL_ANCHORS: Array<[number, number]> = [
+  [1990, 20280], [1995, 22880], [2000, 27820], [2003, 30420],
+  [2010, 43875], [2021, 50270], [2030, 50270],
+]
+
+// Higher-rate income tax threshold (total income, not taxable income).
+// Varied by year; hardcoding today's £50,270 to all years under-estimates historical tax.
+const HR_THRESHOLD_ANCHORS: Array<[number, number]> = [
+  [1990, 20700], [1993, 23700], [1997, 26100], [2000, 28000],
+  [2003, 30500], [2006, 33300], [2010, 37400], [2013, 41450],
+  [2016, 43000], [2018, 46350], [2019, 50000], [2021, 50270], [2030, 50270],
+]
+
 // Compute tax, NI, student loan, pension for an individual earner.
 // pensionPct is an explicit percentage (e.g. 5 means 5%), not auto-enrolment rate.
 // studentLoanPlan is the literal plan string.
@@ -74,14 +89,18 @@ function computeTaxNI(
     : year < 2025 ? 0.12
     : 0.08
   const niPT = interp(year, NI_PT_ANCHORS)
+  const niUEL = interp(year, NI_UEL_ANCHORS)
+  const niAboveUELRate = year < 2003 ? 0 : year < 2011 ? 0.01 : 0.02
 
   const taxable = Math.max(0, gross - personalAllowance)
-  const basicBandTop = 50270
-  const basicBand = Math.max(0, basicBandTop - personalAllowance)
+  const hrThreshold = interp(year, HR_THRESHOLD_ANCHORS)
+  const basicBand = Math.max(0, hrThreshold - personalAllowance)
   const tax =
     Math.min(taxable, basicBand) * basicRate +
     Math.max(0, taxable - basicBand) * 0.40
-  const ni = Math.max(0, gross - niPT) * niMainRate
+  const ni =
+    Math.max(0, Math.min(gross, niUEL) - niPT) * niMainRate +
+    Math.max(0, gross - niUEL) * niAboveUELRate
 
   // Student loan thresholds by plan
   let slThreshold: number | null = null
