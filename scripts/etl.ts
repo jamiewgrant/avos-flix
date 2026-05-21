@@ -36,7 +36,7 @@ type SourceFn = () => Promise<Series | Series[]>
 
 interface SourceEntry {
   fn: SourceFn
-  /** Human-readable name shown in the summary (derived from first series id at runtime). */
+  /** Human-readable name shown in the summary. */
   label: string
 }
 
@@ -84,12 +84,10 @@ interface FetchResult {
   failed: boolean
 }
 
-// AsyncLocalStorage allows each parallel fetch to track its own seed-usage flag
-// without interfering with sibling fetches running concurrently.
+// AsyncLocalStorage lets each concurrent fetch carry its own seed-usage flag.
+// console.warn is patched once (below) to write into whichever context is active.
 const seedContext = new AsyncLocalStorage<{ usedSeed: boolean }>()
 
-// Patch console.warn once — inspects the AsyncLocalStorage context to set the flag
-// only for the call-stack that owns the current fetch.
 const _originalWarn = console.warn
 console.warn = (...args: unknown[]) => {
   const ctx = seedContext.getStore()
@@ -159,30 +157,24 @@ async function loadPrevious(): Promise<Record<string, Series>> {
   }
 }
 
-async function safeFetch(fn: SourceFn, label: string): Promise<FetchResult> {
-  // Intercept console.warn to detect seed fallback without modifying source files.
-  // Sources signal seed usage by calling console.warn() with a message containing "seed".
-  let usedSeed = false
-  const originalWarn = console.warn
-  console.warn = (...args: unknown[]) => {
-    const message = args.map(String).join(" ")
-    if (/\bseed\b/i.test(message)) usedSeed = true
-    originalWarn(...args)
-  }
-
-  try {
-    const result = await fn()
-    const list = Array.isArray(result) ? result : [result]
-    for (const s of list) {
-      console.log(`  ${s.id}: ${s.points.length} points`)
+function safeFetch(fn: SourceFn, label: string): Promise<FetchResult> {
+  // Run each fetch inside its own AsyncLocalStorage context so the patched
+  // console.warn can attribute "using seed" warnings to the correct source,
+  // even when fetches run concurrently via Promise.all.
+  const store = { usedSeed: false }
+  return seedContext.run(store, async () => {
+    try {
+      const result = await fn()
+      const list = Array.isArray(result) ? result : [result]
+      for (const s of list) {
+        console.log(`  ${s.id}: ${s.points.length} points`)
+      }
+      return { series: list, label, usedSeed: store.usedSeed, failed: false }
+    } catch (err) {
+      console.error(`  FAILED (${label}): ${(err as Error).message}`)
+      return { series: [], label, usedSeed: false, failed: true }
     }
-    return { series: list, label, usedSeed, failed: false }
-  } catch (err) {
-    console.error(`  FAILED (${label}): ${(err as Error).message}`)
-    return { series: [], label, usedSeed: false, failed: true }
-  } finally {
-    console.warn = originalWarn
-  }
+  })
 }
 
 main().catch((err) => {
