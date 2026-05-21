@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "etl": "tsx scripts/etl.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "audit": "tsx scripts/audit-snapshot.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
