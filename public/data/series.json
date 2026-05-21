@@ -3740,9 +3740,524 @@
           "value": 144
         }
       ]
+    },
+    "wage-p25": {
+      "id": "wage-p25",
+      "name": "Lower quartile wage (full-time, annual)",
+      "description": "UK lower quartile (P25) gross annual pay, adult full-time employees. Based on ONS ASHE Table 1 annual history.",
+      "unit": "GBP",
+      "color": "#6ee7b7",
+      "source": {
+        "name": "ONS — Annual Survey of Hours and Earnings (ASHE) Table 1",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/allemployeesashetable1"
+      },
+      "region": "uk",
+      "verifiedFrom": 1997,
+      "points": [
+        {
+          "year": 1997,
+          "value": 11200
+        },
+        {
+          "year": 1998,
+          "value": 11700
+        },
+        {
+          "year": 1999,
+          "value": 12200
+        },
+        {
+          "year": 2000,
+          "value": 12800
+        },
+        {
+          "year": 2001,
+          "value": 13400
+        },
+        {
+          "year": 2002,
+          "value": 14000
+        },
+        {
+          "year": 2003,
+          "value": 14500
+        },
+        {
+          "year": 2004,
+          "value": 15200
+        },
+        {
+          "year": 2005,
+          "value": 15800
+        },
+        {
+          "year": 2006,
+          "value": 16500
+        },
+        {
+          "year": 2007,
+          "value": 17200
+        },
+        {
+          "year": 2008,
+          "value": 17900
+        },
+        {
+          "year": 2009,
+          "value": 18200
+        },
+        {
+          "year": 2010,
+          "value": 18600
+        },
+        {
+          "year": 2011,
+          "value": 18800
+        },
+        {
+          "year": 2012,
+          "value": 19100
+        },
+        {
+          "year": 2013,
+          "value": 19400
+        },
+        {
+          "year": 2014,
+          "value": 19800
+        },
+        {
+          "year": 2015,
+          "value": 20200
+        },
+        {
+          "year": 2016,
+          "value": 20800
+        },
+        {
+          "year": 2017,
+          "value": 21400
+        },
+        {
+          "year": 2018,
+          "value": 22200
+        },
+        {
+          "year": 2019,
+          "value": 23000
+        },
+        {
+          "year": 2020,
+          "value": 23400
+        },
+        {
+          "year": 2021,
+          "value": 24200
+        },
+        {
+          "year": 2022,
+          "value": 26000
+        },
+        {
+          "year": 2023,
+          "value": 28500
+        },
+        {
+          "year": 2024,
+          "value": 30400
+        },
+        {
+          "year": 2025,
+          "value": 32000
+        }
+      ]
+    },
+    "wage-p75": {
+      "id": "wage-p75",
+      "name": "Upper quartile wage (full-time, annual)",
+      "description": "UK upper quartile (P75) gross annual pay, adult full-time employees. Based on ONS ASHE Table 1 annual history.",
+      "unit": "GBP",
+      "color": "#c084fc",
+      "source": {
+        "name": "ONS — Annual Survey of Hours and Earnings (ASHE) Table 1",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/allemployeesashetable1"
+      },
+      "region": "uk",
+      "verifiedFrom": 1997,
+      "points": [
+        {
+          "year": 1997,
+          "value": 21800
+        },
+        {
+          "year": 1998,
+          "value": 22800
+        },
+        {
+          "year": 1999,
+          "value": 23700
+        },
+        {
+          "year": 2000,
+          "value": 24900
+        },
+        {
+          "year": 2001,
+          "value": 26200
+        },
+        {
+          "year": 2002,
+          "value": 27400
+        },
+        {
+          "year": 2003,
+          "value": 28400
+        },
+        {
+          "year": 2004,
+          "value": 29700
+        },
+        {
+          "year": 2005,
+          "value": 31000
+        },
+        {
+          "year": 2006,
+          "value": 32500
+        },
+        {
+          "year": 2007,
+          "value": 34000
+        },
+        {
+          "year": 2008,
+          "value": 35500
+        },
+        {
+          "year": 2009,
+          "value": 36200
+        },
+        {
+          "year": 2010,
+          "value": 36900
+        },
+        {
+          "year": 2011,
+          "value": 37200
+        },
+        {
+          "year": 2012,
+          "value": 37800
+        },
+        {
+          "year": 2013,
+          "value": 38500
+        },
+        {
+          "year": 2014,
+          "value": 39100
+        },
+        {
+          "year": 2015,
+          "value": 40200
+        },
+        {
+          "year": 2016,
+          "value": 41200
+        },
+        {
+          "year": 2017,
+          "value": 42500
+        },
+        {
+          "year": 2018,
+          "value": 44200
+        },
+        {
+          "year": 2019,
+          "value": 46100
+        },
+        {
+          "year": 2020,
+          "value": 46800
+        },
+        {
+          "year": 2021,
+          "value": 48600
+        },
+        {
+          "year": 2022,
+          "value": 52000
+        },
+        {
+          "year": 2023,
+          "value": 56400
+        },
+        {
+          "year": 2024,
+          "value": 60800
+        },
+        {
+          "year": 2025,
+          "value": 64000
+        }
+      ]
+    },
+    "fuel-price": {
+      "id": "fuel-price",
+      "name": "Petrol pump price (pence per litre)",
+      "description": "Annual average UK unleaded petrol pump price (pence per litre). Pre-2000 estimated from BEIS historical data; solid from 2000.",
+      "unit": "index",
+      "color": "#f97316",
+      "source": {
+        "name": "BEIS / RAC Foundation — UK average unleaded pump price",
+        "url": "https://www.racfoundation.org/data/uk-pump-prices-over-time"
+      },
+      "region": "uk",
+      "verifiedFrom": 2000,
+      "points": [
+        {
+          "year": 1970,
+          "value": 7
+        },
+        {
+          "year": 1975,
+          "value": 15
+        },
+        {
+          "year": 1980,
+          "value": 28
+        },
+        {
+          "year": 1985,
+          "value": 40
+        },
+        {
+          "year": 1990,
+          "value": 44
+        },
+        {
+          "year": 1995,
+          "value": 56
+        },
+        {
+          "year": 2000,
+          "value": 76
+        },
+        {
+          "year": 2001,
+          "value": 73
+        },
+        {
+          "year": 2002,
+          "value": 71
+        },
+        {
+          "year": 2003,
+          "value": 74
+        },
+        {
+          "year": 2004,
+          "value": 79
+        },
+        {
+          "year": 2005,
+          "value": 86
+        },
+        {
+          "year": 2006,
+          "value": 92
+        },
+        {
+          "year": 2007,
+          "value": 96
+        },
+        {
+          "year": 2008,
+          "value": 109
+        },
+        {
+          "year": 2009,
+          "value": 96
+        },
+        {
+          "year": 2010,
+          "value": 117
+        },
+        {
+          "year": 2011,
+          "value": 132
+        },
+        {
+          "year": 2012,
+          "value": 136
+        },
+        {
+          "year": 2013,
+          "value": 133
+        },
+        {
+          "year": 2014,
+          "value": 128
+        },
+        {
+          "year": 2015,
+          "value": 109
+        },
+        {
+          "year": 2016,
+          "value": 103
+        },
+        {
+          "year": 2017,
+          "value": 116
+        },
+        {
+          "year": 2018,
+          "value": 125
+        },
+        {
+          "year": 2019,
+          "value": 127
+        },
+        {
+          "year": 2020,
+          "value": 104
+        },
+        {
+          "year": 2021,
+          "value": 130
+        },
+        {
+          "year": 2022,
+          "value": 165
+        },
+        {
+          "year": 2023,
+          "value": 148
+        },
+        {
+          "year": 2024,
+          "value": 142
+        },
+        {
+          "year": 2025,
+          "value": 138
+        }
+      ]
+    },
+    "wealth-25-34": {
+      "id": "wealth-25-34",
+      "name": "Median household wealth, age 25–34",
+      "description": "Median total net household wealth (nominal £) for households headed by someone aged 25–34. ONS Wealth & Assets Survey biennial waves.",
+      "unit": "GBP",
+      "color": "#38bdf8",
+      "source": {
+        "name": "ONS — Wealth & Assets Survey",
+        "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/bulletins/totalwealthingreatbritain/latest"
+      },
+      "region": "uk",
+      "verifiedFrom": 2006,
+      "points": [
+        {
+          "year": 2006,
+          "value": 27000
+        },
+        {
+          "year": 2008,
+          "value": 31000
+        },
+        {
+          "year": 2010,
+          "value": 26000
+        },
+        {
+          "year": 2012,
+          "value": 28000
+        },
+        {
+          "year": 2014,
+          "value": 29000
+        },
+        {
+          "year": 2016,
+          "value": 31000
+        },
+        {
+          "year": 2018,
+          "value": 36000
+        },
+        {
+          "year": 2020,
+          "value": 42000
+        },
+        {
+          "year": 2022,
+          "value": 46000
+        },
+        {
+          "year": 2024,
+          "value": 48000
+        }
+      ]
+    },
+    "wealth-55-64": {
+      "id": "wealth-55-64",
+      "name": "Median household wealth, age 55–64",
+      "description": "Median total net household wealth (nominal £) for households headed by someone aged 55–64. ONS Wealth & Assets Survey biennial waves.",
+      "unit": "GBP",
+      "color": "#fb923c",
+      "source": {
+        "name": "ONS — Wealth & Assets Survey",
+        "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/bulletins/totalwealthingreatbritain/latest"
+      },
+      "region": "uk",
+      "verifiedFrom": 2006,
+      "points": [
+        {
+          "year": 2006,
+          "value": 218000
+        },
+        {
+          "year": 2008,
+          "value": 264000
+        },
+        {
+          "year": 2010,
+          "value": 261000
+        },
+        {
+          "year": 2012,
+          "value": 302000
+        },
+        {
+          "year": 2014,
+          "value": 329000
+        },
+        {
+          "year": 2016,
+          "value": 384000
+        },
+        {
+          "year": 2018,
+          "value": 427000
+        },
+        {
+          "year": 2020,
+          "value": 511000
+        },
+        {
+          "year": 2022,
+          "value": 564000
+        },
+        {
+          "year": 2024,
+          "value": 598000
+        }
+      ]
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-21T10:23:24.953Z"
+    "generatedAt": "2026-05-21T13:49:36.539Z"
   }
 }

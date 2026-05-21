@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { resolve } from "node:path"
+import { AsyncLocalStorage } from "node:async_hooks"
 import type { Series, SeriesData } from "../src/types/series.ts"
 
 import { fetchSeries as fetchBoe } from "./sources/boe.ts"
@@ -26,45 +27,84 @@ import { fetchSeries as fetchFtbAge } from "./sources/ftb-age.ts"
 import { fetchSeries as fetchTaxBurden } from "./sources/tax-burden.ts"
 import { fetchSeries as fetchGradSalary } from "./sources/grad-salary.ts"
 import { fetchSeries as fetchFoodCpi } from "./sources/food-cpi.ts"
+import { fetchSeries as fetchAshePercentiles } from "./sources/ashePercentiles.ts"
+import { fetchSeries as fetchFuel } from "./sources/fuel.ts"
+import { fetchSeries as fetchWealth } from "./sources/wealth.ts"
 
 // Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
 type SourceFn = () => Promise<Series | Series[]>
 
-const SOURCES: SourceFn[] = [
-  fetchBoe,
-  fetchLandReg,
-  fetchNationwide,
-  fetchCpih,
-  fetchAshe,
-  fetchHouseholdIncome,
-  fetchEnergy,
-  fetchRent,
-  fetchNetflix,
-  fetchAvocado,
-  fetchBirths,
-  fetchMigration,
-  fetchHouseholdSize,
-  fetchTuition,
-  fetchCouncilTax,
-  fetchRailFares,
-  fetchMinWage,
-  fetchStudentDebt,
-  fetchChildcare,
-  fetchHomeownership,
-  fetchFtbAge,
-  fetchTaxBurden,
-  fetchGradSalary,
-  fetchFoodCpi,
+interface SourceEntry {
+  fn: SourceFn
+  /** Human-readable name shown in the summary (derived from first series id at runtime). */
+  label: string
+}
+
+const SOURCES: SourceEntry[] = [
+  { fn: fetchBoe, label: "boe" },
+  { fn: fetchLandReg, label: "landRegistry" },
+  { fn: fetchNationwide, label: "nationwide" },
+  { fn: fetchCpih, label: "cpih" },
+  { fn: fetchAshe, label: "ashe" },
+  { fn: fetchHouseholdIncome, label: "household-income" },
+  { fn: fetchEnergy, label: "energy" },
+  { fn: fetchRent, label: "rent" },
+  { fn: fetchNetflix, label: "netflix" },
+  { fn: fetchAvocado, label: "avocado" },
+  { fn: fetchBirths, label: "births" },
+  { fn: fetchMigration, label: "migration" },
+  { fn: fetchHouseholdSize, label: "household-size" },
+  { fn: fetchTuition, label: "tuition" },
+  { fn: fetchCouncilTax, label: "council-tax" },
+  { fn: fetchRailFares, label: "rail-fares" },
+  { fn: fetchMinWage, label: "min-wage" },
+  { fn: fetchStudentDebt, label: "student-debt" },
+  { fn: fetchChildcare, label: "childcare" },
+  { fn: fetchHomeownership, label: "homeownership" },
+  { fn: fetchFtbAge, label: "ftb-age" },
+  { fn: fetchTaxBurden, label: "tax-burden" },
+  { fn: fetchGradSalary, label: "grad-salary" },
+  { fn: fetchFoodCpi, label: "food-cpi" },
+  { fn: fetchAshePercentiles, label: "ashe-percentiles" },
+  { fn: fetchFuel, label: "fuel-price" },
+  { fn: fetchWealth, label: "wealth" },
 ]
 
 const OUT_DIR = resolve("public", "data")
 const OUT_FILE = resolve(OUT_DIR, "series.json")
 
+// ETL_ALLOW_SEEDS=true lets Vercel preview builds (which may lack network access)
+// pass CI even when sources fell back to seed data.
+const ALLOW_SEEDS = process.env.ETL_ALLOW_SEEDS === "true"
+
+interface FetchResult {
+  series: Series[]
+  label: string
+  usedSeed: boolean
+  failed: boolean
+}
+
+// AsyncLocalStorage allows each parallel fetch to track its own seed-usage flag
+// without interfering with sibling fetches running concurrently.
+const seedContext = new AsyncLocalStorage<{ usedSeed: boolean }>()
+
+// Patch console.warn once — inspects the AsyncLocalStorage context to set the flag
+// only for the call-stack that owns the current fetch.
+const _originalWarn = console.warn
+console.warn = (...args: unknown[]) => {
+  const ctx = seedContext.getStore()
+  if (ctx) {
+    const message = args.map(String).join(" ")
+    if (/\bseed\b/i.test(message)) ctx.usedSeed = true
+  }
+  _originalWarn(...args)
+}
+
 async function main() {
   console.log("Running ETL…")
   const previous = await loadPrevious()
-  const fetched = await Promise.all(SOURCES.map(safeFetch))
-  const seriesList = fetched.flat()
+  const results = await Promise.all(SOURCES.map(({ fn, label }) => safeFetch(fn, label)))
+  const seriesList = results.flatMap((r) => r.series)
   const series: Record<string, Series> = { ...previous }
   for (const s of seriesList) {
     if (s.points.length === 0 && series[s.id]?.points.length) {
@@ -82,6 +122,31 @@ async function main() {
   await mkdir(OUT_DIR, { recursive: true })
   await writeFile(OUT_FILE, JSON.stringify(data, null, 2))
   console.log(`Wrote ${OUT_FILE} (${Object.keys(series).length} series)`)
+
+  // ── Summary ───────────────────────────────────────────────────────────────
+  const seedSources = results.filter((r) => r.usedSeed).map((r) => r.label)
+  const failedSources = results.filter((r) => r.failed).map((r) => r.label)
+  const liveCount = results.length - seedSources.length - failedSources.length
+
+  console.log("")
+  console.log("━".repeat(40))
+  console.log(`ETL complete: ${results.length} sources`)
+  console.log(`  ✓ ${liveCount} fetched live`)
+  if (seedSources.length > 0) {
+    console.log(`  ⚠ ${seedSources.length} used seed fallback: ${seedSources.join(", ")}`)
+  }
+  if (failedSources.length > 0) {
+    console.log(`  ✗ ${failedSources.length} failed entirely: ${failedSources.join(", ")}`)
+  }
+  console.log("━".repeat(40))
+
+  if ((seedSources.length > 0 || failedSources.length > 0) && !ALLOW_SEEDS) {
+    console.error("")
+    console.error(
+      "Some sources used seed data. Set ETL_ALLOW_SEEDS=true to suppress this exit code.",
+    )
+    process.exit(1)
+  }
 }
 
 async function loadPrevious(): Promise<Record<string, Series>> {
@@ -94,17 +159,29 @@ async function loadPrevious(): Promise<Record<string, Series>> {
   }
 }
 
-async function safeFetch(fn: SourceFn): Promise<Series[]> {
+async function safeFetch(fn: SourceFn, label: string): Promise<FetchResult> {
+  // Intercept console.warn to detect seed fallback without modifying source files.
+  // Sources signal seed usage by calling console.warn() with a message containing "seed".
+  let usedSeed = false
+  const originalWarn = console.warn
+  console.warn = (...args: unknown[]) => {
+    const message = args.map(String).join(" ")
+    if (/\bseed\b/i.test(message)) usedSeed = true
+    originalWarn(...args)
+  }
+
   try {
     const result = await fn()
     const list = Array.isArray(result) ? result : [result]
     for (const s of list) {
       console.log(`  ${s.id}: ${s.points.length} points`)
     }
-    return list
+    return { series: list, label, usedSeed, failed: false }
   } catch (err) {
-    console.error(`  FAILED: ${(err as Error).message}`)
-    return []
+    console.error(`  FAILED (${label}): ${(err as Error).message}`)
+    return { series: [], label, usedSeed: false, failed: true }
+  } finally {
+    console.warn = originalWarn
   }
 }
 
