@@ -448,10 +448,21 @@ describe("computeSnapshot — structural invariants", () => {
     )
   })
 
-  it("childcare cost rises (weakly) with children count", () => {
-    const r0 = computeSnapshot({ ...baseInputs, children: 0 }, SERIES, 2015)!
-    const r1 = computeSnapshot({ ...baseInputs, children: 1 }, SERIES, 2015)!
-    const r2 = computeSnapshot({ ...baseInputs, children: 2 }, SERIES, 2015)!
+  it("childcare is zero for single-earner household regardless of children count", () => {
+    // If earners=1, one parent is at home — no formal childcare needed.
+    const r1 = computeSnapshot({ ...baseInputs, earners: 1, children: 1 }, SERIES, 2015)!
+    const r2 = computeSnapshot({ ...baseInputs, earners: 1, children: 2 }, SERIES, 2015)!
+    expect(r1.today.childcare).toBe(0)
+    expect(r2.today.childcare).toBe(0)
+    expect(r1.historical.childcare).toBe(0)
+    expect(r2.historical.childcare).toBe(0)
+  })
+
+  it("childcare cost rises (weakly) with children count for dual-earner household", () => {
+    const dual = { ...baseInputs, earners: 2 as const, grossSalary: 90000 }
+    const r0 = computeSnapshot({ ...dual, children: 0 }, SERIES, 2015)!
+    const r1 = computeSnapshot({ ...dual, children: 1 }, SERIES, 2015)!
+    const r2 = computeSnapshot({ ...dual, children: 2 }, SERIES, 2015)!
     expect(r1.today.childcare).toBeGreaterThan(r0.today.childcare)
     expect(r2.today.childcare).toBeGreaterThan(r1.today.childcare)
   })
@@ -922,7 +933,8 @@ describe("regression pins — previously-fixed bugs", () => {
     // The original bug multiplied the already-annual childcare series by 50,
     // producing £750k+ childcare for one child. Realistic full-time nursery
     // costs in the UK in 2020 are ~£12k–£17k per child per year.
-    const r = computeSnapshot({ ...baseInputs, children: 1 }, SERIES, 2015)!
+    // Must use earners=2 so childcare is applied (earners=1 → zero by design).
+    const r = computeSnapshot({ ...baseInputs, earners: 2, grossSalary: 90000, children: 1 }, SERIES, 2015)!
     expect(r.today.childcare).toBeLessThan(30000) // would be ~£750k with the bug
     expect(r.today.childcare).toBeGreaterThan(5000)
   })

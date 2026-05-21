@@ -108,7 +108,7 @@ export function computeSnapshot(
   const todayGroceries = 5200 * (foodCpiNow / 100) + 1000 * inputs.children
   const childcareAnnual = latestValue(series["childcare-cost"])
   const todayChildcare =
-    inputs.children > 0
+    inputs.children > 0 && inputs.earners === 2
       ? childcareAnnual != null
         ? childcareAnnual * Math.min(inputs.children, 2)
         : 15000 * Math.min(inputs.children, 2)
@@ -192,9 +192,10 @@ export function computeSnapshot(
   const histGroceries =
     5200 * (foodCpiThen / 100) + 1000 * inputs.children
 
-  // Childcare historical — scale by food-cpi as proxy if no direct data
+  // Childcare historical — only applies when both parents work. A single-earner
+  // household with children has a stay-at-home parent, so formal childcare cost is zero.
   let histChildcare = 0
-  if (inputs.children > 0) {
+  if (inputs.children > 0 && inputs.earners === 2) {
     const ccThen = valueAtYear(series["childcare-cost"], compareYear)
     if (ccThen != null) {
       histChildcare = ccThen * Math.min(inputs.children, 2)
