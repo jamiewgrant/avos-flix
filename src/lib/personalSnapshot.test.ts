@@ -811,6 +811,112 @@ describe("computeSnapshot — dual-earner symmetry", () => {
 // corresponding bug is reintroduced.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Rent-index data integrity — guards against re-introducing the bad RPI-splice
+// values that implied 1990 rents were 52% of median gross (actually ~30%).
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("rent-index series — historical affordability bounds", () => {
+  const ri = SERIES["rent-index"]
+  const mw = SERIES["median-wage"]
+
+  function riAt(year: number) {
+    return ri.points.find((p) => p.year === year)?.value ?? null
+  }
+  function mwAt(year: number) {
+    return mw.points.find((p) => p.year === year)?.value ?? null
+  }
+
+  it("1990 rent burden on median wage is below 35% of gross (was 52% with the bad splice)", () => {
+    // Old values: 1990=60, today=137.4 → implied rent was 43.7% of a £1200/mo rent bill.
+    // At £1200/mo user rent, 1990 median earner (£11,929/yr) rent burden was 52.7%.
+    // Corrected value: 1990=36 → burden ≈ 31.6%. Must stay below 35%.
+    const ri1990 = riAt(1990)
+    const riNow = ri.points[ri.points.length - 1].value
+    const mw1990 = mwAt(1990)
+    expect(ri1990).not.toBeNull()
+    expect(mw1990).not.toBeNull()
+    // Rent burden: (ri1990 / riNow) × 1200 × 12 / mw1990
+    const impliedBurden = (ri1990! / riNow) * 1200 * 12 / mw1990!
+    expect(impliedBurden).toBeLessThan(0.35)
+    expect(impliedBurden).toBeGreaterThan(0.15) // sanity lower bound
+  })
+
+  it("1995 rent burden on median wage is below 35%", () => {
+    const ri1995 = riAt(1995)
+    const riNow = ri.points[ri.points.length - 1].value
+    const mw1995 = mwAt(1995)
+    expect(ri1995).not.toBeNull()
+    expect(mw1995).not.toBeNull()
+    const burden = (ri1995! / riNow) * 1200 * 12 / mw1995!
+    expect(burden).toBeLessThan(0.35)
+  })
+
+  it("rent index is strictly monotonically increasing (rents never nominally fell)", () => {
+    const sorted = [...ri.points].sort((a, b) => a.year - b.year)
+    for (let i = 1; i < sorted.length; i++) {
+      expect(sorted[i].value).toBeGreaterThan(sorted[i - 1].value)
+    }
+  })
+
+  it("rent index values are plausible: 2015=100 anchor, today above 130", () => {
+    const ri2015 = riAt(2015)
+    const riNow = ri.points[ri.points.length - 1].value
+    expect(ri2015).toBeCloseTo(100, 0)
+    expect(riNow).toBeGreaterThan(130)
+  })
+
+  it("rent burden is lower in 1990 than in 2020 (renting harder now than then)", () => {
+    const riNow = ri.points[ri.points.length - 1].value
+    const ri1990 = riAt(1990)!
+    const ri2020 = riAt(2020)!
+    const mw1990 = mwAt(1990)!
+    const mw2020 = mwAt(2020)!
+    const burden1990 = (ri1990 / riNow) * 1200 * 12 / mw1990
+    const burden2020 = (ri2020 / riNow) * 1200 * 12 / mw2020
+    expect(burden1990).toBeLessThan(burden2020)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Rent scenario: no false deficit in 1990-2000 for moderate incomes.
+// These cases specifically test the scenarios that showed false deficits due
+// to the overcalibrated RPI-splice rent-index data.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("computeSnapshot — rent scenario: 1990-2000 should not be in deficit for moderate earners", () => {
+  const rentInputs = (gross: number, monthly: number) => ({
+    grossSalary: gross,
+    housingType: "rent" as const,
+    monthlyHousing: monthly,
+    children: 0,
+    studentLoanPlan: "none" as const,
+    pensionPct: 0,
+    earners: 1 as const,
+  })
+
+  for (const [label, gross, monthly] of [
+    ["£35k, £1200/mo", 35000, 1200],
+    ["£30k, £1000/mo", 30000, 1000],
+    ["£45k, £1400/mo", 45000, 1400],
+    ["£50k, £1500/mo", 50000, 1500],
+  ] as [string, number, number][]) {
+    for (const year of [1990, 1995, 2000]) {
+      it(`${label} compare ${year}: today positive → 1990 rent not in deficit`, () => {
+        const r = computeSnapshot(rentInputs(gross, monthly), SERIES, year)
+        expect(r).not.toBeNull()
+        // If today isn't in deficit, 1990 rent scenario should not be either
+        if (r!.today.disposable > 0) {
+          expect(
+            r!.historical.disposable,
+            `${label} in ${year}: expected surplus, got ${r!.historical.disposable.toFixed(0)}`,
+          ).toBeGreaterThan(0)
+        }
+      })
+    }
+  }
+})
+
 describe("regression pins — previously-fixed bugs", () => {
   it("childcare cost is bounded by realistic annual nursery fees (no ×50 over-count)", () => {
     // The original bug multiplied the already-annual childcare series by 50,

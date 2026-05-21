@@ -1,1 +1,3748 @@
-{"series":{"boe-rate":{"id":"boe-rate","name":"Bank of England Bank Rate","description":"Official Bank Rate, time-weighted annual mean. Counters the 'rates were 15% in the 80s' rebuttal.","unit":"percent","color":"#fb923c","source":{"name":"Bank of England via datahub.io mirror","url":"https://datahub.io/core/interest-rates-gb"},"region":"uk","points":[{"year":1980,"value":15.8},{"year":1981,"value":13.16},{"year":1982,"value":11.95},{"year":1983,"value":9.86},{"year":1984,"value":9.67},{"year":1985,"value":12.06},{"year":1986,"value":10.7},{"year":1987,"value":9.6},{"year":1988,"value":9.95},{"year":1989,"value":13.65},{"year":1990,"value":14.57},{"year":1991,"value":11.56},{"year":1992,"value":9.43},{"year":1993,"value":5.89},{"year":1994,"value":5.34},{"year":1995,"value":6.57},{"year":1996,"value":5.88},{"year":1997,"value":6.55},{"year":1998,"value":7.23},{"year":1999,"value":5.35},{"year":2000,"value":5.96},{"year":2001,"value":5.12},{"year":2002,"value":4},{"year":2003,"value":3.69},{"year":2004,"value":4.38},{"year":2005,"value":4.65},{"year":2006,"value":4.64},{"year":2007,"value":5.51},{"year":2008,"value":4.67},{"year":2009,"value":0.64},{"year":2010,"value":0.5},{"year":2011,"value":0.5},{"year":2012,"value":0.5},{"year":2013,"value":0.5},{"year":2014,"value":0.5},{"year":2015,"value":0.5},{"year":2016,"value":0.4},{"year":2017,"value":0.29},{"year":2018,"value":0.6},{"year":2019,"value":0.75},{"year":2020,"value":0.23},{"year":2021,"value":0.11},{"year":2022,"value":1.41},{"year":2023,"value":4.68},{"year":2024,"value":5.11},{"year":2025,"value":4.36},{"year":2026,"value":4.25}]},"house-price-landreg":{"id":"house-price-landreg","name":"House prices (HM Land Registry, UK)","description":"UK average property price from the official UK HPI, monthly aggregated to annual mean. Methodology dates from 1968.","unit":"GBP","color":"#f5f4f0","source":{"name":"HM Land Registry UK House Price Index","url":"https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"},"region":"uk","verifiedFrom":1995,"points":[{"year":1968,"value":3380},{"year":1969,"value":3531},{"year":1970,"value":3737},{"year":1971,"value":4181},{"year":1972,"value":5589},{"year":1973,"value":7689},{"year":1974,"value":8292},{"year":1975,"value":8779},{"year":1976,"value":9555},{"year":1977,"value":10257},{"year":1978,"value":11936},{"year":1979,"value":15443},{"year":1980,"value":18670},{"year":1981,"value":19741},{"year":1982,"value":20209},{"year":1983,"value":22590},{"year":1984,"value":24694},{"year":1985,"value":26845},{"year":1986,"value":30494},{"year":1987,"value":35614},{"year":1988,"value":45432},{"year":1989,"value":54236},{"year":1990,"value":53578},{"year":1991,"value":52814},{"year":1992,"value":50713},{"year":1993,"value":49855},{"year":1994,"value":51179},{"year":1995,"value":51529},{"year":1996,"value":53415},{"year":1997,"value":58112},{"year":1998,"value":64771},{"year":1999,"value":71816},{"year":2000,"value":82534},{"year":2001,"value":89255},{"year":2002,"value":103650},{"year":2003,"value":119904},{"year":2004,"value":134131},{"year":2005,"value":143921},{"year":2006,"value":155230},{"year":2007,"value":170598},{"year":2008,"value":162912},{"year":2009,"value":148445},{"year":2010,"value":156936},{"year":2011,"value":154654},{"year":2012,"value":155269},{"year":2013,"value":159262},{"year":2014,"value":172048},{"year":2015,"value":182291},{"year":2016,"value":195035},{"year":2017,"value":203950},{"year":2018,"value":210354},{"year":2019,"value":212434},{"year":2020,"value":218522},{"year":2021,"value":236313},{"year":2022,"value":258236},{"year":2023,"value":258956},{"year":2024,"value":260532},{"year":2025,"value":267899},{"year":2026,"value":267805}]},"house-price-london":{"id":"house-price-london","name":"House prices (London)","description":"Greater London average property price, UK HPI monthly \u2192 annual mean. The methodology cliff that the UK average hides.","unit":"GBP","color":"#f97316","source":{"name":"HM Land Registry UK House Price Index","url":"https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"},"region":"london","verifiedFrom":1995,"points":[{"year":1968,"value":4784},{"year":1969,"value":4912},{"year":1970,"value":5420},{"year":1971,"value":6251},{"year":1972,"value":9075},{"year":1973,"value":11589},{"year":1974,"value":11819},{"year":1975,"value":12096},{"year":1976,"value":12954},{"year":1977,"value":13853},{"year":1978,"value":16624},{"year":1979,"value":22225},{"year":1980,"value":26949},{"year":1981,"value":27847},{"year":1982,"value":28273},{"year":1983,"value":31760},{"year":1984,"value":36828},{"year":1985,"value":41829},{"year":1986,"value":51357},{"year":1987,"value":63316},{"year":1988,"value":79171},{"year":1989,"value":85391},{"year":1990,"value":84118},{"year":1991,"value":80652},{"year":1992,"value":73063},{"year":1993,"value":72761},{"year":1994,"value":76236},{"year":1995,"value":79993},{"year":1996,"value":83681},{"year":1997,"value":96290},{"year":1998,"value":109315},{"year":1999,"value":123848},{"year":2000,"value":152026},{"year":2001,"value":170460},{"year":2002,"value":200617},{"year":2003,"value":225995},{"year":2004,"value":244743},{"year":2005,"value":251933},{"year":2006,"value":269010},{"year":2007,"value":307371},{"year":2008,"value":302923},{"year":2009,"value":276046},{"year":2010,"value":304619},{"year":2011,"value":311051},{"year":2012,"value":325370},{"year":2013,"value":352392},{"year":2014,"value":413367},{"year":2015,"value":455129},{"year":2016,"value":500487},{"year":2017,"value":514130},{"year":2018,"value":511558},{"year":2019,"value":504314},{"year":2020,"value":517773},{"year":2021,"value":535454},{"year":2022,"value":565955},{"year":2023,"value":558024},{"year":2024,"value":556104},{"year":2025,"value":560889},{"year":2026,"value":547685}]},"house-price-northeast":{"id":"house-price-northeast","name":"House prices (North East)","description":"North East England average property price. The opposite end of the same chart \u2014 the cheapest English region.","unit":"GBP","color":"#14b8a6","source":{"name":"HM Land Registry UK House Price Index","url":"https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"},"region":"north-east","verifiedFrom":1995,"points":[{"year":1992,"value":39456},{"year":1993,"value":40207},{"year":1994,"value":41313},{"year":1995,"value":40009},{"year":1996,"value":40045},{"year":1997,"value":41543},{"year":1998,"value":42937},{"year":1999,"value":44466},{"year":2000,"value":46653},{"year":2001,"value":49846},{"year":2002,"value":58529},{"year":2003,"value":75436},{"year":2004,"value":98411},{"year":2005,"value":111904},{"year":2006,"value":121298},{"year":2007,"value":128961},{"year":2008,"value":123933},{"year":2009,"value":114437},{"year":2010,"value":116012},{"year":2011,"value":111099},{"year":2012,"value":110074},{"year":2013,"value":109678},{"year":2014,"value":112179},{"year":2015,"value":114778},{"year":2016,"value":117724},{"year":2017,"value":119773},{"year":2018,"value":121422},{"year":2019,"value":121669},{"year":2020,"value":123917},{"year":2021,"value":137432},{"year":2022,"value":148134},{"year":2023,"value":149708},{"year":2024,"value":151900},{"year":2025,"value":159431},{"year":2026,"value":160928}]},"house-price-nationwide":{"id":"house-price-nationwide","name":"House prices (Nationwide HPI)","description":"UK Nationwide House Price Index, quarterly from Feb 1953. Aggregated to annual mean of the 'Price (All)' column. Methodology differs from Land Registry HPI \u2014 included for the longer back-series.","unit":"GBP","color":"#a78bfa","source":{"name":"Nationwide via datahub.io mirror","url":"https://datahub.io/core/house-prices-uk"},"region":"uk","points":[{"year":1953,"value":1884},{"year":1954,"value":1863},{"year":1955,"value":1928},{"year":1956,"value":1996},{"year":1957,"value":2026},{"year":1958,"value":2056},{"year":1959,"value":2119},{"year":1960,"value":2263},{"year":1961,"value":2464},{"year":1962,"value":2617},{"year":1963,"value":2841},{"year":1964,"value":3104},{"year":1965,"value":3353},{"year":1966,"value":3542},{"year":1967,"value":3735},{"year":1968,"value":4010},{"year":1969,"value":4222},{"year":1970,"value":4480},{"year":1971,"value":5107},{"year":1972,"value":6960},{"year":1973,"value":9045},{"year":1974,"value":10078},{"year":1975,"value":10846},{"year":1976,"value":11867},{"year":1977,"value":12805},{"year":1978,"value":15262},{"year":1979,"value":19830},{"year":1980,"value":23288},{"year":1981,"value":23954},{"year":1982,"value":24851},{"year":1983,"value":27623},{"year":1984,"value":31076},{"year":1985,"value":34378},{"year":1986,"value":37627},{"year":1987,"value":43165},{"year":1988,"value":51405},{"year":1989,"value":61514},{"year":1990,"value":57683},{"year":1991,"value":54626},{"year":1992,"value":51815},{"year":1993,"value":51211},{"year":1994,"value":51634},{"year":1995,"value":51245},{"year":1996,"value":53394},{"year":1997,"value":59199},{"year":1998,"value":65201},{"year":1999,"value":71122},{"year":2000,"value":80366},{"year":2001,"value":88799},{"year":2002,"value":106407},{"year":2003,"value":127246},{"year":2004,"value":148658},{"year":2005,"value":156325},{"year":2006,"value":166470},{"year":2007,"value":181364},{"year":2008,"value":168973},{"year":2009,"value":156513},{"year":2010,"value":165483},{"year":2011,"value":165131},{"year":2012,"value":163628},{"year":2013,"value":168928},{"year":2014,"value":185620},{"year":2015,"value":193900},{"year":2016,"value":203771},{"year":2017,"value":209935},{"year":2018,"value":214163},{"year":2019,"value":215334},{"year":2020,"value":223050},{"year":2021,"value":243750},{"year":2022,"value":267388},{"year":2023,"value":259862},{"year":2024,"value":265240},{"year":2025,"value":271809}]},"cpih":{"id":"cpih","name":"Inflation (CPIH)","description":"ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. National Statistic 1988+; pre-1988 are ONS modelled historical estimates rebased to the modern 2015 base via the 1988 overlap. Pre-1988 portion is officially flagged as 'not National Statistics' by ONS.","unit":"index","color":"#34d399","source":{"name":"ONS \u2014 CPIH (l522/mm23) + Consumer Price Inflation historical 1950 to 1988","url":"https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23"},"region":"uk","verifiedFrom":1988,"points":[{"year":1989,"value":51},{"year":1990,"value":55.1},{"year":1991,"value":59.2},{"year":1992,"value":61.9},{"year":1993,"value":63.5},{"year":1994,"value":64.9},{"year":1995,"value":66.6},{"year":1996,"value":68.5},{"year":1997,"value":70},{"year":1998,"value":71.3},{"year":1999,"value":72.6},{"year":2000,"value":73.4},{"year":2001,"value":74.6},{"year":2002,"value":75.7},{"year":2003,"value":76.7},{"year":2004,"value":77.8},{"year":2005,"value":79.4},{"year":2006,"value":81.4},{"year":2007,"value":83.3},{"year":2008,"value":86.2},{"year":2009,"value":87.9},{"year":2010,"value":90.1},{"year":2011,"value":93.6},{"year":2012,"value":96},{"year":2013,"value":98.2},{"year":2014,"value":99.6},{"year":2015,"value":100},{"year":2016,"value":101},{"year":2017,"value":103.6},{"year":2018,"value":106},{"year":2019,"value":107.8},{"year":2020,"value":108.9},{"year":2021,"value":111.6},{"year":2022,"value":120.5},{"year":2023,"value":128.6},{"year":2024,"value":132.9},{"year":2025,"value":138}]},"median-wage":{"id":"median-wage","name":"Median wage (full-time, annual)","description":"UK median gross annual pay, adult full-time employees. Weekly ONS NES/ASHE figures \u00d7 52. Combined male+female median is published from 1984 onwards. For 1968-1983 we use the Adult Male median scaled by the male-to-combined ratio at 1984 (proxy, since combined wasn't published in the NES era).","unit":"GBP","color":"#60a5fa","source":{"name":"ONS \u2014 earnings time series of median gross weekly earnings 1968 to latest","url":"https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022"},"region":"uk","verifiedFrom":1984,"points":[{"year":1984,"value":7400},{"year":1985,"value":7930},{"year":1986,"value":8518},{"year":1987,"value":9105},{"year":1988,"value":9927},{"year":1989,"value":10884},{"year":1990,"value":11929},{"year":1991,"value":12839},{"year":1992,"value":13759},{"year":1993,"value":14212},{"year":1994,"value":14659},{"year":1995,"value":15096},{"year":1996,"value":15657},{"year":1997,"value":16666},{"year":1998,"value":17415},{"year":1999,"value":17966},{"year":2000,"value":18668},{"year":2001,"value":19547},{"year":2002,"value":20327},{"year":2003,"value":21008},{"year":2005,"value":22422},{"year":2007,"value":23795},{"year":2008,"value":24913},{"year":2009,"value":25402},{"year":2010,"value":25922},{"year":2011,"value":25912},{"year":2012,"value":26317},{"year":2013,"value":26905},{"year":2014,"value":26952},{"year":2015,"value":27409},{"year":2016,"value":28007},{"year":2017,"value":28600},{"year":2018,"value":29552},{"year":2019,"value":30430},{"year":2020,"value":30456},{"year":2021,"value":31710},{"year":2022,"value":33374},{"year":2023,"value":35724},{"year":2024,"value":37872},{"year":2025,"value":39863}]},"household-income":{"id":"household-income","name":"Household disposable income (per head)","description":"UK gross disposable household income per head, current price \u00a3, seasonally adjusted. The 'how much does each person have to play with after tax' line \u2014 useful counterweight to wages.","unit":"GBP","color":"#38bdf8","source":{"name":"ONS \u2014 Household disposable income per head (CRXS)","url":"https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/crxs/ukea"},"region":"uk","points":[{"year":1953,"value":220},{"year":1954,"value":235},{"year":1955,"value":248},{"year":1956,"value":265},{"year":1957,"value":277},{"year":1958,"value":290},{"year":1959,"value":306},{"year":1960,"value":328},{"year":1961,"value":349},{"year":1962,"value":364},{"year":1963,"value":383},{"year":1964,"value":412},{"year":1965,"value":440},{"year":1966,"value":466},{"year":1967,"value":485},{"year":1968,"value":517},{"year":1969,"value":551},{"year":1970,"value":607},{"year":1971,"value":667},{"year":1972,"value":773},{"year":1973,"value":897},{"year":1974,"value":1054},{"year":1975,"value":1312},{"year":1976,"value":1528},{"year":1977,"value":1726},{"year":1978,"value":2034},{"year":1979,"value":2449},{"year":1980,"value":2908},{"year":1981,"value":3264},{"year":1982,"value":3581},{"year":1983,"value":3872},{"year":1984,"value":4218},{"year":1985,"value":4566},{"year":1986,"value":4946},{"year":1987,"value":5237},{"year":1988,"value":5794},{"year":1989,"value":6418},{"year":1990,"value":7176},{"year":1991,"value":7868},{"year":1992,"value":8408},{"year":1993,"value":8830},{"year":1994,"value":9105},{"year":1995,"value":9624},{"year":1996,"value":10207},{"year":1997,"value":10610},{"year":1998,"value":10827},{"year":1999,"value":11312},{"year":2000,"value":11903},{"year":2001,"value":12371},{"year":2002,"value":12652},{"year":2003,"value":13035},{"year":2004,"value":13572},{"year":2005,"value":14058},{"year":2006,"value":14644},{"year":2007,"value":15346},{"year":2008,"value":15749},{"year":2009,"value":16012},{"year":2010,"value":16150},{"year":2011,"value":16294},{"year":2012,"value":16890},{"year":2013,"value":17515},{"year":2014,"value":18083},{"year":2015,"value":19024},{"year":2016,"value":19257},{"year":2017,"value":19701},{"year":2018,"value":20410},{"year":2019,"value":21071},{"year":2020,"value":20990},{"year":2021,"value":21844},{"year":2022,"value":22964},{"year":2023,"value":24451},{"year":2024,"value":25950},{"year":2025,"value":27084}]},"energy-cost":{"id":"energy-cost","name":"Energy (typical dual-fuel annual bill)","description":"Typical UK household annual dual-fuel bill (nominal \u00a3). 2019+ is the Ofgem default tariff cap (April-level each year); 2022/2023 reflect the effective EPG-capped cost. Pre-2019 uses DESNZ Quarterly Energy Prices averages; pre-1980 are rough nominal estimates (coal-and-town-gas era, not directly comparable to today's bills).","unit":"GBP","color":"#f43f5e","source":{"name":"Ofgem default tariff cap + DESNZ Quarterly Energy Prices + historical estimates","url":"https://www.ofgem.gov.uk/information-consumers/energy-advice-households/energy-price-cap-explained"},"region":"uk","verifiedFrom":1980,"points":[{"year":1953,"value":15},{"year":1960,"value":25},{"year":1965,"value":35},{"year":1970,"value":55},{"year":1975,"value":100},{"year":1980,"value":200},{"year":1985,"value":320},{"year":1990,"value":410},{"year":1995,"value":410},{"year":2000,"value":420},{"year":2004,"value":548},{"year":2007,"value":880},{"year":2010,"value":1069},{"year":2013,"value":1320},{"year":2015,"value":1256},{"year":2018,"value":1254},{"year":2019,"value":1137},{"year":2020,"value":1162},{"year":2021,"value":1138},{"year":2022,"value":1971},{"year":2023,"value":2500},{"year":2024,"value":1690},{"year":2025,"value":1849},{"year":2026,"value":1641}]},"rent-index":{"id":"rent-index","name":"Private rent index (UK)","description":"UK private rental price index, 2015 = 100. 2005+ approximated from ONS IPHRP / PIPR. Pre-2005 reconstructed from the RPI housing-rent component, rebased to align with IPHRP at 2005 \u2014 methodologies differ and the spliced back-series is for shape, not headline citation.","unit":"index","color":"#facc15","source":{"name":"ONS \u2014 IPHRP/PIPR + RPI housing rent component (pre-2005)","url":"https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest"},"region":"uk","verifiedFrom":2005,"points":[{"year":1953,"value":2.5},{"year":1960,"value":4},{"year":1965,"value":5.5},{"year":1970,"value":8},{"year":1975,"value":14},{"year":1980,"value":28},{"year":1985,"value":42},{"year":1990,"value":60},{"year":1995,"value":75},{"year":2000,"value":82},{"year":2005,"value":86.6},{"year":2008,"value":89.4},{"year":2010,"value":91.5},{"year":2012,"value":93.7},{"year":2014,"value":97.4},{"year":2015,"value":100},{"year":2017,"value":103.5},{"year":2019,"value":106.4},{"year":2020,"value":107.8},{"year":2021,"value":109.4},{"year":2022,"value":113},{"year":2023,"value":119.5},{"year":2024,"value":130.6},{"year":2025,"value":137.4}]},"netflix-uk":{"id":"netflix-uk","name":"Netflix UK Standard plan (annual)","description":"Annual cost of Netflix UK Standard plan (monthly price \u00d7 12). Tiers were reshuffled in 2024 \u2014 values use the modal Standard tier of each year. Included tongue-in-cheek because the original 'avocado toast and Netflix' rhetoric named it.","unit":"GBP","color":"#ef4444","source":{"name":"Netflix UK pricing history (press releases + archived plan pages)","url":"https://help.netflix.com/en-gb/node/24926"},"region":"uk","points":[{"year":2012,"value":83.88},{"year":2013,"value":83.88},{"year":2014,"value":83.88},{"year":2015,"value":89.88},{"year":2016,"value":89.88},{"year":2017,"value":95.88},{"year":2018,"value":95.88},{"year":2019,"value":107.88},{"year":2020,"value":107.88},{"year":2021,"value":119.88},{"year":2022,"value":131.88},{"year":2023,"value":131.88},{"year":2024,"value":143.88},{"year":2025,"value":155.88},{"year":2026,"value":167.88}]},"avocado-uk":{"id":"avocado-uk","name":"Avocado (single supermarket avg)","description":"Approximate UK supermarket avocado retail price per unit. \u26a0\ufe0f No clean canonical source \u2014 values are based on retail surveys and archived supermarket listings, included for the joke. Treat as illustrative.","unit":"GBP","color":"#84cc16","source":{"name":"Mixed retail surveys / archived supermarket listings","url":"https://www.ons.gov.uk/economy/inflationandpriceindices"},"region":"uk","points":[{"year":2008,"value":0.5},{"year":2012,"value":0.65},{"year":2015,"value":0.8},{"year":2018,"value":0.85},{"year":2020,"value":0.9},{"year":2022,"value":1.1},{"year":2024,"value":1.15},{"year":2025,"value":1.2}]},"birth-rate":{"id":"birth-rate","name":"Crude birth rate (per 1,000)","description":"UK live births per 1,000 population. The fertility floor \u2014 2023 was the lowest on record (9.5).","unit":"rate","color":"#fcd34d","source":{"name":"ONS \u2014 Births in England and Wales (UK aggregate)","url":"https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths"},"region":"uk","points":[{"year":1950,"value":16.3},{"year":1955,"value":15.3},{"year":1960,"value":17.5},{"year":1964,"value":18.6},{"year":1970,"value":16.3},{"year":1975,"value":12.5},{"year":1980,"value":13.4},{"year":1985,"value":13.3},{"year":1990,"value":13.9},{"year":1995,"value":12.6},{"year":2000,"value":11.5},{"year":2005,"value":12},{"year":2010,"value":13},{"year":2015,"value":12},{"year":2020,"value":10.4},{"year":2022,"value":9.9},{"year":2023,"value":9.5}]},"net-migration":{"id":"net-migration","name":"Net long-term international migration","description":"UK net long-term international migration, thousands of people. 2012+ uses the ONS admin-data methodology; pre-2012 uses the legacy IPS-based estimates (not strictly comparable). Pre-1990 values are decadal estimates from House of Commons Library research.","unit":"count","color":"#06b6d4","source":{"name":"ONS \u2014 Long-term international migration (+ HoC Library pre-1990 estimates)","url":"https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration"},"region":"uk","verifiedFrom":1991,"points":[{"year":1953,"value":0},{"year":1955,"value":20},{"year":1960,"value":50},{"year":1965,"value":20},{"year":1970,"value":-50},{"year":1975,"value":-30},{"year":1980,"value":-55},{"year":1985,"value":30},{"year":1990,"value":50},{"year":1991,"value":35},{"year":1995,"value":76},{"year":2000,"value":163},{"year":2005,"value":268},{"year":2010,"value":256},{"year":2015,"value":329},{"year":2019,"value":271},{"year":2020,"value":94},{"year":2021,"value":488},{"year":2022,"value":745},{"year":2023,"value":685},{"year":2024,"value":431}]},"persons-per-household":{"id":"persons-per-household","name":"Persons per household (avg)","description":"Average UK household size from census + ONS Families and Households. Slow-moving but unmistakable downward trend: more solo earners absorbing the costs that used to be split.","unit":"count","color":"#d8b4fe","source":{"name":"ONS \u2014 Families and households / UK Census + General Register Office (pre-1961)","url":"https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/familiesandhouseholdsfamiliesandhouseholds"},"region":"uk","verifiedFrom":1961,"points":[{"year":1953,"value":3.2},{"year":1955,"value":3.16},{"year":1961,"value":3.09},{"year":1971,"value":2.91},{"year":1981,"value":2.71},{"year":1991,"value":2.48},{"year":2001,"value":2.36},{"year":2011,"value":2.35},{"year":2021,"value":2.36},{"year":2024,"value":2.36}]},"tuition-uk":{"id":"tuition-uk","name":"Undergraduate tuition fees (England, max)","description":"Maximum annual undergraduate tuition fee chargeable by English universities. Pre-1998 = \u00a30 (no fees). Top-up fees raised the cap to \u00a33,000 in 2006; the Browne reforms tripled it to \u00a39,000 in 2012. Held flat at \u00a39,250 since 2017.","unit":"GBP","color":"#fb923c","source":{"name":"Department for Education / Office for Students fee cap history","url":"https://www.officeforstudents.org.uk/advice-and-guidance/fees-and-funding/"},"region":"england","points":[{"year":1990,"value":0},{"year":1997,"value":0},{"year":1998,"value":1000},{"year":1999,"value":1025},{"year":2000,"value":1050},{"year":2001,"value":1075},{"year":2002,"value":1100},{"year":2003,"value":1125},{"year":2004,"value":1150},{"year":2005,"value":1175},{"year":2006,"value":3000},{"year":2007,"value":3070},{"year":2008,"value":3145},{"year":2009,"value":3225},{"year":2010,"value":3290},{"year":2011,"value":3375},{"year":2012,"value":9000},{"year":2013,"value":9000},{"year":2014,"value":9000},{"year":2015,"value":9000},{"year":2016,"value":9000},{"year":2017,"value":9250},{"year":2018,"value":9250},{"year":2019,"value":9250},{"year":2020,"value":9250},{"year":2021,"value":9250},{"year":2022,"value":9250},{"year":2023,"value":9250},{"year":2024,"value":9250},{"year":2025,"value":9535},{"year":2026,"value":9535}]},"council-tax":{"id":"council-tax","name":"Council Tax (England, Band D average)","description":"Average council tax bill for a Band D property in England. Council tax replaced the community charge in 1993. Pre-1993 figures show domestic rates / community charge equivalents for context (modelled, dashed).","unit":"GBP","color":"#84cc16","source":{"name":"Department for Levelling Up, Housing & Communities / MHCLG council-tax statistics","url":"https://www.gov.uk/government/collections/council-tax-statistics"},"region":"england","verifiedFrom":1993,"points":[{"year":1980,"value":120},{"year":1985,"value":250},{"year":1990,"value":360},{"year":1991,"value":380},{"year":1992,"value":410},{"year":1993,"value":568},{"year":1994,"value":600},{"year":1995,"value":609},{"year":1996,"value":646},{"year":1997,"value":688},{"year":1998,"value":727},{"year":1999,"value":770},{"year":2000,"value":798},{"year":2001,"value":851},{"year":2002,"value":901},{"year":2003,"value":1014},{"year":2004,"value":1102},{"year":2005,"value":1167},{"year":2006,"value":1214},{"year":2007,"value":1268},{"year":2008,"value":1320},{"year":2009,"value":1373},{"year":2010,"value":1414},{"year":2011,"value":1439},{"year":2012,"value":1444},{"year":2013,"value":1456},{"year":2014,"value":1468},{"year":2015,"value":1484},{"year":2016,"value":1530},{"year":2017,"value":1591},{"year":2018,"value":1671},{"year":2019,"value":1750},{"year":2020,"value":1818},{"year":2021,"value":1898},{"year":2022,"value":1966},{"year":2023,"value":2065},{"year":2024,"value":2171},{"year":2025,"value":2280},{"year":2026,"value":2393}]},"rail-fares":{"id":"rail-fares","name":"Rail fares (UK index, Jan 1995 = 100)","description":"ORR/DfT rail-fares index covering all GB rail tickets. Regulated fares track RPI (+1% for many years post-2004) \u2014 the line climbs faster than wages essentially by formula. Pre-1995 indexed back to BR-era estimates (dashed).","unit":"index","color":"#22d3ee","source":{"name":"Office of Rail and Road \u2014 Rail fares index","url":"https://dataportal.orr.gov.uk/statistics/usage/passenger-rail-usage/"},"region":"uk","verifiedFrom":1995,"points":[{"year":1980,"value":38},{"year":1985,"value":50},{"year":1990,"value":70},{"year":1995,"value":100},{"year":1996,"value":103},{"year":1997,"value":106},{"year":1998,"value":110},{"year":1999,"value":113},{"year":2000,"value":116},{"year":2001,"value":119},{"year":2002,"value":122},{"year":2003,"value":126},{"year":2004,"value":130},{"year":2005,"value":134},{"year":2006,"value":140},{"year":2007,"value":146},{"year":2008,"value":153},{"year":2009,"value":158},{"year":2010,"value":159},{"year":2011,"value":167},{"year":2012,"value":177},{"year":2013,"value":184},{"year":2014,"value":190},{"year":2015,"value":195},{"year":2016,"value":197},{"year":2017,"value":200},{"year":2018,"value":207},{"year":2019,"value":214},{"year":2020,"value":220},{"year":2021,"value":220},{"year":2022,"value":226},{"year":2023,"value":238},{"year":2024,"value":252},{"year":2025,"value":263},{"year":2026,"value":273}]},"min-wage":{"id":"min-wage","name":"Minimum / National Living Wage (annual, 37.5h)","description":"Statutory wage floor for adults (21/22+), annualised at a 37.5-hour week \u00d7 52 weeks. National Minimum Wage introduced 1999 at \u00a33.60; rebadged National Living Wage for 25+ from 2016 and lowered to 21+ from 2024. Pre-1999 there was no UK statutory floor.","unit":"GBP","color":"#eab308","source":{"name":"Low Pay Commission / gov.uk NMW & NLW rates","url":"https://www.gov.uk/national-minimum-wage-rates"},"region":"uk","points":[{"year":1999,"value":7020},{"year":2000,"value":7215},{"year":2001,"value":7995},{"year":2002,"value":8190},{"year":2003,"value":8775},{"year":2004,"value":9458},{"year":2005,"value":9848},{"year":2006,"value":10433},{"year":2007,"value":10764},{"year":2008,"value":11174},{"year":2009,"value":11310},{"year":2010,"value":11564},{"year":2011,"value":11856},{"year":2012,"value":12071},{"year":2013,"value":12304},{"year":2014,"value":12675},{"year":2015,"value":13065},{"year":2016,"value":14040},{"year":2017,"value":14625},{"year":2018,"value":15269},{"year":2019,"value":16010},{"year":2020,"value":17004},{"year":2021,"value":17375},{"year":2022,"value":18525},{"year":2023,"value":20319},{"year":2024,"value":22308},{"year":2025,"value":23810},{"year":2026,"value":24785}]},"student-debt":{"id":"student-debt","name":"Student loan balance at graduation (England, average)","description":"Average outstanding student-loan balance on the day of graduation, England, full-time undergrad. Combines tuition-fee loans and maintenance loans. Reflects 3 years of borrowing under each year's regime. Pre-1998 = \u00a30 (no tuition fees, mortgage-style maintenance loans were small).","unit":"GBP","color":"#ec4899","source":{"name":"Student Loans Company / House of Commons Library \u2014 Student loan statistics","url":"https://commonslibrary.parliament.uk/research-briefings/sn01079/"},"region":"england","verifiedFrom":2000,"points":[{"year":1995,"value":0},{"year":1998,"value":1700},{"year":1999,"value":2300},{"year":2000,"value":3100},{"year":2001,"value":4500},{"year":2002,"value":6500},{"year":2003,"value":8400},{"year":2004,"value":9800},{"year":2005,"value":10800},{"year":2006,"value":11200},{"year":2007,"value":12200},{"year":2008,"value":13400},{"year":2009,"value":14600},{"year":2010,"value":15800},{"year":2011,"value":16800},{"year":2012,"value":18000},{"year":2013,"value":21200},{"year":2014,"value":27300},{"year":2015,"value":33800},{"year":2016,"value":38200},{"year":2017,"value":41800},{"year":2018,"value":44700},{"year":2019,"value":47200},{"year":2020,"value":49500},{"year":2021,"value":51000},{"year":2022,"value":50400},{"year":2023,"value":49500},{"year":2024,"value":48400},{"year":2025,"value":47800},{"year":2026,"value":47600}]},"childcare-cost":{"id":"childcare-cost","name":"Full-time nursery (England, under-2, annual)","description":"Annual cost of full-time (50h/week) nursery for a child under 2 in England. Coram Family & Childcare conducts the canonical annual survey; nominal \u00a3, sticker price (before any government support). Pre-2003 modelled from CPI-trended estimates of historical part-time rates (dashed).","unit":"GBP","color":"#fde047","source":{"name":"Coram Family & Childcare \u2014 Childcare Survey","url":"https://www.coram.org.uk/our-impact/childcare-survey/"},"region":"england","verifiedFrom":2003,"points":[{"year":1995,"value":3000},{"year":2000,"value":5000},{"year":2003,"value":7100},{"year":2005,"value":7950},{"year":2007,"value":8750},{"year":2009,"value":9600},{"year":2011,"value":9950},{"year":2013,"value":10550},{"year":2015,"value":11100},{"year":2017,"value":11600},{"year":2019,"value":12350},{"year":2021,"value":13150},{"year":2023,"value":14250},{"year":2024,"value":15100},{"year":2025,"value":15700},{"year":2026,"value":16300}]},"homeownership-25-34":{"id":"homeownership-25-34","name":"Homeownership rate (25\u201334)","description":"Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.","unit":"percent","color":"#f87171","source":{"name":"ONS / English Housing Survey \u2014 Tenure by age","url":"https://www.gov.uk/government/collections/english-housing-survey"},"region":"england","points":[{"year":1981,"value":60},{"year":1991,"value":67},{"year":2001,"value":59},{"year":2011,"value":43},{"year":2014,"value":36},{"year":2017,"value":35},{"year":2019,"value":41},{"year":2021,"value":41},{"year":2023,"value":39},{"year":2025,"value":39}]},"homeownership-35-44":{"id":"homeownership-35-44","name":"Homeownership rate (35\u201344)","description":"Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.","unit":"percent","color":"#fbbf24","source":{"name":"ONS / English Housing Survey \u2014 Tenure by age","url":"https://www.gov.uk/government/collections/english-housing-survey"},"region":"england","points":[{"year":1981,"value":67},{"year":1991,"value":78},{"year":2001,"value":76},{"year":2011,"value":64},{"year":2014,"value":59},{"year":2017,"value":56},{"year":2019,"value":56},{"year":2021,"value":57},{"year":2023,"value":57},{"year":2025,"value":57}]},"homeownership-55-64":{"id":"homeownership-55-64","name":"Homeownership rate (55\u201364)","description":"Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.","unit":"percent","color":"#34d399","source":{"name":"ONS / English Housing Survey \u2014 Tenure by age","url":"https://www.gov.uk/government/collections/english-housing-survey"},"region":"england","points":[{"year":1981,"value":56},{"year":1991,"value":68},{"year":2001,"value":75},{"year":2011,"value":76},{"year":2014,"value":74},{"year":2017,"value":74},{"year":2019,"value":73},{"year":2021,"value":74},{"year":2023,"value":73},{"year":2025,"value":73}]},"ftb-age":{"id":"ftb-age","name":"First-time buyer average age (UK)","description":"Average age of UK first-time buyers based on mortgage completions. Combines HMRC / CML / UK Finance / Halifax FTB tracker historical figures. Pre-1995 reflects industry estimates (dashed).","unit":"rate","color":"#a3a3a3","source":{"name":"UK Finance / Halifax First-Time Buyer Review","url":"https://www.ukfinance.org.uk/data-and-research"},"region":"uk","verifiedFrom":1995,"points":[{"year":1960,"value":23},{"year":1970,"value":24},{"year":1980,"value":25},{"year":1990,"value":28},{"year":1995,"value":29},{"year":2000,"value":30},{"year":2005,"value":31},{"year":2008,"value":32},{"year":2010,"value":31},{"year":2013,"value":30},{"year":2015,"value":30},{"year":2017,"value":31},{"year":2019,"value":32},{"year":2021,"value":32},{"year":2023,"value":33},{"year":2024,"value":34},{"year":2025,"value":34},{"year":2026,"value":34}]},"tax-burden-median":{"id":"tax-burden-median","name":"Effective tax + NI rate (median earner)","description":"Income tax + employee National Insurance as a percentage of gross pay for a single worker on the median full-time wage. Reflects each year's personal allowance, basic-rate threshold and NI primary threshold. Pre-1990 modelled from IFS historical effective-rate tables (dashed).","unit":"percent","color":"#fb7185","source":{"name":"HMRC / IFS \u2014 Direct tax statistics","url":"https://ifs.org.uk/taxlab"},"region":"uk","verifiedFrom":1990,"points":[{"year":1970,"value":21},{"year":1975,"value":26.5},{"year":1980,"value":29},{"year":1985,"value":27.5},{"year":1990,"value":25.2},{"year":1995,"value":24},{"year":2000,"value":23.5},{"year":2005,"value":23.8},{"year":2008,"value":23.4},{"year":2010,"value":22},{"year":2012,"value":20.5},{"year":2014,"value":19.8},{"year":2016,"value":19},{"year":2018,"value":18.4},{"year":2020,"value":18},{"year":2021,"value":18.2},{"year":2022,"value":21.5},{"year":2023,"value":22.4},{"year":2024,"value":22.9},{"year":2025,"value":23.6},{"year":2026,"value":24.1}]},"grad-salary":{"id":"grad-salary","name":"Graduate starting salary (median, UK)","description":"Median annual starting salary for new UK graduates entering full-time employment. Combines HECSU 'What Do Graduates Do?' and ISE Student Recruitment Survey medians. Nominal \u00a3.","unit":"GBP","color":"#60a5fa","source":{"name":"HECSU / Prospects + Institute of Student Employers","url":"https://luminate.prospects.ac.uk/what-do-graduates-do"},"region":"uk","verifiedFrom":1999,"points":[{"year":1990,"value":11500},{"year":1995,"value":14000},{"year":1999,"value":17500},{"year":2001,"value":18500},{"year":2003,"value":19500},{"year":2005,"value":20500},{"year":2007,"value":21500},{"year":2009,"value":21500},{"year":2011,"value":22000},{"year":2013,"value":22500},{"year":2015,"value":23000},{"year":2017,"value":23500},{"year":2019,"value":24000},{"year":2021,"value":25500},{"year":2023,"value":27000},{"year":2024,"value":28000},{"year":2025,"value":28500},{"year":2026,"value":29000}]},"food-cpi":{"id":"food-cpi","name":"Food & drink price index (CPIH)","description":"ONS CPIH food and non-alcoholic beverages sub-index, 2015 = 100. Food rose ~39% from 2015 to 2023, vs 29% for CPIH overall \u2014 the 2022-23 cost-of-living spike was disproportionately a food crisis. Pre-2005 estimated from RPI food component, rebased to align.","unit":"index","color":"#fbbf24","source":{"name":"ONS \u2014 CPIH food & non-alcoholic beverages sub-index","url":"https://www.ons.gov.uk/economy/inflationandpriceindices"},"region":"uk","verifiedFrom":2005,"points":[{"year":1990,"value":49.5},{"year":1995,"value":57.0},{"year":2000,"value":64.7},{"year":2003,"value":68.7},{"year":2005,"value":71.9},{"year":2006,"value":73.3},{"year":2007,"value":75.9},{"year":2008,"value":82.0},{"year":2009,"value":85.7},{"year":2010,"value":89.1},{"year":2011,"value":94.0},{"year":2012,"value":97.8},{"year":2013,"value":101.7},{"year":2014,"value":100.7},{"year":2015,"value":100.0},{"year":2016,"value":99.5},{"year":2017,"value":102.9},{"year":2018,"value":105.0},{"year":2019,"value":105.5},{"year":2020,"value":107.6},{"year":2021,"value":111.4},{"year":2022,"value":123.1},{"year":2023,"value":139.1},{"year":2024,"value":141.9},{"year":2025,"value":144.0}]}},"metadata":{"generatedAt":"2026-05-19T13:58:51.757Z"}}
+{
+  "series": {
+    "boe-rate": {
+      "id": "boe-rate",
+      "name": "Bank of England Bank Rate",
+      "description": "Official Bank Rate, time-weighted annual mean. Counters the 'rates were 15% in the 80s' rebuttal.",
+      "unit": "percent",
+      "color": "#fb923c",
+      "source": {
+        "name": "Bank of England via datahub.io mirror",
+        "url": "https://datahub.io/core/interest-rates-gb"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1980,
+          "value": 15.8
+        },
+        {
+          "year": 1981,
+          "value": 13.16
+        },
+        {
+          "year": 1982,
+          "value": 11.95
+        },
+        {
+          "year": 1983,
+          "value": 9.86
+        },
+        {
+          "year": 1984,
+          "value": 9.67
+        },
+        {
+          "year": 1985,
+          "value": 12.06
+        },
+        {
+          "year": 1986,
+          "value": 10.7
+        },
+        {
+          "year": 1987,
+          "value": 9.6
+        },
+        {
+          "year": 1988,
+          "value": 9.95
+        },
+        {
+          "year": 1989,
+          "value": 13.65
+        },
+        {
+          "year": 1990,
+          "value": 14.57
+        },
+        {
+          "year": 1991,
+          "value": 11.56
+        },
+        {
+          "year": 1992,
+          "value": 9.43
+        },
+        {
+          "year": 1993,
+          "value": 5.89
+        },
+        {
+          "year": 1994,
+          "value": 5.34
+        },
+        {
+          "year": 1995,
+          "value": 6.57
+        },
+        {
+          "year": 1996,
+          "value": 5.88
+        },
+        {
+          "year": 1997,
+          "value": 6.55
+        },
+        {
+          "year": 1998,
+          "value": 7.23
+        },
+        {
+          "year": 1999,
+          "value": 5.35
+        },
+        {
+          "year": 2000,
+          "value": 5.96
+        },
+        {
+          "year": 2001,
+          "value": 5.12
+        },
+        {
+          "year": 2002,
+          "value": 4
+        },
+        {
+          "year": 2003,
+          "value": 3.69
+        },
+        {
+          "year": 2004,
+          "value": 4.38
+        },
+        {
+          "year": 2005,
+          "value": 4.65
+        },
+        {
+          "year": 2006,
+          "value": 4.64
+        },
+        {
+          "year": 2007,
+          "value": 5.51
+        },
+        {
+          "year": 2008,
+          "value": 4.67
+        },
+        {
+          "year": 2009,
+          "value": 0.64
+        },
+        {
+          "year": 2010,
+          "value": 0.5
+        },
+        {
+          "year": 2011,
+          "value": 0.5
+        },
+        {
+          "year": 2012,
+          "value": 0.5
+        },
+        {
+          "year": 2013,
+          "value": 0.5
+        },
+        {
+          "year": 2014,
+          "value": 0.5
+        },
+        {
+          "year": 2015,
+          "value": 0.5
+        },
+        {
+          "year": 2016,
+          "value": 0.4
+        },
+        {
+          "year": 2017,
+          "value": 0.29
+        },
+        {
+          "year": 2018,
+          "value": 0.6
+        },
+        {
+          "year": 2019,
+          "value": 0.75
+        },
+        {
+          "year": 2020,
+          "value": 0.23
+        },
+        {
+          "year": 2021,
+          "value": 0.11
+        },
+        {
+          "year": 2022,
+          "value": 1.41
+        },
+        {
+          "year": 2023,
+          "value": 4.68
+        },
+        {
+          "year": 2024,
+          "value": 5.11
+        },
+        {
+          "year": 2025,
+          "value": 4.36
+        },
+        {
+          "year": 2026,
+          "value": 4.25
+        }
+      ]
+    },
+    "house-price-landreg": {
+      "id": "house-price-landreg",
+      "name": "House prices (HM Land Registry, UK)",
+      "description": "UK average property price from the official UK HPI, monthly aggregated to annual mean. Methodology dates from 1968.",
+      "unit": "GBP",
+      "color": "#f5f4f0",
+      "source": {
+        "name": "HM Land Registry UK House Price Index",
+        "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1968,
+          "value": 3380
+        },
+        {
+          "year": 1969,
+          "value": 3531
+        },
+        {
+          "year": 1970,
+          "value": 3737
+        },
+        {
+          "year": 1971,
+          "value": 4181
+        },
+        {
+          "year": 1972,
+          "value": 5589
+        },
+        {
+          "year": 1973,
+          "value": 7689
+        },
+        {
+          "year": 1974,
+          "value": 8292
+        },
+        {
+          "year": 1975,
+          "value": 8779
+        },
+        {
+          "year": 1976,
+          "value": 9555
+        },
+        {
+          "year": 1977,
+          "value": 10257
+        },
+        {
+          "year": 1978,
+          "value": 11936
+        },
+        {
+          "year": 1979,
+          "value": 15443
+        },
+        {
+          "year": 1980,
+          "value": 18670
+        },
+        {
+          "year": 1981,
+          "value": 19741
+        },
+        {
+          "year": 1982,
+          "value": 20209
+        },
+        {
+          "year": 1983,
+          "value": 22590
+        },
+        {
+          "year": 1984,
+          "value": 24694
+        },
+        {
+          "year": 1985,
+          "value": 26845
+        },
+        {
+          "year": 1986,
+          "value": 30494
+        },
+        {
+          "year": 1987,
+          "value": 35614
+        },
+        {
+          "year": 1988,
+          "value": 45432
+        },
+        {
+          "year": 1989,
+          "value": 54236
+        },
+        {
+          "year": 1990,
+          "value": 53578
+        },
+        {
+          "year": 1991,
+          "value": 52814
+        },
+        {
+          "year": 1992,
+          "value": 50713
+        },
+        {
+          "year": 1993,
+          "value": 49855
+        },
+        {
+          "year": 1994,
+          "value": 51179
+        },
+        {
+          "year": 1995,
+          "value": 51529
+        },
+        {
+          "year": 1996,
+          "value": 53415
+        },
+        {
+          "year": 1997,
+          "value": 58112
+        },
+        {
+          "year": 1998,
+          "value": 64771
+        },
+        {
+          "year": 1999,
+          "value": 71816
+        },
+        {
+          "year": 2000,
+          "value": 82534
+        },
+        {
+          "year": 2001,
+          "value": 89255
+        },
+        {
+          "year": 2002,
+          "value": 103650
+        },
+        {
+          "year": 2003,
+          "value": 119904
+        },
+        {
+          "year": 2004,
+          "value": 134131
+        },
+        {
+          "year": 2005,
+          "value": 143921
+        },
+        {
+          "year": 2006,
+          "value": 155230
+        },
+        {
+          "year": 2007,
+          "value": 170598
+        },
+        {
+          "year": 2008,
+          "value": 162912
+        },
+        {
+          "year": 2009,
+          "value": 148445
+        },
+        {
+          "year": 2010,
+          "value": 156936
+        },
+        {
+          "year": 2011,
+          "value": 154654
+        },
+        {
+          "year": 2012,
+          "value": 155269
+        },
+        {
+          "year": 2013,
+          "value": 159262
+        },
+        {
+          "year": 2014,
+          "value": 172048
+        },
+        {
+          "year": 2015,
+          "value": 182291
+        },
+        {
+          "year": 2016,
+          "value": 195035
+        },
+        {
+          "year": 2017,
+          "value": 203950
+        },
+        {
+          "year": 2018,
+          "value": 210354
+        },
+        {
+          "year": 2019,
+          "value": 212434
+        },
+        {
+          "year": 2020,
+          "value": 218522
+        },
+        {
+          "year": 2021,
+          "value": 236313
+        },
+        {
+          "year": 2022,
+          "value": 258236
+        },
+        {
+          "year": 2023,
+          "value": 258956
+        },
+        {
+          "year": 2024,
+          "value": 260532
+        },
+        {
+          "year": 2025,
+          "value": 267899
+        },
+        {
+          "year": 2026,
+          "value": 267805
+        }
+      ]
+    },
+    "house-price-london": {
+      "id": "house-price-london",
+      "name": "House prices (London)",
+      "description": "Greater London average property price, UK HPI monthly → annual mean. The methodology cliff that the UK average hides.",
+      "unit": "GBP",
+      "color": "#f97316",
+      "source": {
+        "name": "HM Land Registry UK House Price Index",
+        "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
+      },
+      "region": "london",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1968,
+          "value": 4784
+        },
+        {
+          "year": 1969,
+          "value": 4912
+        },
+        {
+          "year": 1970,
+          "value": 5420
+        },
+        {
+          "year": 1971,
+          "value": 6251
+        },
+        {
+          "year": 1972,
+          "value": 9075
+        },
+        {
+          "year": 1973,
+          "value": 11589
+        },
+        {
+          "year": 1974,
+          "value": 11819
+        },
+        {
+          "year": 1975,
+          "value": 12096
+        },
+        {
+          "year": 1976,
+          "value": 12954
+        },
+        {
+          "year": 1977,
+          "value": 13853
+        },
+        {
+          "year": 1978,
+          "value": 16624
+        },
+        {
+          "year": 1979,
+          "value": 22225
+        },
+        {
+          "year": 1980,
+          "value": 26949
+        },
+        {
+          "year": 1981,
+          "value": 27847
+        },
+        {
+          "year": 1982,
+          "value": 28273
+        },
+        {
+          "year": 1983,
+          "value": 31760
+        },
+        {
+          "year": 1984,
+          "value": 36828
+        },
+        {
+          "year": 1985,
+          "value": 41829
+        },
+        {
+          "year": 1986,
+          "value": 51357
+        },
+        {
+          "year": 1987,
+          "value": 63316
+        },
+        {
+          "year": 1988,
+          "value": 79171
+        },
+        {
+          "year": 1989,
+          "value": 85391
+        },
+        {
+          "year": 1990,
+          "value": 84118
+        },
+        {
+          "year": 1991,
+          "value": 80652
+        },
+        {
+          "year": 1992,
+          "value": 73063
+        },
+        {
+          "year": 1993,
+          "value": 72761
+        },
+        {
+          "year": 1994,
+          "value": 76236
+        },
+        {
+          "year": 1995,
+          "value": 79993
+        },
+        {
+          "year": 1996,
+          "value": 83681
+        },
+        {
+          "year": 1997,
+          "value": 96290
+        },
+        {
+          "year": 1998,
+          "value": 109315
+        },
+        {
+          "year": 1999,
+          "value": 123848
+        },
+        {
+          "year": 2000,
+          "value": 152026
+        },
+        {
+          "year": 2001,
+          "value": 170460
+        },
+        {
+          "year": 2002,
+          "value": 200617
+        },
+        {
+          "year": 2003,
+          "value": 225995
+        },
+        {
+          "year": 2004,
+          "value": 244743
+        },
+        {
+          "year": 2005,
+          "value": 251933
+        },
+        {
+          "year": 2006,
+          "value": 269010
+        },
+        {
+          "year": 2007,
+          "value": 307371
+        },
+        {
+          "year": 2008,
+          "value": 302923
+        },
+        {
+          "year": 2009,
+          "value": 276046
+        },
+        {
+          "year": 2010,
+          "value": 304619
+        },
+        {
+          "year": 2011,
+          "value": 311051
+        },
+        {
+          "year": 2012,
+          "value": 325370
+        },
+        {
+          "year": 2013,
+          "value": 352392
+        },
+        {
+          "year": 2014,
+          "value": 413367
+        },
+        {
+          "year": 2015,
+          "value": 455129
+        },
+        {
+          "year": 2016,
+          "value": 500487
+        },
+        {
+          "year": 2017,
+          "value": 514130
+        },
+        {
+          "year": 2018,
+          "value": 511558
+        },
+        {
+          "year": 2019,
+          "value": 504314
+        },
+        {
+          "year": 2020,
+          "value": 517773
+        },
+        {
+          "year": 2021,
+          "value": 535454
+        },
+        {
+          "year": 2022,
+          "value": 565955
+        },
+        {
+          "year": 2023,
+          "value": 558024
+        },
+        {
+          "year": 2024,
+          "value": 556104
+        },
+        {
+          "year": 2025,
+          "value": 560889
+        },
+        {
+          "year": 2026,
+          "value": 547685
+        }
+      ]
+    },
+    "house-price-northeast": {
+      "id": "house-price-northeast",
+      "name": "House prices (North East)",
+      "description": "North East England average property price. The opposite end of the same chart — the cheapest English region.",
+      "unit": "GBP",
+      "color": "#14b8a6",
+      "source": {
+        "name": "HM Land Registry UK House Price Index",
+        "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
+      },
+      "region": "north-east",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1992,
+          "value": 39456
+        },
+        {
+          "year": 1993,
+          "value": 40207
+        },
+        {
+          "year": 1994,
+          "value": 41313
+        },
+        {
+          "year": 1995,
+          "value": 40009
+        },
+        {
+          "year": 1996,
+          "value": 40045
+        },
+        {
+          "year": 1997,
+          "value": 41543
+        },
+        {
+          "year": 1998,
+          "value": 42937
+        },
+        {
+          "year": 1999,
+          "value": 44466
+        },
+        {
+          "year": 2000,
+          "value": 46653
+        },
+        {
+          "year": 2001,
+          "value": 49846
+        },
+        {
+          "year": 2002,
+          "value": 58529
+        },
+        {
+          "year": 2003,
+          "value": 75436
+        },
+        {
+          "year": 2004,
+          "value": 98411
+        },
+        {
+          "year": 2005,
+          "value": 111904
+        },
+        {
+          "year": 2006,
+          "value": 121298
+        },
+        {
+          "year": 2007,
+          "value": 128961
+        },
+        {
+          "year": 2008,
+          "value": 123933
+        },
+        {
+          "year": 2009,
+          "value": 114437
+        },
+        {
+          "year": 2010,
+          "value": 116012
+        },
+        {
+          "year": 2011,
+          "value": 111099
+        },
+        {
+          "year": 2012,
+          "value": 110074
+        },
+        {
+          "year": 2013,
+          "value": 109678
+        },
+        {
+          "year": 2014,
+          "value": 112179
+        },
+        {
+          "year": 2015,
+          "value": 114778
+        },
+        {
+          "year": 2016,
+          "value": 117724
+        },
+        {
+          "year": 2017,
+          "value": 119773
+        },
+        {
+          "year": 2018,
+          "value": 121422
+        },
+        {
+          "year": 2019,
+          "value": 121669
+        },
+        {
+          "year": 2020,
+          "value": 123917
+        },
+        {
+          "year": 2021,
+          "value": 137432
+        },
+        {
+          "year": 2022,
+          "value": 148134
+        },
+        {
+          "year": 2023,
+          "value": 149708
+        },
+        {
+          "year": 2024,
+          "value": 151900
+        },
+        {
+          "year": 2025,
+          "value": 159431
+        },
+        {
+          "year": 2026,
+          "value": 160928
+        }
+      ]
+    },
+    "house-price-nationwide": {
+      "id": "house-price-nationwide",
+      "name": "House prices (Nationwide HPI)",
+      "description": "UK Nationwide House Price Index, quarterly from Feb 1953. Aggregated to annual mean of the 'Price (All)' column. Methodology differs from Land Registry HPI — included for the longer back-series.",
+      "unit": "GBP",
+      "color": "#a78bfa",
+      "source": {
+        "name": "Nationwide via datahub.io mirror",
+        "url": "https://datahub.io/core/house-prices-uk"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1953,
+          "value": 1884
+        },
+        {
+          "year": 1954,
+          "value": 1863
+        },
+        {
+          "year": 1955,
+          "value": 1928
+        },
+        {
+          "year": 1956,
+          "value": 1996
+        },
+        {
+          "year": 1957,
+          "value": 2026
+        },
+        {
+          "year": 1958,
+          "value": 2056
+        },
+        {
+          "year": 1959,
+          "value": 2119
+        },
+        {
+          "year": 1960,
+          "value": 2263
+        },
+        {
+          "year": 1961,
+          "value": 2464
+        },
+        {
+          "year": 1962,
+          "value": 2617
+        },
+        {
+          "year": 1963,
+          "value": 2841
+        },
+        {
+          "year": 1964,
+          "value": 3104
+        },
+        {
+          "year": 1965,
+          "value": 3353
+        },
+        {
+          "year": 1966,
+          "value": 3542
+        },
+        {
+          "year": 1967,
+          "value": 3735
+        },
+        {
+          "year": 1968,
+          "value": 4010
+        },
+        {
+          "year": 1969,
+          "value": 4222
+        },
+        {
+          "year": 1970,
+          "value": 4480
+        },
+        {
+          "year": 1971,
+          "value": 5107
+        },
+        {
+          "year": 1972,
+          "value": 6960
+        },
+        {
+          "year": 1973,
+          "value": 9045
+        },
+        {
+          "year": 1974,
+          "value": 10078
+        },
+        {
+          "year": 1975,
+          "value": 10846
+        },
+        {
+          "year": 1976,
+          "value": 11867
+        },
+        {
+          "year": 1977,
+          "value": 12805
+        },
+        {
+          "year": 1978,
+          "value": 15262
+        },
+        {
+          "year": 1979,
+          "value": 19830
+        },
+        {
+          "year": 1980,
+          "value": 23288
+        },
+        {
+          "year": 1981,
+          "value": 23954
+        },
+        {
+          "year": 1982,
+          "value": 24851
+        },
+        {
+          "year": 1983,
+          "value": 27623
+        },
+        {
+          "year": 1984,
+          "value": 31076
+        },
+        {
+          "year": 1985,
+          "value": 34378
+        },
+        {
+          "year": 1986,
+          "value": 37627
+        },
+        {
+          "year": 1987,
+          "value": 43165
+        },
+        {
+          "year": 1988,
+          "value": 51405
+        },
+        {
+          "year": 1989,
+          "value": 61514
+        },
+        {
+          "year": 1990,
+          "value": 57683
+        },
+        {
+          "year": 1991,
+          "value": 54626
+        },
+        {
+          "year": 1992,
+          "value": 51815
+        },
+        {
+          "year": 1993,
+          "value": 51211
+        },
+        {
+          "year": 1994,
+          "value": 51634
+        },
+        {
+          "year": 1995,
+          "value": 51245
+        },
+        {
+          "year": 1996,
+          "value": 53394
+        },
+        {
+          "year": 1997,
+          "value": 59199
+        },
+        {
+          "year": 1998,
+          "value": 65201
+        },
+        {
+          "year": 1999,
+          "value": 71122
+        },
+        {
+          "year": 2000,
+          "value": 80366
+        },
+        {
+          "year": 2001,
+          "value": 88799
+        },
+        {
+          "year": 2002,
+          "value": 106407
+        },
+        {
+          "year": 2003,
+          "value": 127246
+        },
+        {
+          "year": 2004,
+          "value": 148658
+        },
+        {
+          "year": 2005,
+          "value": 156325
+        },
+        {
+          "year": 2006,
+          "value": 166470
+        },
+        {
+          "year": 2007,
+          "value": 181364
+        },
+        {
+          "year": 2008,
+          "value": 168973
+        },
+        {
+          "year": 2009,
+          "value": 156513
+        },
+        {
+          "year": 2010,
+          "value": 165483
+        },
+        {
+          "year": 2011,
+          "value": 165131
+        },
+        {
+          "year": 2012,
+          "value": 163628
+        },
+        {
+          "year": 2013,
+          "value": 168928
+        },
+        {
+          "year": 2014,
+          "value": 185620
+        },
+        {
+          "year": 2015,
+          "value": 193900
+        },
+        {
+          "year": 2016,
+          "value": 203771
+        },
+        {
+          "year": 2017,
+          "value": 209935
+        },
+        {
+          "year": 2018,
+          "value": 214163
+        },
+        {
+          "year": 2019,
+          "value": 215334
+        },
+        {
+          "year": 2020,
+          "value": 223050
+        },
+        {
+          "year": 2021,
+          "value": 243750
+        },
+        {
+          "year": 2022,
+          "value": 267388
+        },
+        {
+          "year": 2023,
+          "value": 259862
+        },
+        {
+          "year": 2024,
+          "value": 265240
+        },
+        {
+          "year": 2025,
+          "value": 271809
+        }
+      ]
+    },
+    "cpih": {
+      "id": "cpih",
+      "name": "Inflation (CPIH)",
+      "description": "ONS Consumer Prices Index including owner-occupier housing costs, 2015 = 100. National Statistic 1988+; pre-1988 are ONS modelled historical estimates rebased to the modern 2015 base via the 1988 overlap. Pre-1988 portion is officially flagged as 'not National Statistics' by ONS.",
+      "unit": "index",
+      "color": "#34d399",
+      "source": {
+        "name": "ONS — CPIH (l522/mm23) + Consumer Price Inflation historical 1950 to 1988",
+        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l522/mm23"
+      },
+      "region": "uk",
+      "verifiedFrom": 1988,
+      "points": [
+        {
+          "year": 1989,
+          "value": 51
+        },
+        {
+          "year": 1990,
+          "value": 55.1
+        },
+        {
+          "year": 1991,
+          "value": 59.2
+        },
+        {
+          "year": 1992,
+          "value": 61.9
+        },
+        {
+          "year": 1993,
+          "value": 63.5
+        },
+        {
+          "year": 1994,
+          "value": 64.9
+        },
+        {
+          "year": 1995,
+          "value": 66.6
+        },
+        {
+          "year": 1996,
+          "value": 68.5
+        },
+        {
+          "year": 1997,
+          "value": 70
+        },
+        {
+          "year": 1998,
+          "value": 71.3
+        },
+        {
+          "year": 1999,
+          "value": 72.6
+        },
+        {
+          "year": 2000,
+          "value": 73.4
+        },
+        {
+          "year": 2001,
+          "value": 74.6
+        },
+        {
+          "year": 2002,
+          "value": 75.7
+        },
+        {
+          "year": 2003,
+          "value": 76.7
+        },
+        {
+          "year": 2004,
+          "value": 77.8
+        },
+        {
+          "year": 2005,
+          "value": 79.4
+        },
+        {
+          "year": 2006,
+          "value": 81.4
+        },
+        {
+          "year": 2007,
+          "value": 83.3
+        },
+        {
+          "year": 2008,
+          "value": 86.2
+        },
+        {
+          "year": 2009,
+          "value": 87.9
+        },
+        {
+          "year": 2010,
+          "value": 90.1
+        },
+        {
+          "year": 2011,
+          "value": 93.6
+        },
+        {
+          "year": 2012,
+          "value": 96
+        },
+        {
+          "year": 2013,
+          "value": 98.2
+        },
+        {
+          "year": 2014,
+          "value": 99.6
+        },
+        {
+          "year": 2015,
+          "value": 100
+        },
+        {
+          "year": 2016,
+          "value": 101
+        },
+        {
+          "year": 2017,
+          "value": 103.6
+        },
+        {
+          "year": 2018,
+          "value": 106
+        },
+        {
+          "year": 2019,
+          "value": 107.8
+        },
+        {
+          "year": 2020,
+          "value": 108.9
+        },
+        {
+          "year": 2021,
+          "value": 111.6
+        },
+        {
+          "year": 2022,
+          "value": 120.5
+        },
+        {
+          "year": 2023,
+          "value": 128.6
+        },
+        {
+          "year": 2024,
+          "value": 132.9
+        },
+        {
+          "year": 2025,
+          "value": 138
+        }
+      ]
+    },
+    "median-wage": {
+      "id": "median-wage",
+      "name": "Median wage (full-time, annual)",
+      "description": "UK median gross annual pay, adult full-time employees. Weekly ONS NES/ASHE figures × 52. Combined male+female median is published from 1984 onwards. For 1968-1983 we use the Adult Male median scaled by the male-to-combined ratio at 1984 (proxy, since combined wasn't published in the NES era).",
+      "unit": "GBP",
+      "color": "#60a5fa",
+      "source": {
+        "name": "ONS — earnings time series of median gross weekly earnings 1968 to latest",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/earningstimeseriesofmediangrossweeklyearningsfrom1968to2022"
+      },
+      "region": "uk",
+      "verifiedFrom": 1984,
+      "points": [
+        {
+          "year": 1984,
+          "value": 7400
+        },
+        {
+          "year": 1985,
+          "value": 7930
+        },
+        {
+          "year": 1986,
+          "value": 8518
+        },
+        {
+          "year": 1987,
+          "value": 9105
+        },
+        {
+          "year": 1988,
+          "value": 9927
+        },
+        {
+          "year": 1989,
+          "value": 10884
+        },
+        {
+          "year": 1990,
+          "value": 11929
+        },
+        {
+          "year": 1991,
+          "value": 12839
+        },
+        {
+          "year": 1992,
+          "value": 13759
+        },
+        {
+          "year": 1993,
+          "value": 14212
+        },
+        {
+          "year": 1994,
+          "value": 14659
+        },
+        {
+          "year": 1995,
+          "value": 15096
+        },
+        {
+          "year": 1996,
+          "value": 15657
+        },
+        {
+          "year": 1997,
+          "value": 16666
+        },
+        {
+          "year": 1998,
+          "value": 17415
+        },
+        {
+          "year": 1999,
+          "value": 17966
+        },
+        {
+          "year": 2000,
+          "value": 18668
+        },
+        {
+          "year": 2001,
+          "value": 19547
+        },
+        {
+          "year": 2002,
+          "value": 20327
+        },
+        {
+          "year": 2003,
+          "value": 21008
+        },
+        {
+          "year": 2005,
+          "value": 22422
+        },
+        {
+          "year": 2007,
+          "value": 23795
+        },
+        {
+          "year": 2008,
+          "value": 24913
+        },
+        {
+          "year": 2009,
+          "value": 25402
+        },
+        {
+          "year": 2010,
+          "value": 25922
+        },
+        {
+          "year": 2011,
+          "value": 25912
+        },
+        {
+          "year": 2012,
+          "value": 26317
+        },
+        {
+          "year": 2013,
+          "value": 26905
+        },
+        {
+          "year": 2014,
+          "value": 26952
+        },
+        {
+          "year": 2015,
+          "value": 27409
+        },
+        {
+          "year": 2016,
+          "value": 28007
+        },
+        {
+          "year": 2017,
+          "value": 28600
+        },
+        {
+          "year": 2018,
+          "value": 29552
+        },
+        {
+          "year": 2019,
+          "value": 30430
+        },
+        {
+          "year": 2020,
+          "value": 30456
+        },
+        {
+          "year": 2021,
+          "value": 31710
+        },
+        {
+          "year": 2022,
+          "value": 33374
+        },
+        {
+          "year": 2023,
+          "value": 35724
+        },
+        {
+          "year": 2024,
+          "value": 37872
+        },
+        {
+          "year": 2025,
+          "value": 39863
+        }
+      ]
+    },
+    "household-income": {
+      "id": "household-income",
+      "name": "Household disposable income (per head)",
+      "description": "UK gross disposable household income per head, current price £, seasonally adjusted. The 'how much does each person have to play with after tax' line — useful counterweight to wages.",
+      "unit": "GBP",
+      "color": "#38bdf8",
+      "source": {
+        "name": "ONS — Household disposable income per head (CRXS)",
+        "url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/crxs/ukea"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1953,
+          "value": 220
+        },
+        {
+          "year": 1954,
+          "value": 235
+        },
+        {
+          "year": 1955,
+          "value": 248
+        },
+        {
+          "year": 1956,
+          "value": 265
+        },
+        {
+          "year": 1957,
+          "value": 277
+        },
+        {
+          "year": 1958,
+          "value": 290
+        },
+        {
+          "year": 1959,
+          "value": 306
+        },
+        {
+          "year": 1960,
+          "value": 328
+        },
+        {
+          "year": 1961,
+          "value": 349
+        },
+        {
+          "year": 1962,
+          "value": 364
+        },
+        {
+          "year": 1963,
+          "value": 383
+        },
+        {
+          "year": 1964,
+          "value": 412
+        },
+        {
+          "year": 1965,
+          "value": 440
+        },
+        {
+          "year": 1966,
+          "value": 466
+        },
+        {
+          "year": 1967,
+          "value": 485
+        },
+        {
+          "year": 1968,
+          "value": 517
+        },
+        {
+          "year": 1969,
+          "value": 551
+        },
+        {
+          "year": 1970,
+          "value": 607
+        },
+        {
+          "year": 1971,
+          "value": 667
+        },
+        {
+          "year": 1972,
+          "value": 773
+        },
+        {
+          "year": 1973,
+          "value": 897
+        },
+        {
+          "year": 1974,
+          "value": 1054
+        },
+        {
+          "year": 1975,
+          "value": 1312
+        },
+        {
+          "year": 1976,
+          "value": 1528
+        },
+        {
+          "year": 1977,
+          "value": 1726
+        },
+        {
+          "year": 1978,
+          "value": 2034
+        },
+        {
+          "year": 1979,
+          "value": 2449
+        },
+        {
+          "year": 1980,
+          "value": 2908
+        },
+        {
+          "year": 1981,
+          "value": 3264
+        },
+        {
+          "year": 1982,
+          "value": 3581
+        },
+        {
+          "year": 1983,
+          "value": 3872
+        },
+        {
+          "year": 1984,
+          "value": 4218
+        },
+        {
+          "year": 1985,
+          "value": 4566
+        },
+        {
+          "year": 1986,
+          "value": 4946
+        },
+        {
+          "year": 1987,
+          "value": 5237
+        },
+        {
+          "year": 1988,
+          "value": 5794
+        },
+        {
+          "year": 1989,
+          "value": 6418
+        },
+        {
+          "year": 1990,
+          "value": 7176
+        },
+        {
+          "year": 1991,
+          "value": 7868
+        },
+        {
+          "year": 1992,
+          "value": 8408
+        },
+        {
+          "year": 1993,
+          "value": 8830
+        },
+        {
+          "year": 1994,
+          "value": 9105
+        },
+        {
+          "year": 1995,
+          "value": 9624
+        },
+        {
+          "year": 1996,
+          "value": 10207
+        },
+        {
+          "year": 1997,
+          "value": 10610
+        },
+        {
+          "year": 1998,
+          "value": 10827
+        },
+        {
+          "year": 1999,
+          "value": 11312
+        },
+        {
+          "year": 2000,
+          "value": 11903
+        },
+        {
+          "year": 2001,
+          "value": 12371
+        },
+        {
+          "year": 2002,
+          "value": 12652
+        },
+        {
+          "year": 2003,
+          "value": 13035
+        },
+        {
+          "year": 2004,
+          "value": 13572
+        },
+        {
+          "year": 2005,
+          "value": 14058
+        },
+        {
+          "year": 2006,
+          "value": 14644
+        },
+        {
+          "year": 2007,
+          "value": 15346
+        },
+        {
+          "year": 2008,
+          "value": 15749
+        },
+        {
+          "year": 2009,
+          "value": 16012
+        },
+        {
+          "year": 2010,
+          "value": 16150
+        },
+        {
+          "year": 2011,
+          "value": 16294
+        },
+        {
+          "year": 2012,
+          "value": 16890
+        },
+        {
+          "year": 2013,
+          "value": 17515
+        },
+        {
+          "year": 2014,
+          "value": 18083
+        },
+        {
+          "year": 2015,
+          "value": 19024
+        },
+        {
+          "year": 2016,
+          "value": 19257
+        },
+        {
+          "year": 2017,
+          "value": 19701
+        },
+        {
+          "year": 2018,
+          "value": 20410
+        },
+        {
+          "year": 2019,
+          "value": 21071
+        },
+        {
+          "year": 2020,
+          "value": 20990
+        },
+        {
+          "year": 2021,
+          "value": 21844
+        },
+        {
+          "year": 2022,
+          "value": 22964
+        },
+        {
+          "year": 2023,
+          "value": 24451
+        },
+        {
+          "year": 2024,
+          "value": 25950
+        },
+        {
+          "year": 2025,
+          "value": 27084
+        }
+      ]
+    },
+    "energy-cost": {
+      "id": "energy-cost",
+      "name": "Energy (typical dual-fuel annual bill)",
+      "description": "Typical UK household annual dual-fuel bill (nominal £). 2019+ is the Ofgem default tariff cap (April-level each year); 2022/2023 reflect the effective EPG-capped cost. Pre-2019 uses DESNZ Quarterly Energy Prices averages; pre-1980 are rough nominal estimates (coal-and-town-gas era, not directly comparable to today's bills).",
+      "unit": "GBP",
+      "color": "#f43f5e",
+      "source": {
+        "name": "Ofgem default tariff cap + DESNZ Quarterly Energy Prices + historical estimates",
+        "url": "https://www.ofgem.gov.uk/information-consumers/energy-advice-households/energy-price-cap-explained"
+      },
+      "region": "uk",
+      "verifiedFrom": 1980,
+      "points": [
+        {
+          "year": 1953,
+          "value": 15
+        },
+        {
+          "year": 1960,
+          "value": 25
+        },
+        {
+          "year": 1965,
+          "value": 35
+        },
+        {
+          "year": 1970,
+          "value": 55
+        },
+        {
+          "year": 1975,
+          "value": 100
+        },
+        {
+          "year": 1980,
+          "value": 200
+        },
+        {
+          "year": 1985,
+          "value": 320
+        },
+        {
+          "year": 1990,
+          "value": 410
+        },
+        {
+          "year": 1995,
+          "value": 410
+        },
+        {
+          "year": 2000,
+          "value": 420
+        },
+        {
+          "year": 2004,
+          "value": 548
+        },
+        {
+          "year": 2007,
+          "value": 880
+        },
+        {
+          "year": 2010,
+          "value": 1069
+        },
+        {
+          "year": 2013,
+          "value": 1320
+        },
+        {
+          "year": 2015,
+          "value": 1256
+        },
+        {
+          "year": 2018,
+          "value": 1254
+        },
+        {
+          "year": 2019,
+          "value": 1137
+        },
+        {
+          "year": 2020,
+          "value": 1162
+        },
+        {
+          "year": 2021,
+          "value": 1138
+        },
+        {
+          "year": 2022,
+          "value": 1971
+        },
+        {
+          "year": 2023,
+          "value": 2500
+        },
+        {
+          "year": 2024,
+          "value": 1690
+        },
+        {
+          "year": 2025,
+          "value": 1849
+        },
+        {
+          "year": 2026,
+          "value": 1641
+        }
+      ]
+    },
+    "rent-index": {
+      "id": "rent-index",
+      "name": "Private rent index (UK)",
+      "description": "UK private rental price index, 2015 = 100. 2005+ from ONS IPHRP / PIPR (official). Pre-2005 estimated from survey data: the previous splice of the RPI housing-rent component overstated historical rents ~2× because the RPI component tracked sitting-tenant rents (many regulated under the Rent Acts) rather than market-rate private lets. The revised pre-2005 values are calibrated to ONS/EHS survey evidence that private renters spent ~29% of income on rent in 1993 (the anchor point), implying 1990 market-rate rent ≈ £300-320/month — vs the old splice's implied £520/month which was plainly wrong.",
+      "unit": "index",
+      "color": "#facc15",
+      "source": {
+        "name": "ONS — IPHRP/PIPR (2005+); EHS/survey calibration (pre-2005)",
+        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/privaterentandhousepricesuk/latest"
+      },
+      "region": "uk",
+      "verifiedFrom": 2005,
+      "points": [
+        {
+          "year": 1953,
+          "value": 2
+        },
+        {
+          "year": 1960,
+          "value": 2.5
+        },
+        {
+          "year": 1965,
+          "value": 3.5
+        },
+        {
+          "year": 1970,
+          "value": 5
+        },
+        {
+          "year": 1975,
+          "value": 8
+        },
+        {
+          "year": 1980,
+          "value": 17
+        },
+        {
+          "year": 1985,
+          "value": 25
+        },
+        {
+          "year": 1990,
+          "value": 36
+        },
+        {
+          "year": 1995,
+          "value": 43
+        },
+        {
+          "year": 2000,
+          "value": 60
+        },
+        {
+          "year": 2005,
+          "value": 86.6
+        },
+        {
+          "year": 2008,
+          "value": 89.4
+        },
+        {
+          "year": 2010,
+          "value": 91.5
+        },
+        {
+          "year": 2012,
+          "value": 93.7
+        },
+        {
+          "year": 2014,
+          "value": 97.4
+        },
+        {
+          "year": 2015,
+          "value": 100
+        },
+        {
+          "year": 2017,
+          "value": 103.5
+        },
+        {
+          "year": 2019,
+          "value": 106.4
+        },
+        {
+          "year": 2020,
+          "value": 107.8
+        },
+        {
+          "year": 2021,
+          "value": 109.4
+        },
+        {
+          "year": 2022,
+          "value": 113
+        },
+        {
+          "year": 2023,
+          "value": 119.5
+        },
+        {
+          "year": 2024,
+          "value": 130.6
+        },
+        {
+          "year": 2025,
+          "value": 137.4
+        }
+      ]
+    },
+    "netflix-uk": {
+      "id": "netflix-uk",
+      "name": "Netflix UK Standard plan (annual)",
+      "description": "Annual cost of Netflix UK Standard plan (monthly price × 12). Tiers were reshuffled in 2024 — values use the modal Standard tier of each year. Included tongue-in-cheek because the original 'avocado toast and Netflix' rhetoric named it.",
+      "unit": "GBP",
+      "color": "#ef4444",
+      "source": {
+        "name": "Netflix UK pricing history (press releases + archived plan pages)",
+        "url": "https://help.netflix.com/en-gb/node/24926"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 2012,
+          "value": 83.88
+        },
+        {
+          "year": 2013,
+          "value": 83.88
+        },
+        {
+          "year": 2014,
+          "value": 83.88
+        },
+        {
+          "year": 2015,
+          "value": 89.88
+        },
+        {
+          "year": 2016,
+          "value": 89.88
+        },
+        {
+          "year": 2017,
+          "value": 95.88
+        },
+        {
+          "year": 2018,
+          "value": 95.88
+        },
+        {
+          "year": 2019,
+          "value": 107.88
+        },
+        {
+          "year": 2020,
+          "value": 107.88
+        },
+        {
+          "year": 2021,
+          "value": 119.88
+        },
+        {
+          "year": 2022,
+          "value": 131.88
+        },
+        {
+          "year": 2023,
+          "value": 131.88
+        },
+        {
+          "year": 2024,
+          "value": 143.88
+        },
+        {
+          "year": 2025,
+          "value": 155.88
+        },
+        {
+          "year": 2026,
+          "value": 167.88
+        }
+      ]
+    },
+    "avocado-uk": {
+      "id": "avocado-uk",
+      "name": "Avocado (single supermarket avg)",
+      "description": "Approximate UK supermarket avocado retail price per unit. ⚠️ No clean canonical source — values are based on retail surveys and archived supermarket listings, included for the joke. Treat as illustrative.",
+      "unit": "GBP",
+      "color": "#84cc16",
+      "source": {
+        "name": "Mixed retail surveys / archived supermarket listings",
+        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 2008,
+          "value": 0.5
+        },
+        {
+          "year": 2012,
+          "value": 0.65
+        },
+        {
+          "year": 2015,
+          "value": 0.8
+        },
+        {
+          "year": 2018,
+          "value": 0.85
+        },
+        {
+          "year": 2020,
+          "value": 0.9
+        },
+        {
+          "year": 2022,
+          "value": 1.1
+        },
+        {
+          "year": 2024,
+          "value": 1.15
+        },
+        {
+          "year": 2025,
+          "value": 1.2
+        }
+      ]
+    },
+    "birth-rate": {
+      "id": "birth-rate",
+      "name": "Crude birth rate (per 1,000)",
+      "description": "UK live births per 1,000 population. The fertility floor — 2023 was the lowest on record (9.5).",
+      "unit": "rate",
+      "color": "#fcd34d",
+      "source": {
+        "name": "ONS — Births in England and Wales (UK aggregate)",
+        "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1950,
+          "value": 16.3
+        },
+        {
+          "year": 1955,
+          "value": 15.3
+        },
+        {
+          "year": 1960,
+          "value": 17.5
+        },
+        {
+          "year": 1964,
+          "value": 18.6
+        },
+        {
+          "year": 1970,
+          "value": 16.3
+        },
+        {
+          "year": 1975,
+          "value": 12.5
+        },
+        {
+          "year": 1980,
+          "value": 13.4
+        },
+        {
+          "year": 1985,
+          "value": 13.3
+        },
+        {
+          "year": 1990,
+          "value": 13.9
+        },
+        {
+          "year": 1995,
+          "value": 12.6
+        },
+        {
+          "year": 2000,
+          "value": 11.5
+        },
+        {
+          "year": 2005,
+          "value": 12
+        },
+        {
+          "year": 2010,
+          "value": 13
+        },
+        {
+          "year": 2015,
+          "value": 12
+        },
+        {
+          "year": 2020,
+          "value": 10.4
+        },
+        {
+          "year": 2022,
+          "value": 9.9
+        },
+        {
+          "year": 2023,
+          "value": 9.5
+        }
+      ]
+    },
+    "net-migration": {
+      "id": "net-migration",
+      "name": "Net long-term international migration",
+      "description": "UK net long-term international migration, thousands of people. 2012+ uses the ONS admin-data methodology; pre-2012 uses the legacy IPS-based estimates (not strictly comparable). Pre-1990 values are decadal estimates from House of Commons Library research.",
+      "unit": "count",
+      "color": "#06b6d4",
+      "source": {
+        "name": "ONS — Long-term international migration (+ HoC Library pre-1990 estimates)",
+        "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration"
+      },
+      "region": "uk",
+      "verifiedFrom": 1991,
+      "points": [
+        {
+          "year": 1953,
+          "value": 0
+        },
+        {
+          "year": 1955,
+          "value": 20
+        },
+        {
+          "year": 1960,
+          "value": 50
+        },
+        {
+          "year": 1965,
+          "value": 20
+        },
+        {
+          "year": 1970,
+          "value": -50
+        },
+        {
+          "year": 1975,
+          "value": -30
+        },
+        {
+          "year": 1980,
+          "value": -55
+        },
+        {
+          "year": 1985,
+          "value": 30
+        },
+        {
+          "year": 1990,
+          "value": 50
+        },
+        {
+          "year": 1991,
+          "value": 35
+        },
+        {
+          "year": 1995,
+          "value": 76
+        },
+        {
+          "year": 2000,
+          "value": 163
+        },
+        {
+          "year": 2005,
+          "value": 268
+        },
+        {
+          "year": 2010,
+          "value": 256
+        },
+        {
+          "year": 2015,
+          "value": 329
+        },
+        {
+          "year": 2019,
+          "value": 271
+        },
+        {
+          "year": 2020,
+          "value": 94
+        },
+        {
+          "year": 2021,
+          "value": 488
+        },
+        {
+          "year": 2022,
+          "value": 745
+        },
+        {
+          "year": 2023,
+          "value": 685
+        },
+        {
+          "year": 2024,
+          "value": 431
+        }
+      ]
+    },
+    "persons-per-household": {
+      "id": "persons-per-household",
+      "name": "Persons per household (avg)",
+      "description": "Average UK household size from census + ONS Families and Households. Slow-moving but unmistakable downward trend: more solo earners absorbing the costs that used to be split.",
+      "unit": "count",
+      "color": "#d8b4fe",
+      "source": {
+        "name": "ONS — Families and households / UK Census + General Register Office (pre-1961)",
+        "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/familiesandhouseholdsfamiliesandhouseholds"
+      },
+      "region": "uk",
+      "verifiedFrom": 1961,
+      "points": [
+        {
+          "year": 1953,
+          "value": 3.2
+        },
+        {
+          "year": 1955,
+          "value": 3.16
+        },
+        {
+          "year": 1961,
+          "value": 3.09
+        },
+        {
+          "year": 1971,
+          "value": 2.91
+        },
+        {
+          "year": 1981,
+          "value": 2.71
+        },
+        {
+          "year": 1991,
+          "value": 2.48
+        },
+        {
+          "year": 2001,
+          "value": 2.36
+        },
+        {
+          "year": 2011,
+          "value": 2.35
+        },
+        {
+          "year": 2021,
+          "value": 2.36
+        },
+        {
+          "year": 2024,
+          "value": 2.36
+        }
+      ]
+    },
+    "tuition-uk": {
+      "id": "tuition-uk",
+      "name": "Undergraduate tuition fees (England, max)",
+      "description": "Maximum annual undergraduate tuition fee chargeable by English universities. Pre-1998 = £0 (no fees). Top-up fees raised the cap to £3,000 in 2006; the Browne reforms tripled it to £9,000 in 2012. Held flat at £9,250 since 2017.",
+      "unit": "GBP",
+      "color": "#fb923c",
+      "source": {
+        "name": "Department for Education / Office for Students fee cap history",
+        "url": "https://www.officeforstudents.org.uk/advice-and-guidance/fees-and-funding/"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1990,
+          "value": 0
+        },
+        {
+          "year": 1997,
+          "value": 0
+        },
+        {
+          "year": 1998,
+          "value": 1000
+        },
+        {
+          "year": 1999,
+          "value": 1025
+        },
+        {
+          "year": 2000,
+          "value": 1050
+        },
+        {
+          "year": 2001,
+          "value": 1075
+        },
+        {
+          "year": 2002,
+          "value": 1100
+        },
+        {
+          "year": 2003,
+          "value": 1125
+        },
+        {
+          "year": 2004,
+          "value": 1150
+        },
+        {
+          "year": 2005,
+          "value": 1175
+        },
+        {
+          "year": 2006,
+          "value": 3000
+        },
+        {
+          "year": 2007,
+          "value": 3070
+        },
+        {
+          "year": 2008,
+          "value": 3145
+        },
+        {
+          "year": 2009,
+          "value": 3225
+        },
+        {
+          "year": 2010,
+          "value": 3290
+        },
+        {
+          "year": 2011,
+          "value": 3375
+        },
+        {
+          "year": 2012,
+          "value": 9000
+        },
+        {
+          "year": 2013,
+          "value": 9000
+        },
+        {
+          "year": 2014,
+          "value": 9000
+        },
+        {
+          "year": 2015,
+          "value": 9000
+        },
+        {
+          "year": 2016,
+          "value": 9000
+        },
+        {
+          "year": 2017,
+          "value": 9250
+        },
+        {
+          "year": 2018,
+          "value": 9250
+        },
+        {
+          "year": 2019,
+          "value": 9250
+        },
+        {
+          "year": 2020,
+          "value": 9250
+        },
+        {
+          "year": 2021,
+          "value": 9250
+        },
+        {
+          "year": 2022,
+          "value": 9250
+        },
+        {
+          "year": 2023,
+          "value": 9250
+        },
+        {
+          "year": 2024,
+          "value": 9250
+        },
+        {
+          "year": 2025,
+          "value": 9535
+        },
+        {
+          "year": 2026,
+          "value": 9535
+        }
+      ]
+    },
+    "council-tax": {
+      "id": "council-tax",
+      "name": "Council Tax (England, Band D average)",
+      "description": "Average council tax bill for a Band D property in England. Council tax replaced the community charge in 1993. Pre-1993 figures show domestic rates / community charge equivalents for context (modelled, dashed).",
+      "unit": "GBP",
+      "color": "#84cc16",
+      "source": {
+        "name": "Department for Levelling Up, Housing & Communities / MHCLG council-tax statistics",
+        "url": "https://www.gov.uk/government/collections/council-tax-statistics"
+      },
+      "region": "england",
+      "verifiedFrom": 1993,
+      "points": [
+        {
+          "year": 1980,
+          "value": 120
+        },
+        {
+          "year": 1985,
+          "value": 250
+        },
+        {
+          "year": 1990,
+          "value": 360
+        },
+        {
+          "year": 1991,
+          "value": 380
+        },
+        {
+          "year": 1992,
+          "value": 410
+        },
+        {
+          "year": 1993,
+          "value": 568
+        },
+        {
+          "year": 1994,
+          "value": 600
+        },
+        {
+          "year": 1995,
+          "value": 609
+        },
+        {
+          "year": 1996,
+          "value": 646
+        },
+        {
+          "year": 1997,
+          "value": 688
+        },
+        {
+          "year": 1998,
+          "value": 727
+        },
+        {
+          "year": 1999,
+          "value": 770
+        },
+        {
+          "year": 2000,
+          "value": 798
+        },
+        {
+          "year": 2001,
+          "value": 851
+        },
+        {
+          "year": 2002,
+          "value": 901
+        },
+        {
+          "year": 2003,
+          "value": 1014
+        },
+        {
+          "year": 2004,
+          "value": 1102
+        },
+        {
+          "year": 2005,
+          "value": 1167
+        },
+        {
+          "year": 2006,
+          "value": 1214
+        },
+        {
+          "year": 2007,
+          "value": 1268
+        },
+        {
+          "year": 2008,
+          "value": 1320
+        },
+        {
+          "year": 2009,
+          "value": 1373
+        },
+        {
+          "year": 2010,
+          "value": 1414
+        },
+        {
+          "year": 2011,
+          "value": 1439
+        },
+        {
+          "year": 2012,
+          "value": 1444
+        },
+        {
+          "year": 2013,
+          "value": 1456
+        },
+        {
+          "year": 2014,
+          "value": 1468
+        },
+        {
+          "year": 2015,
+          "value": 1484
+        },
+        {
+          "year": 2016,
+          "value": 1530
+        },
+        {
+          "year": 2017,
+          "value": 1591
+        },
+        {
+          "year": 2018,
+          "value": 1671
+        },
+        {
+          "year": 2019,
+          "value": 1750
+        },
+        {
+          "year": 2020,
+          "value": 1818
+        },
+        {
+          "year": 2021,
+          "value": 1898
+        },
+        {
+          "year": 2022,
+          "value": 1966
+        },
+        {
+          "year": 2023,
+          "value": 2065
+        },
+        {
+          "year": 2024,
+          "value": 2171
+        },
+        {
+          "year": 2025,
+          "value": 2280
+        },
+        {
+          "year": 2026,
+          "value": 2393
+        }
+      ]
+    },
+    "rail-fares": {
+      "id": "rail-fares",
+      "name": "Rail fares (UK index, Jan 1995 = 100)",
+      "description": "ORR/DfT rail-fares index covering all GB rail tickets. Regulated fares track RPI (+1% for many years post-2004) — the line climbs faster than wages essentially by formula. Pre-1995 indexed back to BR-era estimates (dashed).",
+      "unit": "index",
+      "color": "#22d3ee",
+      "source": {
+        "name": "Office of Rail and Road — Rail fares index",
+        "url": "https://dataportal.orr.gov.uk/statistics/usage/passenger-rail-usage/"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1980,
+          "value": 38
+        },
+        {
+          "year": 1985,
+          "value": 50
+        },
+        {
+          "year": 1990,
+          "value": 70
+        },
+        {
+          "year": 1995,
+          "value": 100
+        },
+        {
+          "year": 1996,
+          "value": 103
+        },
+        {
+          "year": 1997,
+          "value": 106
+        },
+        {
+          "year": 1998,
+          "value": 110
+        },
+        {
+          "year": 1999,
+          "value": 113
+        },
+        {
+          "year": 2000,
+          "value": 116
+        },
+        {
+          "year": 2001,
+          "value": 119
+        },
+        {
+          "year": 2002,
+          "value": 122
+        },
+        {
+          "year": 2003,
+          "value": 126
+        },
+        {
+          "year": 2004,
+          "value": 130
+        },
+        {
+          "year": 2005,
+          "value": 134
+        },
+        {
+          "year": 2006,
+          "value": 140
+        },
+        {
+          "year": 2007,
+          "value": 146
+        },
+        {
+          "year": 2008,
+          "value": 153
+        },
+        {
+          "year": 2009,
+          "value": 158
+        },
+        {
+          "year": 2010,
+          "value": 159
+        },
+        {
+          "year": 2011,
+          "value": 167
+        },
+        {
+          "year": 2012,
+          "value": 177
+        },
+        {
+          "year": 2013,
+          "value": 184
+        },
+        {
+          "year": 2014,
+          "value": 190
+        },
+        {
+          "year": 2015,
+          "value": 195
+        },
+        {
+          "year": 2016,
+          "value": 197
+        },
+        {
+          "year": 2017,
+          "value": 200
+        },
+        {
+          "year": 2018,
+          "value": 207
+        },
+        {
+          "year": 2019,
+          "value": 214
+        },
+        {
+          "year": 2020,
+          "value": 220
+        },
+        {
+          "year": 2021,
+          "value": 220
+        },
+        {
+          "year": 2022,
+          "value": 226
+        },
+        {
+          "year": 2023,
+          "value": 238
+        },
+        {
+          "year": 2024,
+          "value": 252
+        },
+        {
+          "year": 2025,
+          "value": 263
+        },
+        {
+          "year": 2026,
+          "value": 273
+        }
+      ]
+    },
+    "min-wage": {
+      "id": "min-wage",
+      "name": "Minimum / National Living Wage (annual, 37.5h)",
+      "description": "Statutory wage floor for adults (21/22+), annualised at a 37.5-hour week × 52 weeks. National Minimum Wage introduced 1999 at £3.60; rebadged National Living Wage for 25+ from 2016 and lowered to 21+ from 2024. Pre-1999 there was no UK statutory floor.",
+      "unit": "GBP",
+      "color": "#eab308",
+      "source": {
+        "name": "Low Pay Commission / gov.uk NMW & NLW rates",
+        "url": "https://www.gov.uk/national-minimum-wage-rates"
+      },
+      "region": "uk",
+      "points": [
+        {
+          "year": 1999,
+          "value": 7020
+        },
+        {
+          "year": 2000,
+          "value": 7215
+        },
+        {
+          "year": 2001,
+          "value": 7995
+        },
+        {
+          "year": 2002,
+          "value": 8190
+        },
+        {
+          "year": 2003,
+          "value": 8775
+        },
+        {
+          "year": 2004,
+          "value": 9458
+        },
+        {
+          "year": 2005,
+          "value": 9848
+        },
+        {
+          "year": 2006,
+          "value": 10433
+        },
+        {
+          "year": 2007,
+          "value": 10764
+        },
+        {
+          "year": 2008,
+          "value": 11174
+        },
+        {
+          "year": 2009,
+          "value": 11310
+        },
+        {
+          "year": 2010,
+          "value": 11564
+        },
+        {
+          "year": 2011,
+          "value": 11856
+        },
+        {
+          "year": 2012,
+          "value": 12071
+        },
+        {
+          "year": 2013,
+          "value": 12304
+        },
+        {
+          "year": 2014,
+          "value": 12675
+        },
+        {
+          "year": 2015,
+          "value": 13065
+        },
+        {
+          "year": 2016,
+          "value": 14040
+        },
+        {
+          "year": 2017,
+          "value": 14625
+        },
+        {
+          "year": 2018,
+          "value": 15269
+        },
+        {
+          "year": 2019,
+          "value": 16010
+        },
+        {
+          "year": 2020,
+          "value": 17004
+        },
+        {
+          "year": 2021,
+          "value": 17375
+        },
+        {
+          "year": 2022,
+          "value": 18525
+        },
+        {
+          "year": 2023,
+          "value": 20319
+        },
+        {
+          "year": 2024,
+          "value": 22308
+        },
+        {
+          "year": 2025,
+          "value": 23810
+        },
+        {
+          "year": 2026,
+          "value": 24785
+        }
+      ]
+    },
+    "student-debt": {
+      "id": "student-debt",
+      "name": "Student loan balance at graduation (England, average)",
+      "description": "Average outstanding student-loan balance on the day of graduation, England, full-time undergrad. Combines tuition-fee loans and maintenance loans. Reflects 3 years of borrowing under each year's regime. Pre-1998 = £0 (no tuition fees, mortgage-style maintenance loans were small).",
+      "unit": "GBP",
+      "color": "#ec4899",
+      "source": {
+        "name": "Student Loans Company / House of Commons Library — Student loan statistics",
+        "url": "https://commonslibrary.parliament.uk/research-briefings/sn01079/"
+      },
+      "region": "england",
+      "verifiedFrom": 2000,
+      "points": [
+        {
+          "year": 1995,
+          "value": 0
+        },
+        {
+          "year": 1998,
+          "value": 1700
+        },
+        {
+          "year": 1999,
+          "value": 2300
+        },
+        {
+          "year": 2000,
+          "value": 3100
+        },
+        {
+          "year": 2001,
+          "value": 4500
+        },
+        {
+          "year": 2002,
+          "value": 6500
+        },
+        {
+          "year": 2003,
+          "value": 8400
+        },
+        {
+          "year": 2004,
+          "value": 9800
+        },
+        {
+          "year": 2005,
+          "value": 10800
+        },
+        {
+          "year": 2006,
+          "value": 11200
+        },
+        {
+          "year": 2007,
+          "value": 12200
+        },
+        {
+          "year": 2008,
+          "value": 13400
+        },
+        {
+          "year": 2009,
+          "value": 14600
+        },
+        {
+          "year": 2010,
+          "value": 15800
+        },
+        {
+          "year": 2011,
+          "value": 16800
+        },
+        {
+          "year": 2012,
+          "value": 18000
+        },
+        {
+          "year": 2013,
+          "value": 21200
+        },
+        {
+          "year": 2014,
+          "value": 27300
+        },
+        {
+          "year": 2015,
+          "value": 33800
+        },
+        {
+          "year": 2016,
+          "value": 38200
+        },
+        {
+          "year": 2017,
+          "value": 41800
+        },
+        {
+          "year": 2018,
+          "value": 44700
+        },
+        {
+          "year": 2019,
+          "value": 47200
+        },
+        {
+          "year": 2020,
+          "value": 49500
+        },
+        {
+          "year": 2021,
+          "value": 51000
+        },
+        {
+          "year": 2022,
+          "value": 50400
+        },
+        {
+          "year": 2023,
+          "value": 49500
+        },
+        {
+          "year": 2024,
+          "value": 48400
+        },
+        {
+          "year": 2025,
+          "value": 47800
+        },
+        {
+          "year": 2026,
+          "value": 47600
+        }
+      ]
+    },
+    "childcare-cost": {
+      "id": "childcare-cost",
+      "name": "Full-time nursery (England, under-2, annual)",
+      "description": "Annual cost of full-time (50h/week) nursery for a child under 2 in England. Coram Family & Childcare conducts the canonical annual survey; nominal £, sticker price (before any government support). Pre-2003 modelled from CPI-trended estimates of historical part-time rates (dashed).",
+      "unit": "GBP",
+      "color": "#fde047",
+      "source": {
+        "name": "Coram Family & Childcare — Childcare Survey",
+        "url": "https://www.coram.org.uk/our-impact/childcare-survey/"
+      },
+      "region": "england",
+      "verifiedFrom": 2003,
+      "points": [
+        {
+          "year": 1995,
+          "value": 3000
+        },
+        {
+          "year": 2000,
+          "value": 5000
+        },
+        {
+          "year": 2003,
+          "value": 7100
+        },
+        {
+          "year": 2005,
+          "value": 7950
+        },
+        {
+          "year": 2007,
+          "value": 8750
+        },
+        {
+          "year": 2009,
+          "value": 9600
+        },
+        {
+          "year": 2011,
+          "value": 9950
+        },
+        {
+          "year": 2013,
+          "value": 10550
+        },
+        {
+          "year": 2015,
+          "value": 11100
+        },
+        {
+          "year": 2017,
+          "value": 11600
+        },
+        {
+          "year": 2019,
+          "value": 12350
+        },
+        {
+          "year": 2021,
+          "value": 13150
+        },
+        {
+          "year": 2023,
+          "value": 14250
+        },
+        {
+          "year": 2024,
+          "value": 15100
+        },
+        {
+          "year": 2025,
+          "value": 15700
+        },
+        {
+          "year": 2026,
+          "value": 16300
+        }
+      ]
+    },
+    "homeownership-25-34": {
+      "id": "homeownership-25-34",
+      "name": "Homeownership rate (25–34)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#f87171",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 60
+        },
+        {
+          "year": 1991,
+          "value": 67
+        },
+        {
+          "year": 2001,
+          "value": 59
+        },
+        {
+          "year": 2011,
+          "value": 43
+        },
+        {
+          "year": 2014,
+          "value": 36
+        },
+        {
+          "year": 2017,
+          "value": 35
+        },
+        {
+          "year": 2019,
+          "value": 41
+        },
+        {
+          "year": 2021,
+          "value": 41
+        },
+        {
+          "year": 2023,
+          "value": 39
+        },
+        {
+          "year": 2025,
+          "value": 39
+        }
+      ]
+    },
+    "homeownership-35-44": {
+      "id": "homeownership-35-44",
+      "name": "Homeownership rate (35–44)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#fbbf24",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 67
+        },
+        {
+          "year": 1991,
+          "value": 78
+        },
+        {
+          "year": 2001,
+          "value": 76
+        },
+        {
+          "year": 2011,
+          "value": 64
+        },
+        {
+          "year": 2014,
+          "value": 59
+        },
+        {
+          "year": 2017,
+          "value": 56
+        },
+        {
+          "year": 2019,
+          "value": 56
+        },
+        {
+          "year": 2021,
+          "value": 57
+        },
+        {
+          "year": 2023,
+          "value": 57
+        },
+        {
+          "year": 2025,
+          "value": 57
+        }
+      ]
+    },
+    "homeownership-55-64": {
+      "id": "homeownership-55-64",
+      "name": "Homeownership rate (55–64)",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "unit": "percent",
+      "color": "#34d399",
+      "source": {
+        "name": "ONS / English Housing Survey — Tenure by age",
+        "url": "https://www.gov.uk/government/collections/english-housing-survey"
+      },
+      "region": "england",
+      "points": [
+        {
+          "year": 1981,
+          "value": 56
+        },
+        {
+          "year": 1991,
+          "value": 68
+        },
+        {
+          "year": 2001,
+          "value": 75
+        },
+        {
+          "year": 2011,
+          "value": 76
+        },
+        {
+          "year": 2014,
+          "value": 74
+        },
+        {
+          "year": 2017,
+          "value": 74
+        },
+        {
+          "year": 2019,
+          "value": 73
+        },
+        {
+          "year": 2021,
+          "value": 74
+        },
+        {
+          "year": 2023,
+          "value": 73
+        },
+        {
+          "year": 2025,
+          "value": 73
+        }
+      ]
+    },
+    "ftb-age": {
+      "id": "ftb-age",
+      "name": "First-time buyer average age (UK)",
+      "description": "Average age of UK first-time buyers based on mortgage completions. Combines HMRC / CML / UK Finance / Halifax FTB tracker historical figures. Pre-1995 reflects industry estimates (dashed).",
+      "unit": "rate",
+      "color": "#a3a3a3",
+      "source": {
+        "name": "UK Finance / Halifax First-Time Buyer Review",
+        "url": "https://www.ukfinance.org.uk/data-and-research"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1960,
+          "value": 23
+        },
+        {
+          "year": 1970,
+          "value": 24
+        },
+        {
+          "year": 1980,
+          "value": 25
+        },
+        {
+          "year": 1990,
+          "value": 28
+        },
+        {
+          "year": 1995,
+          "value": 29
+        },
+        {
+          "year": 2000,
+          "value": 30
+        },
+        {
+          "year": 2005,
+          "value": 31
+        },
+        {
+          "year": 2008,
+          "value": 32
+        },
+        {
+          "year": 2010,
+          "value": 31
+        },
+        {
+          "year": 2013,
+          "value": 30
+        },
+        {
+          "year": 2015,
+          "value": 30
+        },
+        {
+          "year": 2017,
+          "value": 31
+        },
+        {
+          "year": 2019,
+          "value": 32
+        },
+        {
+          "year": 2021,
+          "value": 32
+        },
+        {
+          "year": 2023,
+          "value": 33
+        },
+        {
+          "year": 2024,
+          "value": 34
+        },
+        {
+          "year": 2025,
+          "value": 34
+        },
+        {
+          "year": 2026,
+          "value": 34
+        }
+      ]
+    },
+    "tax-burden-median": {
+      "id": "tax-burden-median",
+      "name": "Effective tax + NI rate (median earner)",
+      "description": "Income tax + employee National Insurance as a percentage of gross pay for a single worker on the median full-time wage. Reflects each year's personal allowance, basic-rate threshold and NI primary threshold. Pre-1990 modelled from IFS historical effective-rate tables (dashed).",
+      "unit": "percent",
+      "color": "#fb7185",
+      "source": {
+        "name": "HMRC / IFS — Direct tax statistics",
+        "url": "https://ifs.org.uk/taxlab"
+      },
+      "region": "uk",
+      "verifiedFrom": 1990,
+      "points": [
+        {
+          "year": 1970,
+          "value": 21
+        },
+        {
+          "year": 1975,
+          "value": 26.5
+        },
+        {
+          "year": 1980,
+          "value": 29
+        },
+        {
+          "year": 1985,
+          "value": 27.5
+        },
+        {
+          "year": 1990,
+          "value": 25.2
+        },
+        {
+          "year": 1995,
+          "value": 24
+        },
+        {
+          "year": 2000,
+          "value": 23.5
+        },
+        {
+          "year": 2005,
+          "value": 23.8
+        },
+        {
+          "year": 2008,
+          "value": 23.4
+        },
+        {
+          "year": 2010,
+          "value": 22
+        },
+        {
+          "year": 2012,
+          "value": 20.5
+        },
+        {
+          "year": 2014,
+          "value": 19.8
+        },
+        {
+          "year": 2016,
+          "value": 19
+        },
+        {
+          "year": 2018,
+          "value": 18.4
+        },
+        {
+          "year": 2020,
+          "value": 18
+        },
+        {
+          "year": 2021,
+          "value": 18.2
+        },
+        {
+          "year": 2022,
+          "value": 21.5
+        },
+        {
+          "year": 2023,
+          "value": 22.4
+        },
+        {
+          "year": 2024,
+          "value": 22.9
+        },
+        {
+          "year": 2025,
+          "value": 23.6
+        },
+        {
+          "year": 2026,
+          "value": 24.1
+        }
+      ]
+    },
+    "grad-salary": {
+      "id": "grad-salary",
+      "name": "Graduate starting salary (median, UK)",
+      "description": "Median annual starting salary for new UK graduates entering full-time employment. Combines HECSU 'What Do Graduates Do?' and ISE Student Recruitment Survey medians. Nominal £.",
+      "unit": "GBP",
+      "color": "#60a5fa",
+      "source": {
+        "name": "HECSU / Prospects + Institute of Student Employers",
+        "url": "https://luminate.prospects.ac.uk/what-do-graduates-do"
+      },
+      "region": "uk",
+      "verifiedFrom": 1999,
+      "points": [
+        {
+          "year": 1990,
+          "value": 11500
+        },
+        {
+          "year": 1995,
+          "value": 14000
+        },
+        {
+          "year": 1999,
+          "value": 17500
+        },
+        {
+          "year": 2001,
+          "value": 18500
+        },
+        {
+          "year": 2003,
+          "value": 19500
+        },
+        {
+          "year": 2005,
+          "value": 20500
+        },
+        {
+          "year": 2007,
+          "value": 21500
+        },
+        {
+          "year": 2009,
+          "value": 21500
+        },
+        {
+          "year": 2011,
+          "value": 22000
+        },
+        {
+          "year": 2013,
+          "value": 22500
+        },
+        {
+          "year": 2015,
+          "value": 23000
+        },
+        {
+          "year": 2017,
+          "value": 23500
+        },
+        {
+          "year": 2019,
+          "value": 24000
+        },
+        {
+          "year": 2021,
+          "value": 25500
+        },
+        {
+          "year": 2023,
+          "value": 27000
+        },
+        {
+          "year": 2024,
+          "value": 28000
+        },
+        {
+          "year": 2025,
+          "value": 28500
+        },
+        {
+          "year": 2026,
+          "value": 29000
+        }
+      ]
+    },
+    "food-cpi": {
+      "id": "food-cpi",
+      "name": "Food & drink price index (CPIH)",
+      "description": "ONS CPIH food and non-alcoholic beverages sub-index, 2015 = 100. Food rose ~39% from 2015 to 2023, vs 29% for CPIH overall — the 2022-23 cost-of-living spike was disproportionately a food crisis. Pre-2005 estimated from RPI food component.",
+      "unit": "index",
+      "color": "#fbbf24",
+      "source": {
+        "name": "ONS — CPIH food & non-alcoholic beverages sub-index",
+        "url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+      },
+      "region": "uk",
+      "verifiedFrom": 2005,
+      "points": [
+        {
+          "year": 1990,
+          "value": 49.5
+        },
+        {
+          "year": 1995,
+          "value": 57
+        },
+        {
+          "year": 2000,
+          "value": 64.7
+        },
+        {
+          "year": 2003,
+          "value": 68.7
+        },
+        {
+          "year": 2005,
+          "value": 71.9
+        },
+        {
+          "year": 2006,
+          "value": 73.3
+        },
+        {
+          "year": 2007,
+          "value": 75.9
+        },
+        {
+          "year": 2008,
+          "value": 82
+        },
+        {
+          "year": 2009,
+          "value": 85.7
+        },
+        {
+          "year": 2010,
+          "value": 89.1
+        },
+        {
+          "year": 2011,
+          "value": 94
+        },
+        {
+          "year": 2012,
+          "value": 97.8
+        },
+        {
+          "year": 2013,
+          "value": 101.7
+        },
+        {
+          "year": 2014,
+          "value": 100.7
+        },
+        {
+          "year": 2015,
+          "value": 100
+        },
+        {
+          "year": 2016,
+          "value": 99.5
+        },
+        {
+          "year": 2017,
+          "value": 102.9
+        },
+        {
+          "year": 2018,
+          "value": 105
+        },
+        {
+          "year": 2019,
+          "value": 105.5
+        },
+        {
+          "year": 2020,
+          "value": 107.6
+        },
+        {
+          "year": 2021,
+          "value": 111.4
+        },
+        {
+          "year": 2022,
+          "value": 123.1
+        },
+        {
+          "year": 2023,
+          "value": 139.1
+        },
+        {
+          "year": 2024,
+          "value": 141.9
+        },
+        {
+          "year": 2025,
+          "value": 144
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "generatedAt": "2026-05-21T10:23:24.953Z"
+  }
+}
