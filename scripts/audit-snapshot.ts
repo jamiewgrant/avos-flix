@@ -397,6 +397,102 @@ for (const grossSalary of GROSS_SALARIES) {
                     )
                   }
                 }
+
+                // ── Economic trend direction checks ─────────────────────────
+                // These verify that the data series encode known economic facts.
+                // A failure here means a data series has been miscalibrated or a
+                // historical scaling formula has been broken — not a bad user input.
+
+                // Energy was much cheaper before the 2020s crisis.
+                // (series anchor: 1990=£410, 2019=£1137, 2026=£1641)
+                // Every pre-2020 compare year should be cheaper than today.
+                if (compareYear <= 2019) {
+                  if (historical.energy >= today.energy) {
+                    fail(
+                      tag,
+                      `energy direction: hist(${compareYear})=£${historical.energy.toFixed(0)} >= today=£${today.energy.toFixed(0)} (energy was cheaper pre-2020s — data series may be miscalibrated)`,
+                    )
+                  }
+                }
+
+                // Council tax has risen every year since its 1993 introduction.
+                // (series: 1990=£360 community charge proxy, 2026=£2393)
+                if (compareYear <= 2020) {
+                  if (historical.councilTax >= today.councilTax) {
+                    fail(
+                      tag,
+                      `council tax direction: hist(${compareYear})=£${historical.councilTax.toFixed(0)} >= today=£${today.councilTax.toFixed(0)} (council tax has risen consistently — data series may be miscalibrated)`,
+                    )
+                  }
+                }
+
+                // Nominal grocery costs were lower in all our compare years because
+                // food CPI was lower (series: 1990=49.5, 2020=107.6, 2025=144).
+                // The grocery formula is 5200*(cpi/100)+1000*children, so today > hist
+                // whenever foodCpiToday > foodCpiThen, which holds for all years ≤ 2020.
+                if (compareYear <= 2020) {
+                  if (historical.groceries >= today.groceries) {
+                    fail(
+                      tag,
+                      `groceries direction: hist(${compareYear})=£${historical.groceries.toFixed(0)} >= today=£${today.groceries.toFixed(0)} (food CPI was lower in all compare years ≤ 2020 — formula or data may be broken)`,
+                    )
+                  }
+                }
+
+                // Childcare costs have risen dramatically.
+                // (childcare-cost series: 1995=£3000/child, 2026=£16300/child)
+                // For dual-earner households with children, today's cost should always
+                // exceed any historical compare year up to 2020.
+                if (earners === 2 && children > 0 && compareYear <= 2020) {
+                  if (today.childcare <= historical.childcare) {
+                    fail(
+                      tag,
+                      `childcare direction: today=£${today.childcare.toFixed(0)} <= hist(${compareYear})=£${historical.childcare.toFixed(0)} (childcare costs have risen dramatically — data series may be miscalibrated)`,
+                    )
+                  }
+                }
+
+                // Mortgage burden was higher in 1990 due to the BoE rate crisis (peak 14.57%).
+                // With a 1.5pp margin, the effective mortgage rate was ~16.07%.
+                // The synthetic mortgage calculation means that for 1990, historical.housingPct
+                // is theoretically ~1.44× today's housingPct (for any mortgage amount/salary).
+                // This tests that the syntheticMortgagePayment formula and the
+                // house-price + boe-rate data are correctly calibrated for 1990.
+                if (housingType === "mortgage" && compareYear === 1990) {
+                  if (historical.housingPct <= today.housingPct) {
+                    fail(
+                      tag,
+                      `1990 mortgage burden: hist.housingPct=${historical.housingPct.toFixed(1)}% <= today=${today.housingPct.toFixed(1)}% (BoE rate was ~14.57% in 1990 — mortgages should have been proportionally more expensive relative to income)`,
+                    )
+                  }
+                }
+
+                // ── Historical absolute range checks ────────────────────────
+                // Catch impossible/degenerate values in historical outputs.
+
+                // Housing costs can't be negative (a negative mortgage payment makes no sense)
+                if (historical.housing < 0) {
+                  fail(
+                    tag,
+                    `historical.housing negative: £${historical.housing.toFixed(2)} (housing cost can't be negative — check syntheticMortgagePayment or rent scaling)`,
+                  )
+                }
+
+                // Energy must be positive (series has no zeroes and shouldn't interpolate to 0)
+                if (historical.energy <= 0) {
+                  fail(
+                    tag,
+                    `historical.energy non-positive: £${historical.energy.toFixed(0)} (energy series should always return a positive value)`,
+                  )
+                }
+
+                // Groceries must be positive (food CPI is always > 0 in the series)
+                if (historical.groceries <= 0) {
+                  fail(
+                    tag,
+                    `historical.groceries non-positive: £${historical.groceries.toFixed(0)} (grocery cost should always be positive)`,
+                  )
+                }
               } // compareYear
             } // pensionPct
           } // studentLoanPlan
