@@ -76,14 +76,16 @@ export function ScrollyIntro({ data }: Props) {
               <span className="text-xs text-(--color-muted) font-mono uppercase tracking-wide">
                 {activeIdx + 1} / {SCENES.length}
               </span>
-              <div className="flex gap-1 ml-1">
+              <div className="flex gap-0.5 ml-1">
                 {SCENES.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveIdx(i)}
                     aria-label={`Go to scene ${i + 1}: ${SCENES[i].headline}`}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${i === activeIdx ? "bg-(--color-accent) w-3" : "bg-(--color-border)"}`}
-                  />
+                    className="w-8 h-8 flex items-center justify-center rounded-full transition-all"
+                  >
+                    <span className={`rounded-full transition-all block ${i === activeIdx ? "w-4 h-2 bg-(--color-accent)" : "w-2 h-2 bg-(--color-border)"}`} />
+                  </button>
                 ))}
               </div>
             </div>

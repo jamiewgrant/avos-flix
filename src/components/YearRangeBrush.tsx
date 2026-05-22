@@ -112,7 +112,7 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-      <div className="flex-1 min-w-[260px]">
+      <div className="flex-1 min-w-0 w-full">
         <svg
           ref={ref}
           width="100%"
@@ -206,7 +206,7 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
             <button
               key={p.label}
               onClick={() => onChange(p.range)}
-              className="px-2.5 py-1 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-(--color-text) transition"
+              className="px-3 py-2 rounded-md font-mono text-xs bg-(--color-bg) text-(--color-muted) hover:text-(--color-text) transition"
             >
               {p.label}
             </button>

@@ -303,6 +303,7 @@ export function PersonalSnapshot({ series, urlSnap = {}, onSnapChange }: Props) 
               <span className="px-3 text-sm text-(--color-muted)">£</span>
               <input
                 type="number"
+                inputMode="numeric"
                 min={0}
                 max={999999}
                 placeholder="45,000"
@@ -351,6 +352,7 @@ export function PersonalSnapshot({ series, urlSnap = {}, onSnapChange }: Props) 
                 <span className="px-3 text-sm text-(--color-muted)">£</span>
                 <input
                   type="number"
+                  inputMode="numeric"
                   min={0}
                   placeholder="1,200"
                   value={monthlyHousing || ""}
@@ -408,6 +410,7 @@ export function PersonalSnapshot({ series, urlSnap = {}, onSnapChange }: Props) 
           <div className="flex items-center border border-(--color-border) rounded-lg overflow-hidden bg-(--color-surface-2) focus-within:border-(--color-accent) transition w-36">
             <input
               type="number"
+              inputMode="numeric"
               min={0}
               max={50}
               step={0.5}

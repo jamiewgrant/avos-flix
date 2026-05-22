@@ -46,6 +46,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-muted) text-sm">£</span>
               <input
                 type="number"
+                inputMode="numeric"
                 value={salary}
                 onChange={(e) => setSalary(Math.max(1, Number(e.target.value)))}
                 min={1}
@@ -60,6 +61,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
             <div className="relative">
               <input
                 type="number"
+                inputMode="numeric"
                 value={employeePct}
                 onChange={(e) => setEmployeePct(Math.max(0, Math.min(50, Number(e.target.value))))}
                 min={0}
@@ -76,6 +78,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
             <div className="relative">
               <input
                 type="number"
+                inputMode="numeric"
                 value={employerPct}
                 onChange={(e) => setEmployerPct(Math.max(0, Math.min(50, Number(e.target.value))))}
                 min={0}

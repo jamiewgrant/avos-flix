@@ -86,6 +86,7 @@ const DEFAULT_VISIBLE_IDS = new Set([
 
 function App() {
   const { theme, toggle: toggleTheme } = useTheme()
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const { data, loading, error } = useSeries()
   const allSeries = useMemo<Series[]>(
     () => (data ? Object.values(data.series) : []),
@@ -269,11 +270,12 @@ function App() {
               <a href="#pension" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Pension</a>
               <a href="#faq" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">FAQ</a>
             </nav>
+            <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+              className="w-10 h-10 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
             >
               {theme === "dark" ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -293,7 +295,47 @@ function App() {
                 </svg>
               )}
             </button>
+            {/* Hamburger — mobile only */}
+            <button
+              onClick={() => setMobileNavOpen((o) => !o)}
+              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileNavOpen}
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+            >
+              {mobileNavOpen ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              )}
+            </button>
+            </div>
           </div>
+          {/* Mobile nav dropdown */}
+          {mobileNavOpen && (
+            <nav className="md:hidden border-t border-(--color-border) bg-(--color-bg)/95 px-4 py-3 flex flex-col gap-1 text-sm text-(--color-muted)">
+              {[
+                { href: "#explore", label: "Explore" },
+                { href: "#costs", label: "Costs" },
+                { href: "#housing", label: "Housing" },
+                { href: "#your-snapshot", label: "Snapshot" },
+                { href: "#pension", label: "Pension" },
+                { href: "#faq", label: "FAQ" },
+              ].map(({ href, label }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={() => setMobileNavOpen(false)}
+                  className="px-3 py-3 rounded-lg hover:text-(--color-text) hover:bg-(--color-surface) transition"
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+          )}
         </header>
       )}
 
@@ -304,7 +346,7 @@ function App() {
             <span className="w-1.5 h-1.5 rounded-full bg-(--color-success) inline-block" />
             Data updated {data ? new Date(data.metadata.generatedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "…"}
           </div>
-          <h1 className="text-6xl md:text-7xl font-semibold tracking-tight text-(--color-text)">
+          <h1 className="text-5xl md:text-7xl font-semibold tracking-tight text-(--color-text)">
             avos<span className="text-(--color-accent)">+</span>flix
           </h1>
           <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto leading-relaxed">
@@ -409,7 +451,7 @@ function App() {
                       <button
                         key={m}
                         onClick={() => setState((p) => ({ ...p, mode: m }))}
-                        className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                           mode === m
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -429,7 +471,7 @@ function App() {
                         <button
                           key={y}
                           onClick={() => setState((p) => ({ ...p, baseYear: y }))}
-                          className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                          className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                             baseYear === y
                               ? "bg-(--color-accent) text-white"
                               : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -449,7 +491,7 @@ function App() {
                       <button
                         key={opt.key}
                         onClick={() => selectRegion(opt.key)}
-                        className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                           activeRegion === opt.key
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -469,7 +511,7 @@ function App() {
                       <button
                         key={v}
                         onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
-                        className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                           (v === "real") === realTerms
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -490,7 +532,7 @@ function App() {
                   <span>Events</span>
                   <button
                     onClick={() => setShowAnnotations((v) => !v)}
-                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                    className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                       showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Show/hide historical event markers"
@@ -503,7 +545,7 @@ function App() {
                   <span>Palette</span>
                   <button
                     onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
-                    className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                    className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
                       palette === "cb" ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Swap to a colour-blind-safe (Okabe-Ito) palette"
