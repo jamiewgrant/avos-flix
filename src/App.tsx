@@ -37,6 +37,9 @@ const PersonalSnapshotLazy = lazy(() =>
 const PensionAdequacyLazy = lazy(() =>
   import("./components/PensionAdequacyView").then((m) => ({ default: m.PensionAdequacyView })),
 )
+const PolicyDifferencesNoteLazy = lazy(() =>
+  import("./components/PolicyDifferencesNote").then((m) => ({ default: m.PolicyDifferencesNote })),
+)
 
 const ChartFallback = () => (
   <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
@@ -64,6 +67,13 @@ import { SeriesLegend } from "./components/SeriesLegend"
 import type { Series } from "./types/series"
 
 const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
+
+type RegionKey = "uk" | "london" | "northeast"
+const REGION_OPTIONS: { label: string; key: RegionKey; seriesId: string }[] = [
+  { label: "UK", key: "uk", seriesId: "house-price-landreg" },
+  { label: "London", key: "london", seriesId: "house-price-london" },
+  { label: "North East", key: "northeast", seriesId: "house-price-northeast" },
+]
 
 const DEFAULT_VISIBLE_IDS = new Set([
   "median-wage",
@@ -124,6 +134,27 @@ function App() {
       return { ...prev, hiddenIds: next }
     })
   }
+
+  function selectRegion(key: RegionKey) {
+    setState((prev) => {
+      const next = new Set(prev.hiddenIds)
+      for (const opt of REGION_OPTIONS) {
+        if (opt.key === key) {
+          next.delete(opt.seriesId)
+        } else {
+          next.add(opt.seriesId)
+        }
+      }
+      return { ...prev, hiddenIds: next }
+    })
+  }
+
+  const activeRegion: RegionKey = (() => {
+    for (const opt of REGION_OPTIONS) {
+      if (!hiddenIds.has(opt.seriesId)) return opt.key
+    }
+    return "uk"
+  })()
 
   const snapshotRef = useRef<HTMLDivElement>(null)
   const [snapshotting, setSnapshotting] = useState(false)
@@ -412,6 +443,26 @@ function App() {
                 )}
 
                 <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span>Region</span>
+                  <div className="flex gap-1">
+                    {REGION_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => selectRegion(opt.key)}
+                        className={`px-2.5 py-1 rounded-md font-mono text-xs transition ${
+                          activeRegion === opt.key
+                            ? "bg-(--color-accent) text-white"
+                            : "bg-(--color-surface-2) hover:text-(--color-text)"
+                        }`}
+                        title={`Show ${opt.label} house prices`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-(--color-muted)">
                   <span>Strip inflation</span>
                   <div className="flex gap-1">
                     {(["nominal", "real"] as const).map((v) => (
@@ -675,6 +726,14 @@ function App() {
           </Suspense>
           <Suspense fallback={<ChartFallback />}>
             <ThenVsNowLazy series={visible} />
+          </Suspense>
+        </section>
+      )}
+
+      {!embedMode && data && (
+        <section className="mb-6">
+          <Suspense fallback={<ChartFallback />}>
+            <PolicyDifferencesNoteLazy />
           </Suspense>
         </section>
       )}
