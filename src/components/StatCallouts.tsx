@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { Series } from "../types/series"
 
 interface Props {
@@ -141,23 +141,54 @@ export function StatCallouts({ series, baseYear, endYear }: Props) {
   if (stats.length === 0) return null
 
   // Cap at 4 so the grid stays clean
-  const visible = stats.slice(0, 4)
+  const displayStats = stats.slice(0, 4)
+
+  return <StatGrid displayStats={displayStats} />
+}
+
+function StatGrid({ displayStats }: { displayStats: Stat[] }) {
+  const gridRef = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = gridRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div
+      ref={gridRef}
       className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6"
       role="region"
       aria-label="Key statistics"
       aria-live="polite"
       aria-atomic="true"
     >
-      {visible.map((s, i) => (
+      {displayStats.map((s, i) => (
         <div
           key={i}
-          className="card card-hover rounded-xl p-4 relative group"
+          className="card card-hover rounded-xl p-4 relative group cursor-default"
         >
           <CopyButton text={buildShareText(s)} />
-          <div className="text-2xl md:text-3xl font-semibold text-(--color-accent) tabular-nums tracking-tight stat-value">
+          <div
+            className="text-2xl md:text-3xl font-semibold text-(--color-accent) group-hover:text-(--color-text) transition-colors duration-150 tabular-nums tracking-tight"
+            style={
+              visible
+                ? { animation: "stat-in 400ms ease both", animationDelay: `${i * 80}ms` }
+                : { opacity: 0, transform: "translateY(6px)" }
+            }
+          >
             {s.headline}
           </div>
           <div className="text-xs text-(--color-text) mt-1.5 leading-snug font-medium">{s.caption}</div>

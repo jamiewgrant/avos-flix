@@ -52,8 +52,11 @@ export function PullQuote({ series, baseYear, endYear }: Props) {
   if (!sentence) return null
 
   return (
-    <div className="mb-6 rounded-2xl border border-(--color-border) bg-(--color-surface) px-5 py-5 md:px-8 md:py-6">
-      <p className="text-lg md:text-xl text-(--color-text) leading-relaxed tabular-nums">
+    <div className="relative mb-6 rounded-2xl border border-(--color-border) bg-(--color-surface) px-5 py-5 md:px-8 md:py-6">
+      <span className="absolute -top-3 -left-1 md:-left-3 text-6xl md:text-7xl font-semibold leading-none select-none pointer-events-none text-(--color-accent) opacity-20">
+        &ldquo;
+      </span>
+      <p className="pl-6 md:pl-8 text-lg md:text-xl text-(--color-text) leading-relaxed tabular-nums">
         Since <span className="font-mono">{sentence.baseYear}</span>:{" "}
         houses <span className="text-(--color-accent) font-semibold">{sentence.house}</span>,{" "}
         wages <span className="text-(--color-text) font-semibold">{sentence.wage}</span>

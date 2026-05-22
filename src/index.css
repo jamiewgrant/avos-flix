@@ -18,8 +18,8 @@
   --shadow-md:  0 4px 12px rgba(0,0,0,.4);
   --shadow-lg:  0 8px 32px rgba(0,0,0,.5);
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "JetBrains Mono", Consolas, monospace;
 }
 
 /* ─── Light mode overrides ───────────────────────────────────────────────── */
@@ -175,9 +175,105 @@ body.embed nav { display: none !important; }
   background-clip: text;
 }
 
-/* Number shimmer for stat cards */
+/* ─── Section h2 — tighter tracking at display size ─────────────────────── */
+.section-h2 {
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* ─── Section number label above headings ────────────────────────────────── */
+.section-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+  user-select: none;
+}
+
+/* ─── Caption / source line ──────────────────────────────────────────────── */
+.caption {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  opacity: 0.55;
+  line-height: 1.5;
+}
+
+/* ─── Tabular figures everywhere that matters ────────────────────────────── */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ─── Primary card — subtle accent top-edge glow ────────────────────────── */
+.card-primary {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 18%, transparent),
+    var(--shadow-md);
+}
+
+/* ─── Section divider with centred pip ───────────────────────────────────── */
+.section-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  margin: 2rem 0;
+}
+.section-divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: var(--color-border);
+}
+.section-divider__pip {
+  position: relative;
+  z-index: 1;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0.5;
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* ─── Scroll progress bar ────────────────────────────────────────────────── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent),
+    color-mix(in srgb, var(--color-accent) 60%, #fff 40%)
+  );
+  z-index: 200;
+  transform-origin: left center;
+  transition: width 60ms linear;
+  pointer-events: none;
+}
+
+/* ─── Stat card number animation (scroll-triggered) ─────────────────────── */
 @keyframes stat-in {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.stat-value { animation: stat-in 300ms ease both; }
+/* Legacy always-on version — kept for backward compat */
+.stat-value { }
+
+/* ─── Hero background radial glow ───────────────────────────────────────── */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 20%,
+    color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
+    transparent 70%
+  );
+}

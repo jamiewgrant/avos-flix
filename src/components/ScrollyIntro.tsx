@@ -147,7 +147,14 @@ function SceneBlock({
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <h3 className="text-3xl md:text-4xl font-semibold text-(--color-text) leading-tight">
-          {scene.headline}
+          {(() => {
+            const [first, ...rest] = scene.headline.split(" ")
+            return rest.length > 0 ? (
+              <><span className="font-extrabold">{first}</span>{" "}{rest.join(" ")}</>
+            ) : (
+              scene.headline
+            )
+          })()}
         </h3>
         <p className="mt-5 text-(--color-muted) text-lg leading-relaxed max-w-md">
           {scene.body}

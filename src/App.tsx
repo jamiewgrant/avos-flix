@@ -78,6 +78,8 @@ import { About } from "./components/About"
 import { OnboardingBanner } from "./components/OnboardingBanner"
 import { ChartSkeleton } from "./components/ChartSkeleton"
 import { SourceStrip } from "./components/SourceStrip"
+import { ScrollProgress } from "./components/ScrollProgress"
+import { SectionDivider } from "./components/SectionDivider"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { applyPalette } from "./lib/palette"
@@ -299,6 +301,7 @@ function App() {
 
   return (
     <>
+      <ScrollProgress />
       <KeyboardShortcuts />
       {!embedMode && (
         <header
@@ -391,12 +394,13 @@ function App() {
 
     <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
       {!embedMode && (
-        <section className="text-center pt-12 pb-24">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-(--color-border) bg-(--color-surface) text-xs text-(--color-muted) mb-8">
+        <section className="relative text-center pt-12 pb-24 overflow-hidden">
+          <div className="hero-glow" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-(--color-border) bg-(--color-surface) text-xs text-(--color-muted) mb-8 relative">
             <span className="w-1.5 h-1.5 rounded-full bg-(--color-success) inline-block" />
             Data updated {data ? new Date(data.metadata.generatedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "…"}
           </div>
-          <h1 className="text-5xl md:text-7xl font-semibold tracking-tight text-(--color-text)">
+          <h1 className="relative text-5xl md:text-7xl font-semibold tracking-tight text-(--color-text)" style={{ letterSpacing: "-0.03em" }}>
             avos<span className="text-(--color-accent)">+</span>flix
           </h1>
           <p className="mt-6 text-lg md:text-xl text-(--color-muted) max-w-2xl mx-auto leading-relaxed">
@@ -430,9 +434,12 @@ function App() {
         {!embedMode && <OnboardingBanner />}
 
         {!embedMode && (
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
-            Explore the whole set.
-          </h2>
+          <>
+            <span className="section-num">01 / Explore</span>
+            <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
+              Explore the whole set.
+            </h2>
+          </>
         )}
         <p className={`text-(--color-muted) max-w-2xl text-lg leading-relaxed ${embedMode ? "mb-4 text-sm" : "mb-8"}`}>
           {mode === "indexed"
@@ -453,7 +460,7 @@ function App() {
             snapshotRef.current = node
             chartContainerRef.current = node
           }}
-          className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6"
+          className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6 card-primary"
         >
           {loading && <ChartSkeleton />}
           {error && (
@@ -699,15 +706,20 @@ function App() {
         </div>
       )}
 
+      {!embedMode && <SectionDivider />}
+
       {!embedMode && data && wage && (
         <div id="costs" style={{ scrollMarginTop: "4rem" }}>
           <CostStackSection series={data.series} wage={wage} />
         </div>
       )}
 
+      {!embedMode && <SectionDivider />}
+
       {!embedMode && canShowAffordability && (
         <section className="mb-20" id="housing" style={{ scrollMarginTop: "4rem" }}>
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+          <span className="section-num">02 / Housing</span>
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             "But interest rates were 15%!"
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -725,7 +737,7 @@ function App() {
 
       {!embedMode && canShowAffordability && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             What the mortgage actually costs.
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -739,7 +751,8 @@ function App() {
 
       {!embedMode && data?.series["rent-index"] && wage && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+          <span className="section-num">03 / Renting</span>
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             "Just buy instead of renting."
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -764,7 +777,8 @@ function App() {
       {!embedMode && housePriceNationwide && wage && (
         <section className="mb-20">
           <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mt-12 mb-3">
+          <span className="section-num">04 / Counterfactual</span>
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mt-12 mb-3">
             What if houses had grown at wage rate?
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -780,7 +794,8 @@ function App() {
 
       {!embedMode && data && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+          <span className="section-num">05 / Calculator</span>
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             What if you'd bought in year X?
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -808,7 +823,8 @@ function App() {
 
       {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
         <section className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+          <span className="section-num">06 / Take-home</span>
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             What actually lands in your bank.
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
@@ -849,6 +865,8 @@ function App() {
           </Suspense>
         </section>
       )}
+
+      {!embedMode && <SectionDivider />}
 
       {!embedMode && data && (
         <Suspense fallback={<ChartFallback />}>
