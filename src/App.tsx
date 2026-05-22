@@ -6,6 +6,11 @@ import { useTheme } from "./lib/useTheme"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { MortgageChart } from "./components/charts/MortgageChart"
+import { KeyboardShortcuts } from "./components/KeyboardShortcuts"
+import { ChartInsight } from "./components/ChartInsight"
+import { EmbedCodeButton } from "./components/EmbedCodeButton"
+import { ShareButton } from "./components/ShareButton"
+import { MethodologyModal } from "./components/MethodologyModal"
 
 const RentToIncomeChart = lazy(() =>
   import("./components/charts/RentToIncomeChart").then((m) => ({ default: m.RentToIncomeChart })),
@@ -39,6 +44,21 @@ const PensionAdequacyLazy = lazy(() =>
 )
 const PolicyDifferencesNoteLazy = lazy(() =>
   import("./components/PolicyDifferencesNote").then((m) => ({ default: m.PolicyDifferencesNote })),
+)
+const HomeBuyingCalculatorLazy = lazy(() =>
+  import("./components/HomeBuyingCalculator").then((m) => ({ default: m.HomeBuyingCalculator })),
+)
+const GradDebtCalloutLazy = lazy(() =>
+  import("./components/GradDebtCallout").then((m) => ({ default: m.GradDebtCallout })),
+)
+const WealthGapSectionLazy = lazy(() =>
+  import("./components/WealthGapSection").then((m) => ({ default: m.WealthGapSection })),
+)
+const BoomerModeViewLazy = lazy(() =>
+  import("./components/BoomerModeView").then((m) => ({ default: m.BoomerModeView })),
+)
+const InternationalComparisonLazy = lazy(() =>
+  import("./components/InternationalComparison").then((m) => ({ default: m.InternationalComparison })),
 )
 
 const ChartFallback = () => (
@@ -87,6 +107,7 @@ const DEFAULT_VISIBLE_IDS = new Set([
 function App() {
   const { theme, toggle: toggleTheme } = useTheme()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [methodologyOpen, setMethodologyOpen] = useState(false)
   const { data, loading, error } = useSeries()
   const allSeries = useMemo<Series[]>(
     () => (data ? Object.values(data.series) : []),
@@ -243,13 +264,42 @@ function App() {
     return new URLSearchParams(window.location.search).get("embed") === "1"
   }, [])
 
+  const boomerMode = useMemo(() => {
+    if (typeof window === "undefined") return false
+    return new URLSearchParams(window.location.search).get("boomer") === "1"
+  }, [])
+
+  // Handle keyboard shortcuts dispatched by KeyboardShortcuts component
+  useEffect(() => {
+    function onShortcut(e: Event) {
+      const detail = (e as CustomEvent).detail as { action: string; value: unknown }
+      if (detail.action === "setMode") {
+        setState((p) => ({ ...p, mode: detail.value as "indexed" | "raw" }))
+      } else if (detail.action === "setBaseYear") {
+        setState((p) => ({ ...p, baseYear: detail.value as number }))
+      }
+    }
+    window.addEventListener("avos:shortcut", onShortcut)
+    return () => window.removeEventListener("avos:shortcut", onShortcut)
+  }, [setState])
+
   useEffect(() => {
     if (embedMode) document.body.classList.add("embed")
     return () => document.body.classList.remove("embed")
   }, [embedMode])
 
+  // Boomer mode — stripped view, no header/footer
+  if (boomerMode && data) {
+    return (
+      <Suspense fallback={<div className="min-h-screen grid place-items-center text-(--color-muted) text-sm font-mono">loading…</div>}>
+        <BoomerModeViewLazy series={allSeries} />
+      </Suspense>
+    )
+  }
+
   return (
     <>
+      <KeyboardShortcuts />
       {!embedMode && (
         <header
           className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-bg)/90"
@@ -555,6 +605,7 @@ function App() {
                 </div>
 
                 <div className="ml-auto flex items-center gap-1.5 chart-actions">
+                  <EmbedCodeButton />
                   <button
                     onClick={toggleFullscreen}
                     aria-label="Toggle fullscreen for the main chart"
@@ -579,6 +630,11 @@ function App() {
                   >
                     ↗ Share
                   </button>
+                  <ShareButton
+                    title="avos+flix — the numbers behind the avocado-toast argument"
+                    stats={palettedVisible.slice(0, 4).map((s) => s.name)}
+                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                  />
                   <button
                     onClick={resetToDefaults}
                     aria-label="Reset all controls to defaults"
@@ -624,6 +680,17 @@ function App() {
         </div>
 
         {!embedMode && data && <StatCallouts series={visible} baseYear={baseYear} />}
+        {!embedMode && data && (
+          <div className="mt-4 px-1">
+            <ChartInsight
+              series={palettedVisible}
+              baseYear={baseYear}
+              fromYear={activeFrom}
+              toYear={activeTo}
+              mode={mode}
+            />
+          </div>
+        )}
       </section>
 
       {embedMode && (
@@ -686,6 +753,14 @@ function App() {
         </section>
       )}
 
+      {!embedMode && data && (
+        <section className="mb-20">
+          <Suspense fallback={<ChartFallback />}>
+            <InternationalComparisonLazy series={allSeries} />
+          </Suspense>
+        </section>
+      )}
+
       {!embedMode && housePriceNationwide && wage && (
         <section className="mb-20">
           <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
@@ -703,10 +778,32 @@ function App() {
         </section>
       )}
 
+      {!embedMode && data && (
+        <section className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
+            What if you'd bought in year X?
+          </h2>
+          <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
+            Pick the year you could theoretically have bought and a deposit size. See what your mortgage would be today — vs. renting.
+          </p>
+          <Suspense fallback={<ChartFallback />}>
+            <HomeBuyingCalculatorLazy series={allSeries} />
+          </Suspense>
+        </section>
+      )}
+
       {!embedMode && housePriceNationwide && wage && (
         <Suspense fallback={<ChartFallback />}>
           <DepositTimelineSectionLazy housePrice={housePriceNationwide} wage={wage} />
         </Suspense>
+      )}
+
+      {!embedMode && data && (
+        <section className="mb-20">
+          <Suspense fallback={<ChartFallback />}>
+            <WealthGapSectionLazy series={allSeries} />
+          </Suspense>
+        </section>
       )}
 
       {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
@@ -735,6 +832,14 @@ function App() {
         <Suspense fallback={<ChartFallback />}>
           <BoomerVsMillennialLazy data={data} />
         </Suspense>
+      )}
+
+      {!embedMode && data && (
+        <section className="mb-20">
+          <Suspense fallback={<ChartFallback />}>
+            <GradDebtCalloutLazy series={allSeries} />
+          </Suspense>
+        </section>
       )}
 
       {!embedMode && housePriceNationwide && (
@@ -794,28 +899,19 @@ function App() {
       )}
 
       {!embedMode && data && (
-        <details className="mt-8 text-xs text-(--color-muted) font-mono">
-          <summary className="cursor-pointer hover:text-(--color-text)">Sources & methodology</summary>
-          <ul className="mt-3 space-y-1.5">
-            {allSeries.map((s) => (
-              <li key={s.id}>
-                <span style={{ color: s.color }}>●</span>{" "}
-                <strong className="text-(--color-text) opacity-80">{s.name}</strong> — {s.description}{" "}
-                <a
-                  className="underline hover:text-(--color-text)"
-                  href={s.source.url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  [{s.source.name}]
-                </a>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 opacity-60">
-            Built {new Date(data.metadata.generatedAt).toLocaleDateString("en-GB")}.
-          </p>
-        </details>
+        <>
+          <button
+            onClick={() => setMethodologyOpen(true)}
+            className="mt-6 text-xs text-(--color-muted) font-mono hover:text-(--color-text) transition underline underline-offset-2"
+          >
+            Sources &amp; methodology ({allSeries.length} series)
+          </button>
+          <MethodologyModal
+            open={methodologyOpen}
+            onClose={() => setMethodologyOpen(false)}
+            series={allSeries}
+          />
+        </>
       )}
     </main>
     </>

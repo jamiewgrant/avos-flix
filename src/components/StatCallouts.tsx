@@ -1,3 +1,4 @@
+import { useState } from "react"
 import type { Series } from "../types/series"
 
 interface Props {
@@ -27,6 +28,50 @@ function valueAt(series: Series[], id: string, year: number): number | null {
 
 function fmtMultiple(x: number): string {
   return x >= 10 ? `${x.toFixed(0)}×` : `${x.toFixed(1)}×`
+}
+
+function buildShareText(stat: Stat): string {
+  const hint = stat.hint ? ` (${stat.hint})` : ""
+  return `${stat.caption}: ${stat.headline}${hint} — avos-flix.vercel.app`
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      aria-label="Copy stat"
+      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-150 p-1 rounded text-(--color-muted) hover:text-(--color-text) touch-device:opacity-100"
+      style={{ touchAction: "manipulation" }}
+    >
+      {copied ? (
+        <span className="text-xs leading-none select-none">✓</span>
+      ) : (
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+      )}
+    </button>
+  )
 }
 
 export function StatCallouts({ series, baseYear, endYear }: Props) {
@@ -109,8 +154,9 @@ export function StatCallouts({ series, baseYear, endYear }: Props) {
       {visible.map((s, i) => (
         <div
           key={i}
-          className="card card-hover rounded-xl p-4"
+          className="card card-hover rounded-xl p-4 relative group"
         >
+          <CopyButton text={buildShareText(s)} />
           <div className="text-2xl md:text-3xl font-semibold text-(--color-accent) tabular-nums tracking-tight stat-value">
             {s.headline}
           </div>

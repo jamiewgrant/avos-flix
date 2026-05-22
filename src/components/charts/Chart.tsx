@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, useRef } from "react"
 import { useChartColors } from "../../lib/useChartColors"
 import { motion, AnimatePresence } from "framer-motion"
 import { Group } from "@visx/group"
@@ -80,6 +80,17 @@ function normalize(s: Series, baseYear: number, fromYear: number): NormalizedSer
   return { meta: s, baseYearActual: base.year, baseValue: base.value, points }
 }
 
+/** Pixel position of an active annotation popover, relative to the wrapper div. */
+interface ActiveAnnotation {
+  annotation: Annotation
+  /** left px (already accounting for flip) */
+  left: number
+  /** top px */
+  top: number
+  /** whether the card opens to the left of the line */
+  flipped: boolean
+}
+
 function IndexedView({
   series,
   baseYear,
@@ -97,11 +108,15 @@ function IndexedView({
 }) {
   const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
   const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
+  const [activeAnnotationId, setActiveAnnotationId] = useState<string | null>(null)
+  const [activeAnnoPos, setActiveAnnoPos] = useState<ActiveAnnotation | null>(null)
   const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
   const [pinned, setPinned] = useState<number | null>(null)
   const hovered = pinned ?? hoveredRaw
   const setHovered = setHoveredRaw
   const startYear = fromYear ?? baseYear
+  const touchDismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   const normalized = useMemo(() => {
     return series
@@ -109,313 +124,419 @@ function IndexedView({
       .filter((s): s is NormalizedSeries => s !== null && s.points.length > 1)
   }, [series, baseYear, startYear])
 
+  function handleAnnotationClick(
+    a: Annotation,
+    annoId: string,
+    cx: number,
+    marginLeft: number,
+    marginTop: number,
+    innerW: number,
+    innerH: number,
+  ) {
+    if (activeAnnotationId === annoId) {
+      setActiveAnnotationId(null)
+      setActiveAnnoPos(null)
+      return
+    }
+    const popoverW = 200
+    const absX = marginLeft + cx
+    const flipped = absX + popoverW + 16 > marginLeft + innerW
+    const left = flipped ? absX - popoverW - 8 : absX + 8
+    // Position popover near the bottom of the chart inner area
+    const top = marginTop + Math.max(0, innerH - 120)
+    setActiveAnnotationId(annoId)
+    setActiveAnnoPos({ annotation: a, left, top, flipped })
+  }
+
   return (
-    <ParentSize>
-      {({ width }) => {
-        if (width === 0) return null
-        const height = Math.max(340, Math.min(540, width * 0.55))
-        const margin = { top: 20, right: 92, bottom: 36, left: 56 }
-        const innerW = width - margin.left - margin.right
-        const innerH = height - margin.top - margin.bottom
+    <div ref={wrapperRef} style={{ position: "relative" }}>
+      <ParentSize>
+        {({ width }) => {
+          if (width === 0) return null
+          const height = Math.max(340, Math.min(540, width * 0.55))
+          const margin = { top: 20, right: 92, bottom: 36, left: 56 }
+          const innerW = width - margin.left - margin.right
+          const innerH = height - margin.top - margin.bottom
 
-        if (normalized.length === 0) {
+          if (normalized.length === 0) {
+            return (
+              <svg width={width} height={height}>
+                <text x={width / 2} y={height / 2} fill={MUTED} fontSize={13} textAnchor="middle">
+                  No series have data at base year {baseYear}. Pick an earlier base or different series.
+                </text>
+              </svg>
+            )
+          }
+
+          const allYears = normalized.flatMap((s) => s.points.map((p) => p.year))
+          const allValues = normalized.flatMap((s) => s.points.map((p) => p.value))
+          const endYear = toYear ?? Math.max(...allYears)
+
+          const xScale = scaleLinear<number>({ domain: [startYear, endYear], range: [0, innerW] })
+          const yScale = scaleLinear<number>({
+            domain: [0, Math.max(...allValues) * 1.05],
+            range: [innerH, 0],
+            nice: true,
+          })
+
+          function handleMove(e: React.PointerEvent<SVGRectElement>) {
+            const rect = e.currentTarget.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const year = Math.round(xScale.invert(x))
+            if (year >= startYear && year <= endYear) setHovered(year)
+            else setHovered(null)
+          }
+
+          function yearFromTouchX(touch: React.Touch, currentTarget: SVGRectElement): number | null {
+            const rect = currentTarget.getBoundingClientRect()
+            const x = touch.clientX - rect.left
+            const year = Math.round(xScale.invert(x))
+            return year >= startYear && year <= endYear ? year : null
+          }
+
+          function scheduleTouchDismiss() {
+            if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
+            touchDismissTimer.current = setTimeout(() => {
+              setHovered(null)
+            }, 2500)
+          }
+
+          function handleTouchStart(e: React.TouchEvent<SVGRectElement>) {
+            e.preventDefault()
+            if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
+            const year = yearFromTouchX(e.touches[0], e.currentTarget)
+            setHovered(year)
+            if (year !== null) scheduleTouchDismiss()
+          }
+
+          function handleTouchMove(e: React.TouchEvent<SVGRectElement>) {
+            if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
+            const year = yearFromTouchX(e.touches[0], e.currentTarget)
+            setHovered(year)
+            if (year !== null) scheduleTouchDismiss()
+          }
+
+          const tooltipItems = hovered === null
+            ? []
+            : normalized
+                .map((s) => {
+                  const point = s.points.find((p) => p.year === hovered)
+                  if (!point) return null
+                  return {
+                    id: s.meta.id,
+                    name: s.meta.name,
+                    color: s.meta.color,
+                    display: `${Math.round(point.value)}`,
+                    rawDisplay: formatValue(s.baseValue * (point.value / 100), s.meta.unit),
+                    cy: yScale(point.value),
+                  }
+                })
+                .filter((x): x is NonNullable<typeof x> => x !== null)
+                .sort((a, b) => a.cy - b.cy)
+
           return (
-            <svg width={width} height={height}>
-              <text x={width / 2} y={height / 2} fill={MUTED} fontSize={13} textAnchor="middle">
-                No series have data at base year {baseYear}. Pick an earlier base or different series.
-              </text>
-            </svg>
-          )
-        }
+            <svg
+              width={width}
+              height={height}
+              role="img"
+              aria-label={`Series indexed to ${baseYear} = 100`}
+            >
+              <Group left={margin.left} top={margin.top}>
+                <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
 
-        const allYears = normalized.flatMap((s) => s.points.map((p) => p.year))
-        const allValues = normalized.flatMap((s) => s.points.map((p) => p.value))
-        const endYear = toYear ?? Math.max(...allYears)
+                <line
+                  x1={0}
+                  x2={innerW}
+                  y1={yScale(100)}
+                  y2={yScale(100)}
+                  stroke={MUTED}
+                  strokeOpacity={0.5}
+                  strokeDasharray="3,3"
+                />
 
-        const xScale = scaleLinear<number>({ domain: [startYear, endYear], range: [0, innerW] })
-        const yScale = scaleLinear<number>({
-          domain: [0, Math.max(...allValues) * 1.05],
-          range: [innerH, 0],
-          nice: true,
-        })
-
-        function handleMove(e: React.PointerEvent<SVGRectElement>) {
-          const rect = e.currentTarget.getBoundingClientRect()
-          const x = e.clientX - rect.left
-          const year = Math.round(xScale.invert(x))
-          if (year >= startYear && year <= endYear) setHovered(year)
-          else setHovered(null)
-        }
-
-        const tooltipItems = hovered === null
-          ? []
-          : normalized
-              .map((s) => {
-                const point = s.points.find((p) => p.year === hovered)
-                if (!point) return null
-                return {
-                  id: s.meta.id,
-                  name: s.meta.name,
-                  color: s.meta.color,
-                  display: `${Math.round(point.value)}`,
-                  rawDisplay: formatValue(s.baseValue * (point.value / 100), s.meta.unit),
-                  cy: yScale(point.value),
-                }
-              })
-              .filter((x): x is NonNullable<typeof x> => x !== null)
-              .sort((a, b) => a.cy - b.cy)
-
-        return (
-          <svg
-            width={width}
-            height={height}
-            role="img"
-            aria-label={`Series indexed to ${baseYear} = 100`}
-          >
-            <Group left={margin.left} top={margin.top}>
-              <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
-
-              <line
-                x1={0}
-                x2={innerW}
-                y1={yScale(100)}
-                y2={yScale(100)}
-                stroke={MUTED}
-                strokeOpacity={0.5}
-                strokeDasharray="3,3"
-              />
-
-              {baseYear >= startYear && baseYear <= endYear && (
-                <>
-                  <line
-                    x1={xScale(baseYear)}
-                    x2={xScale(baseYear)}
-                    y1={0}
-                    y2={innerH}
-                    stroke={MUTED}
-                    strokeOpacity={0.3}
-                    strokeDasharray="2,3"
-                  />
-                  <text x={xScale(baseYear) + 4} y={14} fill={MUTED} fontSize={11} opacity={0.8}>
-                    {baseYear} = 100
-                  </text>
-                </>
-              )}
-
-              <AxisBottom
-                top={innerH}
-                scale={xScale}
-                numTicks={Math.min(8, endYear - startYear)}
-                tickFormat={(v) => `${v}`}
-                stroke={GRID}
-                tickStroke={GRID}
-                tickLabelProps={{ fill: MUTED, fontSize: 12, textAnchor: "middle" }}
-              />
-              <AxisLeft
-                scale={yScale}
-                numTicks={5}
-                tickFormat={(v) => `${v}`}
-                stroke={GRID}
-                tickStroke={GRID}
-                tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
-              />
-
-              {annotations?.filter((a) => a.year >= startYear && a.year <= endYear).map((a) => {
-                const cx = xScale(a.year)
-                const isHovered = hoveredAnno?.year === a.year
-                return (
-                  <g key={`anno-${a.year}`} style={{ cursor: "help" }}>
+                {baseYear >= startYear && baseYear <= endYear && (
+                  <>
                     <line
-                      x1={cx}
-                      x2={cx}
+                      x1={xScale(baseYear)}
+                      x2={xScale(baseYear)}
                       y1={0}
                       y2={innerH}
                       stroke={MUTED}
-                      strokeOpacity={isHovered ? 0.6 : 0.18}
-                      strokeWidth={1}
+                      strokeOpacity={0.3}
                       strokeDasharray="2,3"
                     />
-                    <circle
-                      cx={cx}
-                      cy={innerH - 4}
-                      r={isHovered ? 6 : 4}
-                      fill={SURFACE}
-                      stroke={MUTED}
-                      strokeOpacity={isHovered ? 1 : 0.6}
-                      strokeWidth={1.5}
-                      onPointerEnter={() => setHoveredAnno(a)}
-                      onPointerLeave={() => setHoveredAnno(null)}
-                    />
-                    <text
-                      x={cx}
-                      y={innerH - 3}
-                      fill={MUTED}
-                      fontSize={8}
-                      textAnchor="middle"
-                      pointerEvents="none"
-                      opacity={isHovered ? 1 : 0.7}
-                    >
-                      ⓘ
+                    <text x={xScale(baseYear) + 4} y={14} fill={MUTED} fontSize={11} opacity={0.8}>
+                      {baseYear} = 100
                     </text>
-                  </g>
-                )
-              })}
+                  </>
+                )}
 
-              <AnimatePresence>
-                {normalized.map((s) => {
-                  const sw = hovered === null ? 2.5 : 2
-                  const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
-                  const baseOpacity = dimmed ? 0.12 : 1
-                  const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                <AxisBottom
+                  top={innerH}
+                  scale={xScale}
+                  numTicks={Math.min(8, endYear - startYear)}
+                  tickFormat={(v) => `${v}`}
+                  stroke={GRID}
+                  tickStroke={GRID}
+                  tickLabelProps={{ fill: MUTED, fontSize: 12, textAnchor: "middle" }}
+                />
+                <AxisLeft
+                  scale={yScale}
+                  numTicks={5}
+                  tickFormat={(v) => `${v}`}
+                  stroke={GRID}
+                  tickStroke={GRID}
+                  tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
+                />
+
+                {annotations?.filter((a) => a.year >= startYear && a.year <= endYear).map((a) => {
+                  const cx = xScale(a.year)
+                  const annoId = `anno-${a.year}`
+                  const isHovered = hoveredAnno?.year === a.year
+                  const isActive = activeAnnotationId === annoId
                   return (
-                    <motion.g
-                      key={s.meta.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: baseOpacity }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    <g
+                      key={annoId}
+                      style={{ cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleAnnotationClick(
+                          a,
+                          annoId,
+                          cx,
+                          margin.left,
+                          margin.top,
+                          innerW,
+                          innerH,
+                        )
+                      }}
                     >
-                      {estimated.length > 1 && (
-                        <motion.path
-                          d={pathFromPoints(estimated, xScale, yScale)}
-                          stroke={s.meta.color}
-                          strokeWidth={sw}
-                          strokeDasharray="5,4"
-                          opacity={0.55 * baseOpacity}
-                          fill="none"
-                          initial={false}
-                          animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
-                          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        />
-                      )}
-                      {verified.length > 1 && (
-                        <motion.path
-                          d={pathFromPoints(verified, xScale, yScale)}
-                          stroke={s.meta.color}
-                          strokeWidth={sw}
-                          fill="none"
-                          initial={false}
-                          animate={{ d: pathFromPoints(verified, xScale, yScale) }}
-                          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        />
-                      )}
-                    </motion.g>
-                  )
-                })}
-              </AnimatePresence>
-
-              {/* Right-hand value labels (only when no hover) */}
-              {hovered === null &&
-                normalized.map((s) => {
-                  const last = s.points[s.points.length - 1]
-                  if (!last) return null
-                  return (
-                    <g key={`${s.meta.id}-label`}>
-                      <circle cx={xScale(last.year)} cy={yScale(last.value)} r={3.5} fill={s.meta.color} />
+                      <line
+                        x1={cx}
+                        x2={cx}
+                        y1={0}
+                        y2={innerH}
+                        stroke={MUTED}
+                        strokeOpacity={isActive ? 0.7 : isHovered ? 0.6 : 0.18}
+                        strokeWidth={isActive ? 1.5 : 1}
+                        strokeDasharray="2,3"
+                      />
+                      <circle
+                        cx={cx}
+                        cy={innerH - 4}
+                        r={isActive ? 7 : isHovered ? 6 : 4}
+                        fill={isActive ? MUTED : SURFACE}
+                        stroke={MUTED}
+                        strokeOpacity={isActive ? 1 : isHovered ? 1 : 0.6}
+                        strokeWidth={1.5}
+                        onPointerEnter={() => setHoveredAnno(a)}
+                        onPointerLeave={() => setHoveredAnno(null)}
+                      />
                       <text
-                        x={xScale(last.year) + 8}
-                        y={yScale(last.value) + 4}
-                        fill={s.meta.color}
-                        fontSize={12}
-                        fontWeight={600}
+                        x={cx}
+                        y={innerH - 3}
+                        fill={isActive ? SURFACE : MUTED}
+                        fontSize={8}
+                        textAnchor="middle"
+                        pointerEvents="none"
+                        opacity={isActive ? 1 : isHovered ? 1 : 0.7}
                       >
-                        {Math.round(last.value)}
+                        ⓘ
                       </text>
                     </g>
                   )
                 })}
 
-              {hovered !== null && (
-                <g>
-                  <line
-                    x1={xScale(hovered)}
-                    x2={xScale(hovered)}
-                    y1={0}
-                    y2={innerH}
-                    stroke={pinned !== null ? "#c084fc" : TEXT}
-                    strokeOpacity={pinned !== null ? 0.7 : 0.4}
-                    strokeWidth={pinned !== null ? 1.5 : 1}
-                  />
-                  {tooltipItems.map((item) => (
-                    <circle
-                      key={item.id}
-                      cx={xScale(hovered)}
-                      cy={item.cy}
-                      r={4}
-                      fill={item.color}
-                      stroke={SURFACE}
-                      strokeWidth={2}
+                <AnimatePresence>
+                  {normalized.map((s) => {
+                    const sw = hovered === null ? 2.5 : 2
+                    const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
+                    const baseOpacity = dimmed ? 0.12 : 1
+                    const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                    return (
+                      <motion.g
+                        key={s.meta.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: baseOpacity }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        {estimated.length > 1 && (
+                          <motion.path
+                            d={pathFromPoints(estimated, xScale, yScale)}
+                            stroke={s.meta.color}
+                            strokeWidth={sw}
+                            strokeDasharray="5,4"
+                            opacity={0.55 * baseOpacity}
+                            fill="none"
+                            initial={false}
+                            animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
+                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                          />
+                        )}
+                        {verified.length > 1 && (
+                          <motion.path
+                            d={pathFromPoints(verified, xScale, yScale)}
+                            stroke={s.meta.color}
+                            strokeWidth={sw}
+                            fill="none"
+                            initial={false}
+                            animate={{ d: pathFromPoints(verified, xScale, yScale) }}
+                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                          />
+                        )}
+                      </motion.g>
+                    )
+                  })}
+                </AnimatePresence>
+
+                {/* Right-hand value labels (only when no hover) */}
+                {hovered === null &&
+                  normalized.map((s) => {
+                    const last = s.points[s.points.length - 1]
+                    if (!last) return null
+                    return (
+                      <g key={`${s.meta.id}-label`}>
+                        <circle cx={xScale(last.year)} cy={yScale(last.value)} r={3.5} fill={s.meta.color} />
+                        <text
+                          x={xScale(last.year) + 8}
+                          y={yScale(last.value) + 4}
+                          fill={s.meta.color}
+                          fontSize={12}
+                          fontWeight={600}
+                        >
+                          {Math.round(last.value)}
+                        </text>
+                      </g>
+                    )
+                  })}
+
+                {hovered !== null && (
+                  <g>
+                    <line
+                      x1={xScale(hovered)}
+                      x2={xScale(hovered)}
+                      y1={0}
+                      y2={innerH}
+                      stroke={pinned !== null ? "#c084fc" : TEXT}
+                      strokeOpacity={pinned !== null ? 0.7 : 0.4}
+                      strokeWidth={pinned !== null ? 1.5 : 1}
                     />
-                  ))}
-                </g>
-              )}
+                    {tooltipItems.map((item) => (
+                      <circle
+                        key={item.id}
+                        cx={xScale(hovered)}
+                        cy={item.cy}
+                        r={4}
+                        fill={item.color}
+                        stroke={SURFACE}
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </g>
+                )}
 
-              {hovered !== null && tooltipItems.length > 0 && (
-                <TooltipBox
-                  year={hovered}
-                  pinned={pinned !== null}
-                  items={tooltipItems.map((i) => ({
-                    id: i.id,
-                    name: i.name,
-                    color: i.color,
-                    value: `${i.display} (${i.rawDisplay})`,
-                  }))}
-                  anchorX={xScale(hovered)}
-                  innerW={innerW}
+                {hovered !== null && tooltipItems.length > 0 && (
+                  <TooltipBox
+                    year={hovered}
+                    pinned={pinned !== null}
+                    items={tooltipItems.map((i) => ({
+                      id: i.id,
+                      name: i.name,
+                      color: i.color,
+                      value: `${i.display} (${i.rawDisplay})`,
+                    }))}
+                    anchorX={xScale(hovered)}
+                    innerW={innerW}
+                  />
+                )}
+
+                {hoveredAnno && !activeAnnotationId && (
+                  <AnnotationTooltip
+                    annotation={hoveredAnno}
+                    anchorX={xScale(hoveredAnno.year)}
+                    innerW={innerW}
+                    innerH={innerH}
+                  />
+                )}
+
+                <rect
+                  x={0}
+                  y={0}
+                  width={innerW}
+                  height={innerH}
+                  fill="transparent"
+                  tabIndex={0}
+                  style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default", touchAction: "none" }}
+                  onPointerMove={handleMove}
+                  onPointerLeave={() => pinned === null && setHovered(null)}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
+                  onClick={(e) => {
+                    // Dismiss annotation popover when clicking the chart background
+                    setActiveAnnotationId(null)
+                    setActiveAnnoPos(null)
+
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const x = e.clientX - rect.left
+                    const year = Math.round(xScale.invert(x))
+                    if (year < startYear || year > endYear) {
+                      setPinned(null)
+                      return
+                    }
+                    setPinned((p) => (p === year ? null : year))
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      setPinned(null)
+                      setHovered(null)
+                      setActiveAnnotationId(null)
+                      setActiveAnnoPos(null)
+                      return
+                    }
+                    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                      e.preventDefault()
+                      const step = e.shiftKey ? 5 : 1
+                      const dir = e.key === "ArrowLeft" ? -step : step
+                      const current = hovered ?? Math.round((startYear + endYear) / 2)
+                      const next = Math.min(endYear, Math.max(startYear, current + dir))
+                      if (pinned !== null) setPinned(next)
+                      else setHovered(next)
+                    }
+                  }}
                 />
-              )}
+              </Group>
+            </svg>
+          )
+        }}
+      </ParentSize>
 
-              {hoveredAnno && (
-                <AnnotationTooltip
-                  annotation={hoveredAnno}
-                  anchorX={xScale(hoveredAnno.year)}
-                  innerW={innerW}
-                  innerH={innerH}
-                />
-              )}
-
-              <rect
-                x={0}
-                y={0}
-                width={innerW}
-                height={innerH}
-                fill="transparent"
-                tabIndex={0}
-                style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default" }}
-                onPointerMove={handleMove}
-                onPointerLeave={() => pinned === null && setHovered(null)}
-                onClick={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const x = e.clientX - rect.left
-                  const year = Math.round(xScale.invert(x))
-                  if (year < startYear || year > endYear) {
-                    setPinned(null)
-                    return
-                  }
-                  setPinned((p) => (p === year ? null : year))
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") {
-                    setPinned(null)
-                    setHovered(null)
-                    return
-                  }
-                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-                    e.preventDefault()
-                    const step = e.shiftKey ? 5 : 1
-                    const dir = e.key === "ArrowLeft" ? -step : step
-                    const current = hovered ?? Math.round((startYear + endYear) / 2)
-                    const next = Math.min(endYear, Math.max(startYear, current + dir))
-                    if (pinned !== null) setPinned(next)
-                    else setHovered(next)
-                  }
-                }}
-              />
-            </Group>
-          </svg>
-        )
-      }}
-    </ParentSize>
+      {/* HTML annotation popover — position: absolute inside relative wrapper */}
+      {activeAnnoPos && (
+        <div
+          style={{
+            position: "absolute",
+            left: activeAnnoPos.left,
+            top: activeAnnoPos.top,
+            maxWidth: 200,
+            zIndex: 20,
+            pointerEvents: "auto",
+          }}
+          className="bg-(--color-surface) border border-(--color-border) rounded-xl p-3 text-xs shadow-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="font-bold text-(--color-text) mb-1">
+            {activeAnnoPos.annotation.year} — {activeAnnoPos.annotation.label}
+          </p>
+          {activeAnnoPos.annotation.description && (
+            <p className="text-(--color-muted) leading-relaxed">
+              {activeAnnoPos.annotation.description}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -488,6 +609,7 @@ function UnitPanel({
   spotlightId?: string | null
 }) {
   const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
+  const touchDismissTimerRaw = useRef<ReturnType<typeof setTimeout> | null>(null)
   return (
     <div>
       <div className="flex items-center justify-between mb-2 px-1">
@@ -532,6 +654,35 @@ function UnitPanel({
             const year = Math.round(xScale.invert(x))
             if (year >= startYear && year <= endYear) onHover(year)
             else onHover(null)
+          }
+
+          function yearFromTouchXRaw(touch: React.Touch, currentTarget: SVGRectElement): number | null {
+            const rect = currentTarget.getBoundingClientRect()
+            const x = touch.clientX - rect.left
+            const year = Math.round(xScale.invert(x))
+            return year >= startYear && year <= endYear ? year : null
+          }
+
+          function scheduleTouchDismissRaw() {
+            if (touchDismissTimerRaw.current) clearTimeout(touchDismissTimerRaw.current)
+            touchDismissTimerRaw.current = setTimeout(() => {
+              onHover(null)
+            }, 2500)
+          }
+
+          function handleTouchStartRaw(e: React.TouchEvent<SVGRectElement>) {
+            e.preventDefault()
+            if (touchDismissTimerRaw.current) clearTimeout(touchDismissTimerRaw.current)
+            const year = yearFromTouchXRaw(e.touches[0], e.currentTarget)
+            onHover(year)
+            if (year !== null) scheduleTouchDismissRaw()
+          }
+
+          function handleTouchMoveRaw(e: React.TouchEvent<SVGRectElement>) {
+            if (touchDismissTimerRaw.current) clearTimeout(touchDismissTimerRaw.current)
+            const year = yearFromTouchXRaw(e.touches[0], e.currentTarget)
+            onHover(year)
+            if (year !== null) scheduleTouchDismissRaw()
           }
 
           const tooltipItems = hovered === null
@@ -664,8 +815,12 @@ function UnitPanel({
                   width={innerW}
                   height={innerH}
                   fill="transparent"
+                  style={{ touchAction: "none" }}
                   onPointerMove={handleMove}
                   onPointerLeave={() => onHover(null)}
+                  onTouchStart={handleTouchStartRaw}
+                  onTouchMove={handleTouchMoveRaw}
+                  onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
                 />
               </Group>
             </svg>

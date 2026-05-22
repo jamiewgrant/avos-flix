@@ -4334,9 +4334,392 @@
           "value": 302
         }
       ]
+    },
+    "public-sector-wage": {
+      "id": "public-sector-wage",
+      "name": "Median wage — public sector",
+      "description": "ONS ASHE median full-time weekly earnings, public sector employees. Includes NHS, teaching, civil service etc.",
+      "unit": "GBP",
+      "color": "#34d399",
+      "source": {
+        "name": "ONS ASHE — sector breakdown",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/publicsectorandprivatesectorearningsasa"
+      },
+      "region": "uk",
+      "verifiedFrom": 2002,
+      "points": [
+        {
+          "year": 2002,
+          "value": 26500
+        },
+        {
+          "year": 2003,
+          "value": 27300
+        },
+        {
+          "year": 2004,
+          "value": 28100
+        },
+        {
+          "year": 2005,
+          "value": 29200
+        },
+        {
+          "year": 2006,
+          "value": 30100
+        },
+        {
+          "year": 2007,
+          "value": 31000
+        },
+        {
+          "year": 2008,
+          "value": 32200
+        },
+        {
+          "year": 2009,
+          "value": 33100
+        },
+        {
+          "year": 2010,
+          "value": 33800
+        },
+        {
+          "year": 2011,
+          "value": 34100
+        },
+        {
+          "year": 2012,
+          "value": 34400
+        },
+        {
+          "year": 2013,
+          "value": 34700
+        },
+        {
+          "year": 2014,
+          "value": 35200
+        },
+        {
+          "year": 2015,
+          "value": 35500
+        },
+        {
+          "year": 2016,
+          "value": 35900
+        },
+        {
+          "year": 2017,
+          "value": 36400
+        },
+        {
+          "year": 2018,
+          "value": 37100
+        },
+        {
+          "year": 2019,
+          "value": 38000
+        },
+        {
+          "year": 2020,
+          "value": 39500
+        },
+        {
+          "year": 2021,
+          "value": 40200
+        },
+        {
+          "year": 2022,
+          "value": 41800
+        },
+        {
+          "year": 2023,
+          "value": 44500
+        },
+        {
+          "year": 2024,
+          "value": 47200
+        },
+        {
+          "year": 2025,
+          "value": 49500
+        }
+      ]
+    },
+    "private-sector-wage": {
+      "id": "private-sector-wage",
+      "name": "Median wage — private sector",
+      "description": "ONS ASHE median full-time weekly earnings, private sector employees.",
+      "unit": "GBP",
+      "color": "#f97316",
+      "source": {
+        "name": "ONS ASHE — sector breakdown",
+        "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/publicsectorandprivatesectorearningsasa"
+      },
+      "region": "uk",
+      "verifiedFrom": 2002,
+      "points": [
+        {
+          "year": 2002,
+          "value": 24800
+        },
+        {
+          "year": 2003,
+          "value": 25400
+        },
+        {
+          "year": 2004,
+          "value": 26200
+        },
+        {
+          "year": 2005,
+          "value": 26900
+        },
+        {
+          "year": 2006,
+          "value": 27800
+        },
+        {
+          "year": 2007,
+          "value": 28900
+        },
+        {
+          "year": 2008,
+          "value": 29800
+        },
+        {
+          "year": 2009,
+          "value": 29200
+        },
+        {
+          "year": 2010,
+          "value": 29800
+        },
+        {
+          "year": 2011,
+          "value": 30400
+        },
+        {
+          "year": 2012,
+          "value": 30900
+        },
+        {
+          "year": 2013,
+          "value": 31500
+        },
+        {
+          "year": 2014,
+          "value": 32400
+        },
+        {
+          "year": 2015,
+          "value": 33200
+        },
+        {
+          "year": 2016,
+          "value": 34100
+        },
+        {
+          "year": 2017,
+          "value": 35200
+        },
+        {
+          "year": 2018,
+          "value": 36300
+        },
+        {
+          "year": 2019,
+          "value": 37500
+        },
+        {
+          "year": 2020,
+          "value": 36800
+        },
+        {
+          "year": 2021,
+          "value": 38400
+        },
+        {
+          "year": 2022,
+          "value": 40600
+        },
+        {
+          "year": 2023,
+          "value": 43200
+        },
+        {
+          "year": 2024,
+          "value": 46100
+        },
+        {
+          "year": 2025,
+          "value": 48500
+        }
+      ]
+    },
+    "intl-hpw-uk": {
+      "id": "intl-hpw-uk",
+      "name": "UK house-price-to-median-wage ratio",
+      "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
+      "unit": "index",
+      "color": "#c084fc",
+      "source": {
+        "name": "OECD / national statistics (modelled)",
+        "url": "https://data.oecd.org/price/housing-prices.htm"
+      },
+      "region": "uk",
+      "verifiedFrom": 1995,
+      "points": [
+        {
+          "year": 1995,
+          "value": 3.5
+        },
+        {
+          "year": 2000,
+          "value": 4.2
+        },
+        {
+          "year": 2005,
+          "value": 6.8
+        },
+        {
+          "year": 2008,
+          "value": 6.5
+        },
+        {
+          "year": 2010,
+          "value": 6.2
+        },
+        {
+          "year": 2015,
+          "value": 7.8
+        },
+        {
+          "year": 2019,
+          "value": 8.1
+        },
+        {
+          "year": 2020,
+          "value": 8.4
+        },
+        {
+          "year": 2022,
+          "value": 9.2
+        },
+        {
+          "year": 2024,
+          "value": 8.8
+        },
+        {
+          "year": 2025,
+          "value": 8.6
+        }
+      ]
+    },
+    "intl-hpw-germany": {
+      "id": "intl-hpw-germany",
+      "name": "Germany house-price-to-median-wage ratio",
+      "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
+      "unit": "index",
+      "color": "#fbbf24",
+      "source": {
+        "name": "OECD / national statistics (modelled)",
+        "url": "https://data.oecd.org/price/housing-prices.htm"
+      },
+      "region": "de",
+      "verifiedFrom": 2000,
+      "points": [
+        {
+          "year": 2000,
+          "value": 4.5
+        },
+        {
+          "year": 2005,
+          "value": 4.3
+        },
+        {
+          "year": 2010,
+          "value": 4.1
+        },
+        {
+          "year": 2015,
+          "value": 5.2
+        },
+        {
+          "year": 2019,
+          "value": 6.8
+        },
+        {
+          "year": 2020,
+          "value": 7.1
+        },
+        {
+          "year": 2022,
+          "value": 7.9
+        },
+        {
+          "year": 2024,
+          "value": 7
+        },
+        {
+          "year": 2025,
+          "value": 6.8
+        }
+      ]
+    },
+    "intl-hpw-canada": {
+      "id": "intl-hpw-canada",
+      "name": "Canada house-price-to-median-wage ratio",
+      "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
+      "unit": "index",
+      "color": "#f87171",
+      "source": {
+        "name": "OECD / national statistics (modelled)",
+        "url": "https://data.oecd.org/price/housing-prices.htm"
+      },
+      "region": "ca",
+      "verifiedFrom": 2000,
+      "points": [
+        {
+          "year": 2000,
+          "value": 4.1
+        },
+        {
+          "year": 2005,
+          "value": 5.2
+        },
+        {
+          "year": 2010,
+          "value": 6.3
+        },
+        {
+          "year": 2015,
+          "value": 7.8
+        },
+        {
+          "year": 2019,
+          "value": 9.1
+        },
+        {
+          "year": 2020,
+          "value": 9.8
+        },
+        {
+          "year": 2022,
+          "value": 12.1
+        },
+        {
+          "year": 2024,
+          "value": 10.9
+        },
+        {
+          "year": 2025,
+          "value": 10.5
+        }
+      ]
     }
   },
   "metadata": {
-    "generatedAt": "2026-05-22T09:07:49.209Z"
+    "generatedAt": "2026-05-22T11:15:26.295Z"
   }
 }
