@@ -38,6 +38,7 @@ const MAP: Record<string, Category> = {
   "netflix-uk": "costs",
   "avocado-uk": "costs",
   "childcare-cost": "costs",
+  "healthcare-oop": "costs",
   "birth-rate": "demographics",
   "net-migration": "demographics",
   "persons-per-household": "demographics",

@@ -30,6 +30,7 @@ import { fetchSeries as fetchFoodCpi } from "./sources/food-cpi.ts"
 import { fetchSeries as fetchAshePercentiles } from "./sources/ashePercentiles.ts"
 import { fetchSeries as fetchFuel } from "./sources/fuel.ts"
 import { fetchSeries as fetchWealth } from "./sources/wealth.ts"
+import { fetchSeries as fetchHealthcare } from "./sources/healthcare.ts"
 
 // Sources may return a single Series or an array (e.g. landRegistry yields UK + regional rows).
 type SourceFn = () => Promise<Series | Series[]>
@@ -68,6 +69,7 @@ const SOURCES: SourceEntry[] = [
   { fn: fetchAshePercentiles, label: "ashe-percentiles" },
   { fn: fetchFuel, label: "fuel-price" },
   { fn: fetchWealth, label: "wealth" },
+  { fn: fetchHealthcare, label: "healthcare-oop" },
 ]
 
 const OUT_DIR = resolve("public", "data")
