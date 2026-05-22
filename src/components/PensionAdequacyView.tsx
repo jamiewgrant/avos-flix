@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react"
 import { fmt } from "../lib/format"
+import { useCountUp } from "../lib/useCountUp"
 
 interface Props {
   defaultSalary?: number
@@ -26,6 +27,12 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
 
     return { pot, annualIncome, finalSalaryIncome, replacementRate, fsReplacementRate }
   }, [salary, employeePct, employerPct, yearsToRetire])
+
+  const animPot = useCountUp(calc.pot)
+  const animAnnualIncome = useCountUp(calc.annualIncome)
+  const animFinalSalaryIncome = useCountUp(calc.finalSalaryIncome)
+  const animGap = useCountUp(calc.finalSalaryIncome - calc.annualIncome)
+  const animGap20 = useCountUp((calc.finalSalaryIncome - calc.annualIncome) * 20)
 
   return (
     <section className="mb-20" id="pension" style={{ scrollMarginTop: "4rem" }}>
@@ -109,7 +116,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
           <div className="rounded-xl bg-(--color-surface-2) p-5 border border-(--color-border)">
             <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">Projected pot</div>
             <div className="text-3xl font-semibold text-(--color-accent) tabular-nums">
-              {fmt(calc.pot)}
+              {fmt(animPot)}
             </div>
             <div className="text-xs text-(--color-muted) mt-2 leading-relaxed">
               In today's money, at 5% real annual return over {yearsToRetire} years.
@@ -119,7 +126,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
           <div className="rounded-xl bg-(--color-surface-2) p-5 border border-(--color-border)">
             <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">Annual income from this</div>
             <div className="text-3xl font-semibold text-(--color-text) tabular-nums">
-              {fmt(calc.annualIncome)}
+              {fmt(animAnnualIncome)}
             </div>
             <div className="text-xs text-(--color-muted) mt-2 leading-relaxed">
               At 4% drawdown —{" "}
@@ -133,7 +140,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
           <div className="rounded-xl bg-(--color-surface-2) p-5 border border-(--color-border)">
             <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">Final-salary equivalent</div>
             <div className="text-3xl font-semibold tabular-nums" style={{ color: "#f59e0b" }}>
-              {fmt(calc.finalSalaryIncome)}
+              {fmt(animFinalSalaryIncome)}
             </div>
             <div className="text-xs text-(--color-muted) mt-2 leading-relaxed">
               What a 40-year final-salary scheme (2/3 accrual) would pay —{" "}
@@ -148,9 +155,9 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
         {calc.annualIncome < calc.finalSalaryIncome && (
           <p className="mt-6 text-sm text-(--color-muted) text-center border-t border-(--color-border) pt-5">
             Your defined-contribution pot pays{" "}
-            <span className="text-(--color-text) font-semibold">{fmt(calc.finalSalaryIncome - calc.annualIncome)} less per year</span>{" "}
+            <span className="text-(--color-text) font-semibold">{fmt(animGap)} less per year</span>{" "}
             than an equivalent final-salary pension would have. That gap, compounded over 20 years of retirement, is{" "}
-            <span className="text-(--color-text) font-semibold">{fmt((calc.finalSalaryIncome - calc.annualIncome) * 20)}</span>.
+            <span className="text-(--color-text) font-semibold">{fmt(animGap20)}</span>.
           </p>
         )}
 

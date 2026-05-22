@@ -80,6 +80,7 @@ import { ChartSkeleton } from "./components/ChartSkeleton"
 import { SourceStrip } from "./components/SourceStrip"
 import { ScrollProgress } from "./components/ScrollProgress"
 import { SectionDivider } from "./components/SectionDivider"
+import { RevealOnScroll } from "./components/RevealOnScroll"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { applyPalette } from "./lib/palette"
@@ -784,11 +785,13 @@ function App() {
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
             Take the 1995 house price. Grow it each year by the same percentage wages grew. The dashed line is the parallel universe where buying a house tracked the paycheque. The gap is what you actually owe the bank.
           </p>
-          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-            <Suspense fallback={<ChartFallback />}>
-              <WhatIfChart housePrice={housePriceNationwide} wage={wage} />
-            </Suspense>
-          </div>
+          <RevealOnScroll>
+            <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+              <Suspense fallback={<ChartFallback />}>
+                <WhatIfChart housePrice={housePriceNationwide} wage={wage} />
+              </Suspense>
+            </div>
+          </RevealOnScroll>
         </section>
       )}
 
@@ -830,11 +833,13 @@ function App() {
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
             Median full-time gross pay, minus income tax and employee NI, then deflated by CPIH to today's money. The line of "what you can actually spend" has barely moved since the financial crisis.
           </p>
-          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-            <Suspense fallback={<ChartFallback />}>
-              <RealTakeHomeChart wage={wage} taxBurden={data.series["tax-burden-median"]} cpih={cpihSeries} />
-            </Suspense>
-          </div>
+          <RevealOnScroll>
+            <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
+              <Suspense fallback={<ChartFallback />}>
+                <RealTakeHomeChart wage={wage} taxBurden={data.series["tax-burden-median"]} cpih={cpihSeries} />
+              </Suspense>
+            </div>
+          </RevealOnScroll>
         </section>
       )}
 

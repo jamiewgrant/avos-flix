@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react"
 import type { Series } from "../types/series"
 import { fmt } from "../lib/format"
+import { useCountUp } from "../lib/useCountUp"
 
 interface Props {
   series: Series[]
@@ -116,6 +117,18 @@ export function HomeBuyingCalculator({ series }: Props) {
   const diff = result ? result.rentNow - result.monthlyPaymentThen : 0
   const isRecent = purchaseYear >= 2020
 
+  const animMonthlyPayment = useCountUp(result?.monthlyPaymentThen ?? 0)
+  const animCurrentHouseValue = useCountUp(result?.currentHouseValue ?? 0)
+  const animEquityNow = useCountUp(result?.equityNow ?? 0)
+  const animRemainingMortgage = useCountUp(
+    result ? result.mortgageThen * Math.max(0, (25 - Math.min(2025 - purchaseYear, 25)) / 25) : 0
+  )
+  const animPurchasePrice = useCountUp(result?.purchasePriceThen ?? 0)
+  const animDeposit = useCountUp(result?.depositThen ?? 0)
+  const animMedianWage = useCountUp(result?.medianWageThen ?? 0)
+  const animDiffAbs = useCountUp(Math.abs(diff))
+  const animDiffYear = useCountUp(Math.abs(diff) * 12)
+
   return (
     <section className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6 md:p-8">
       <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
@@ -202,18 +215,18 @@ export function HomeBuyingCalculator({ series }: Props) {
           <div className="mt-6 grid sm:grid-cols-3 gap-4">
             <ResultCard
               label={`Monthly mortgage (bought ${purchaseYear})`}
-              value={fmt(result.monthlyPaymentThen)}
+              value={fmt(animMonthlyPayment)}
               sub={`Rate ~${result.annualRate.toFixed(1)}% SVR · ${depositPct}% deposit`}
             />
             <ResultCard
               label="Your home's value today"
-              value={fmt(result.currentHouseValue)}
-              sub={`Bought for ${fmt(result.purchasePriceThen)} · deposit was ${fmt(result.depositThen)}`}
+              value={fmt(animCurrentHouseValue)}
+              sub={`Bought for ${fmt(animPurchasePrice)} · deposit was ${fmt(animDeposit)}`}
             />
             <ResultCard
               label="Equity built"
-              value={fmt(result.equityNow)}
-              sub={`Remaining mortgage ~${fmt(result.mortgageThen * Math.max(0, (25 - Math.min(2025 - purchaseYear, 25)) / 25))}`}
+              value={fmt(animEquityNow)}
+              sub={`Remaining mortgage ~${fmt(animRemainingMortgage)}`}
             />
           </div>
 
@@ -224,7 +237,7 @@ export function HomeBuyingCalculator({ series }: Props) {
                   Median wage in {purchaseYear}
                 </span>
                 <span className="text-xl font-semibold text-(--color-text)">
-                  {fmt(result.medianWageThen)}
+                  {fmt(animMedianWage)}
                 </span>
                 <span className="ml-2">/ year</span>
               </div>
@@ -242,12 +255,12 @@ export function HomeBuyingCalculator({ series }: Props) {
 
           <p className="mt-5 text-sm text-(--color-muted) leading-relaxed">
             Your monthly mortgage would be{" "}
-            <span className="font-semibold text-(--color-text)">{fmt(result.monthlyPaymentThen)}</span>{" "}
+            <span className="font-semibold text-(--color-text)">{fmt(animMonthlyPayment)}</span>{" "}
             vs. renting at ~<span className="font-semibold text-(--color-text)">£1,800</span>/month
             today — a difference of{" "}
-            <span className="font-semibold text-(--color-text)">{fmt(Math.abs(diff))}</span>/month
+            <span className="font-semibold text-(--color-text)">{fmt(animDiffAbs)}</span>/month
             {diff > 0 ? " cheaper to own" : " cheaper to rent"},{" "}
-            <span className="font-semibold text-(--color-text)">{fmt(Math.abs(diff) * 12)}</span>/year.
+            <span className="font-semibold text-(--color-text)">{fmt(animDiffYear)}</span>/year.
           </p>
 
           <p className="mt-3 text-xs text-(--color-muted) leading-relaxed">
