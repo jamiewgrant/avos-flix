@@ -15,12 +15,20 @@ export function WhatIfCallout({ housePrice, wage, baseYear = 1995 }: Props) {
     const houseBase = housePrice.points.find((p) => p.year === baseYear)?.value
     const houseLatest = housePrice.points[housePrice.points.length - 1]
     if (!wageBase || !wageLatest || !houseBase || !houseLatest) return null
-    const counterfactual = houseBase * (wageLatest.value / wageBase)
+
+    // Original: house price if it had grown at wage rate
+    const counterfactualHouse = houseBase * (wageLatest.value / wageBase)
+    // Reverse: wage if it had grown at house price rate
+    const counterfactualWage = wageBase * (houseLatest.value / houseBase)
+
     return {
-      year: houseLatest.year,
-      actual: houseLatest.value,
-      counter: counterfactual,
-      gap: houseLatest.value - counterfactual,
+      houseYear: houseLatest.year,
+      actualHouse: houseLatest.value,
+      counterHouse: counterfactualHouse,
+      houseGap: houseLatest.value - counterfactualHouse,
+      wageYear: wageLatest.year,
+      actualWage: wageLatest.value,
+      counterWage: counterfactualWage,
       baseYear,
     }
   }, [housePrice, wage, baseYear])
@@ -34,16 +42,31 @@ export function WhatIfCallout({ housePrice, wage, baseYear = 1995 }: Props) {
       </div>
       <p className="text-xl md:text-2xl text-(--color-text) leading-relaxed max-w-2xl mx-auto">
         If UK house prices had grown at <span className="font-semibold">the same rate as wages</span>{" "}
-        since {stat.baseYear}, the average home in {stat.year} would cost{" "}
+        since {stat.baseYear}, the average home in {stat.houseYear} would cost{" "}
         <span className="text-(--color-accent) font-semibold tabular-nums">
-          {formatValue(stat.counter, "GBP")}
+          {formatValue(stat.counterHouse, "GBP")}
         </span>
         .
       </p>
       <p className="mt-3 text-(--color-muted) text-sm">
-        It actually costs <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.actual, "GBP")}</span>.
-        That gap — <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.gap, "GBP")}</span> —
+        It actually costs <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.actualHouse, "GBP")}</span>.
+        That gap — <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.houseGap, "GBP")}</span> —
         is what every UK first-time buyer is now borrowing on top of "if things had stayed normal".
+      </p>
+      <hr className="my-6 border-(--color-border)" />
+      <p className="text-xl md:text-2xl text-(--color-text) leading-relaxed max-w-2xl mx-auto">
+        Flip it around: if wages had grown at <span className="font-semibold">the same rate as house prices</span>{" "}
+        since {stat.baseYear}, the median salary in {stat.wageYear} would be{" "}
+        <span className="font-semibold tabular-nums" style={{ color: "#f59e0b" }}>
+          {formatValue(stat.counterWage, "GBP")}
+        </span>
+        .
+      </p>
+      <p className="mt-3 text-(--color-muted) text-sm">
+        It is actually <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.actualWage, "GBP")}</span> —
+        meaning workers would need to earn{" "}
+        <span className="text-(--color-text) font-semibold tabular-nums">{formatValue(stat.counterWage - stat.actualWage, "GBP")}</span>{" "}
+        more per year just to have kept pace with the homes they are trying to buy.
       </p>
     </div>
   )

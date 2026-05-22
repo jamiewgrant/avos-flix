@@ -95,6 +95,18 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
     }
   }, [drag, max, min, onChange])
 
+  function handleKeyFrom(e: React.KeyboardEvent) {
+    const step = e.shiftKey ? 5 : 1
+    if (e.key === "ArrowLeft") { e.preventDefault(); onChange([Math.max(min, clampedFrom - step), clampedTo]) }
+    if (e.key === "ArrowRight") { e.preventDefault(); onChange([Math.min(clampedTo - 1, clampedFrom + step), clampedTo]) }
+  }
+
+  function handleKeyTo(e: React.KeyboardEvent) {
+    const step = e.shiftKey ? 5 : 1
+    if (e.key === "ArrowLeft") { e.preventDefault(); onChange([clampedFrom, Math.max(clampedFrom + 1, clampedTo - step)]) }
+    if (e.key === "ArrowRight") { e.preventDefault(); onChange([clampedFrom, Math.min(max, clampedTo + step)]) }
+  }
+
   const height = 36
   const trackY = height / 2
 
@@ -137,7 +149,15 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
             stroke={ACCENT}
             strokeWidth={2.5}
             style={{ cursor: "ew-resize" }}
+            tabIndex={0}
+            role="slider"
+            aria-label="Start year"
+            aria-valuemin={min}
+            aria-valuemax={clampedTo - 1}
+            aria-valuenow={clampedFrom}
+            aria-valuetext={String(clampedFrom)}
             onPointerDown={(e) => handleDown("from", e)}
+            onKeyDown={handleKeyFrom}
           />
           <circle
             cx={xAt(clampedTo)}
@@ -147,7 +167,15 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
             stroke={ACCENT}
             strokeWidth={2.5}
             style={{ cursor: "ew-resize" }}
+            tabIndex={0}
+            role="slider"
+            aria-label="End year"
+            aria-valuemin={clampedFrom + 1}
+            aria-valuemax={max}
+            aria-valuenow={clampedTo}
+            aria-valuetext={String(clampedTo)}
             onPointerDown={(e) => handleDown("to", e)}
+            onKeyDown={handleKeyTo}
           />
           {/* Year labels */}
           <text

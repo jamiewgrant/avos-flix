@@ -99,7 +99,13 @@ export function StatCallouts({ series, baseYear, endYear }: Props) {
   const visible = stats.slice(0, 4)
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+    <div
+      className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6"
+      role="region"
+      aria-label="Key statistics"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {visible.map((s, i) => (
         <div
           key={i}

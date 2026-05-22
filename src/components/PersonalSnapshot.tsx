@@ -6,9 +6,12 @@ import {
   type SnapshotBreakdown,
 } from "../lib/personalSnapshot"
 import { fmt, pct } from "../lib/format"
+import type { SnapState } from "../data/useUrlState"
 
 interface Props {
   series: Record<string, Series>
+  urlSnap?: SnapState
+  onSnapChange?: (next: SnapState) => void
 }
 
 const COMPARE_YEARS = [1990, 1995, 2000, 2005, 2010, 2015, 2020]
@@ -175,16 +178,53 @@ function StatCard({
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
-export function PersonalSnapshot({ series }: Props) {
-  const [grossSalary, setGrossSalary] = useState(0)
-  const [housingType, setHousingType] = useState<PersonalInputs["housingType"]>("mortgage")
-  const [monthlyHousing, setMonthlyHousing] = useState(0)
-  const [children, setChildren] = useState(0)
-  const [studentLoanPlan, setStudentLoanPlan] =
-    useState<PersonalInputs["studentLoanPlan"]>("none")
-  const [pensionPct, setPensionPct] = useState(5)
-  const [earners, setEarners] = useState<1 | 2>(1)
-  const [compareYear, setCompareYear] = useState(1995)
+export function PersonalSnapshot({ series, urlSnap = {}, onSnapChange }: Props) {
+  const [grossSalary, setGrossSalaryRaw] = useState(urlSnap.grossSalary ?? 0)
+  const [housingType, setHousingTypeRaw] = useState<PersonalInputs["housingType"]>(urlSnap.housingType ?? "mortgage")
+  const [monthlyHousing, setMonthlyHousingRaw] = useState(urlSnap.monthlyHousing ?? 0)
+  const [children, setChildrenRaw] = useState(urlSnap.children ?? 0)
+  const [studentLoanPlan, setStudentLoanPlanRaw] =
+    useState<PersonalInputs["studentLoanPlan"]>(urlSnap.studentLoanPlan ?? "none")
+  const [pensionPct, setPensionPctRaw] = useState(urlSnap.pensionPct ?? 5)
+  const [earners, setEarnersRaw] = useState<1 | 2>(urlSnap.earners ?? 1)
+  const [compareYear, setCompareYearRaw] = useState(urlSnap.compareYear ?? 1995)
+  const [shareTooltip, setShareTooltip] = useState(false)
+
+  // Build a merged snap state for URL sync
+  function pushSnap(patch: Partial<SnapState>) {
+    if (!onSnapChange) return
+    const next: SnapState = {
+      grossSalary,
+      housingType,
+      monthlyHousing,
+      children,
+      earners,
+      studentLoanPlan,
+      pensionPct,
+      compareYear,
+      ...patch,
+    }
+    onSnapChange(next)
+  }
+
+  function setGrossSalary(v: number) { setGrossSalaryRaw(v); pushSnap({ grossSalary: v }) }
+  function setHousingType(v: PersonalInputs["housingType"]) { setHousingTypeRaw(v); pushSnap({ housingType: v }) }
+  function setMonthlyHousing(v: number) { setMonthlyHousingRaw(v); pushSnap({ monthlyHousing: v }) }
+  function setChildren(v: number) { setChildrenRaw(v); pushSnap({ children: v }) }
+  function setStudentLoanPlan(v: PersonalInputs["studentLoanPlan"]) { setStudentLoanPlanRaw(v); pushSnap({ studentLoanPlan: v }) }
+  function setPensionPct(v: number) { setPensionPctRaw(v); pushSnap({ pensionPct: v }) }
+  function setEarners(v: 1 | 2) { setEarnersRaw(v); pushSnap({ earners: v }) }
+  function setCompareYear(v: number) { setCompareYearRaw(v); pushSnap({ compareYear: v }) }
+
+  async function copyShareLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+    } catch {
+      // fallback: select the URL bar — nothing more we can do silently
+    }
+    setShareTooltip(true)
+    setTimeout(() => setShareTooltip(false), 2000)
+  }
 
   const inputs: PersonalInputs = {
     grossSalary,
@@ -214,9 +254,38 @@ export function PersonalSnapshot({ series }: Props) {
 
   return (
     <section id="your-snapshot" className="mb-20" style={{ scrollMarginTop: "4rem" }}>
-      <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) mb-3">
-        Your financial picture.
-      </h2>
+      <div className="flex items-start gap-3 mb-3">
+        <h2 className="text-3xl md:text-4xl font-semibold text-(--color-text) flex-1">
+          Your financial picture.
+        </h2>
+        <div className="relative flex-shrink-0 mt-1">
+          <button
+            type="button"
+            onClick={copyShareLink}
+            aria-label="Copy link to this snapshot"
+            title="Copy a shareable link to this snapshot"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-(--color-border) text-xs text-(--color-muted) bg-(--color-surface-2) hover:text-(--color-text) hover:border-(--color-muted) transition font-mono"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            Share
+          </button>
+          {shareTooltip && (
+            <div
+              className="absolute right-0 top-full mt-1.5 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap z-20 pointer-events-none"
+              style={{
+                background: "var(--color-bg)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-accent)",
+              }}
+            >
+              Copied!
+            </div>
+          )}
+        </div>
+      </div>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
         Enter your details to see where your money actually goes — and how a household in the same
         relative position would have fared in a different era.

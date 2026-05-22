@@ -34,6 +34,9 @@ const DepositTimelineSectionLazy = lazy(() =>
 const PersonalSnapshotLazy = lazy(() =>
   import("./components/PersonalSnapshot").then((m) => ({ default: m.PersonalSnapshot })),
 )
+const PensionAdequacyLazy = lazy(() =>
+  import("./components/PensionAdequacyView").then((m) => ({ default: m.PensionAdequacyView })),
+)
 
 const ChartFallback = () => (
   <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
@@ -54,11 +57,10 @@ import { ChartSkeleton } from "./components/ChartSkeleton"
 import { SourceStrip } from "./components/SourceStrip"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
-import { CATEGORY_LABELS, CATEGORY_ORDER, categoryOf } from "./lib/categories"
 import { applyPalette } from "./lib/palette"
 import type { PaletteMode } from "./lib/palette"
 import { seriesToCsv, downloadCsv } from "./lib/csv"
-import type { Category } from "./lib/categories"
+import { SeriesLegend } from "./components/SeriesLegend"
 import type { Series } from "./types/series"
 
 const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
@@ -87,7 +89,7 @@ function App() {
     )
   }, [data])
 
-  const [{ mode, baseYear, hiddenIds, realTerms, range }, setState] = useUrlState(initialHidden)
+  const [{ mode, baseYear, hiddenIds, realTerms, range, snap }, setState] = useUrlState(initialHidden)
 
   // Derive the data span across visible series for the brush bounds.
   const dataSpan = useMemo<[number, number]>(() => {
@@ -151,18 +153,6 @@ function App() {
   const canShowAffordability = housePriceNationwide && wage && boeRate
 
   const [search, setSearch] = useState("")
-  const grouped = useMemo(() => {
-    const out = new Map<Category, Series[]>()
-    const q = search.trim().toLowerCase()
-    for (const s of allSeries) {
-      if (q && !s.name.toLowerCase().includes(q) && !s.id.toLowerCase().includes(q)) continue
-      const cat = categoryOf(s.id)
-      const arr = out.get(cat) ?? []
-      arr.push(s)
-      out.set(cat, arr)
-    }
-    return out
-  }, [allSeries, search])
 
   const [spotlightId, setSpotlightId] = useState<string | null>(null)
   const [showAnnotations, setShowAnnotations] = useState(true)
@@ -207,6 +197,8 @@ function App() {
       hiddenIds: new Set(initialHidden),
       realTerms: false,
       range: null,
+      snap: {},
+      embed: false,
     }))
     setSearch("")
     setSpotlightId(null)
@@ -243,6 +235,7 @@ function App() {
               <a href="#costs" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Costs</a>
               <a href="#housing" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Housing</a>
               <a href="#your-snapshot" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Snapshot</a>
+              <a href="#pension" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Pension</a>
               <a href="#faq" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">FAQ</a>
             </nav>
             <button
@@ -519,78 +512,18 @@ function App() {
                 </div>
               )}
 
-              <div className="mt-5 px-1 chart-legend">
-                <div className="mb-3 flex items-center gap-2 flex-wrap">
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Filter series…"
-                    className="flex-1 max-w-xs bg-(--color-surface-2) border border-(--color-border) rounded-md px-3 py-1.5 text-xs text-(--color-text) placeholder:text-(--color-muted) focus:outline-none focus:border-(--color-accent) transition"
-                  />
-                  <span className="text-[10px] text-(--color-muted) font-mono">
-                    {visible.length}/{allSeries.length} on · shift-click to spotlight
-                  </span>
-                  {spotlightId && (
-                    <button
-                      onClick={() => setSpotlightId(null)}
-                      className="text-[10px] font-mono text-(--color-accent) hover:opacity-80 underline underline-offset-2"
-                    >
-                      clear spotlight
-                    </button>
-                  )}
-                </div>
-
-                {CATEGORY_ORDER.map((cat) => {
-                  const items = grouped.get(cat)
-                  if (!items || items.length === 0) return null
-                  return (
-                    <div key={cat} className="mb-3">
-                      <div className="text-[10px] uppercase tracking-wider text-(--color-muted) font-mono mb-1.5 opacity-70">
-                        {CATEGORY_LABELS[cat]}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {items.map((sOrig) => {
-                          const s = palettedAllSeries.find((x) => x.id === sOrig.id) ?? sOrig
-                          const isOn = !hiddenIds.has(s.id)
-                          const hasData = s.points.length > 0
-                          const isSpot = spotlightId === s.id
-                          return (
-                            <button
-                              key={s.id}
-                              onClick={(e) => {
-                                if (e.shiftKey) {
-                                  setSpotlightId((cur) => (cur === s.id ? null : s.id))
-                                } else {
-                                  toggle(s.id)
-                                }
-                              }}
-                              disabled={!hasData}
-                              title={`${s.description}\n\nClick to toggle. Shift-click to spotlight.`}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition ${
-                                isSpot ? "border-(--color-accent) ring-1 ring-(--color-accent)" : "border-(--color-border)"
-                              } ${
-                                isOn && hasData
-                                  ? "bg-(--color-surface-2) text-(--color-text)"
-                                  : "bg-transparent text-(--color-muted) opacity-50 hover:opacity-80"
-                              } ${!hasData ? "cursor-not-allowed" : "cursor-pointer"}`}
-                              style={isSpot ? { borderColor: "var(--color-accent)" } : undefined}
-                            >
-                              <span className="size-2.5 rounded-full" style={{ background: s.color }} />
-                              {s.name}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )
-                })}
-                {grouped.size === 0 && (
-                  <div className="text-xs text-(--color-muted) py-2">
-                    No series match “{search}”.
-                  </div>
-                )}
-
+              <SeriesLegend
+                allSeries={allSeries}
+                palettedAllSeries={palettedAllSeries}
+                hiddenIds={hiddenIds}
+                spotlightId={spotlightId}
+                search={search}
+                onSearch={setSearch}
+                onToggle={toggle}
+                onSpotlight={setSpotlightId}
+                visibleCount={visible.length}
+              />
+              <div className="px-1">
                 <SourceStrip series={visible} />
               </div>
             </>
@@ -721,7 +654,17 @@ function App() {
 
       {!embedMode && data && (
         <Suspense fallback={<ChartFallback />}>
-          <PersonalSnapshotLazy series={data.series} />
+          <PersonalSnapshotLazy
+            series={data.series}
+            urlSnap={snap}
+            onSnapChange={(next) => setState((p) => ({ ...p, snap: next }))}
+          />
+        </Suspense>
+      )}
+
+      {!embedMode && data && (
+        <Suspense fallback={<ChartFallback />}>
+          <PensionAdequacyLazy defaultSalary={snap.grossSalary ?? 35000} />
         </Suspense>
       )}
 

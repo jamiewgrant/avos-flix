@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 
 interface QA {
   q: string
@@ -56,11 +57,22 @@ export function Faq() {
                 </span>
                 <span className="text-(--color-text) font-medium flex-1">{qa.q}</span>
               </button>
-              {open && (
-                <div className="px-5 pb-5 pl-12 text-(--color-muted) text-sm leading-relaxed">
-                  {qa.a}
-                </div>
-              )}
+              <AnimatePresence initial={false}>
+                {open && (
+                  <motion.div
+                    key="body"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: "easeInOut" }}
+                    style={{ overflow: "hidden" }}
+                  >
+                    <div className="px-5 pb-5 pl-12 text-(--color-muted) text-sm leading-relaxed">
+                      {qa.a}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )
         })}

@@ -12,9 +12,12 @@ export const CATEGORY_ORDER: Category[] = ["income", "housing", "costs", "demogr
 
 const MAP: Record<string, Category> = {
   "median-wage": "income",
+  "wage-p25": "income",
+  "wage-p75": "income",
   "household-income": "income",
   "min-wage": "income",
   "grad-salary": "income",
+  "tax-burden-median": "income",
   "house-price-nationwide": "housing",
   "house-price-landreg": "housing",
   "house-price-london": "housing",
@@ -24,20 +27,23 @@ const MAP: Record<string, Category> = {
   "homeownership-35-44": "housing",
   "homeownership-55-64": "housing",
   "ftb-age": "housing",
+  "wealth-25-34": "housing",
+  "wealth-55-64": "housing",
   "energy-cost": "costs",
   "council-tax": "costs",
   "rail-fares": "costs",
+  "fuel-price": "costs",
   "tuition-uk": "costs",
   "student-debt": "costs",
   "netflix-uk": "costs",
   "avocado-uk": "costs",
   "childcare-cost": "costs",
-  "tax-burden-median": "costs",
   "birth-rate": "demographics",
   "net-migration": "demographics",
   "persons-per-household": "demographics",
   "cpih": "macro",
   "boe-rate": "macro",
+  "food-cpi": "macro",
 }
 
 export function categoryOf(id: string): Category {

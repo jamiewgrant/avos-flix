@@ -69,10 +69,23 @@ export function ScrollyIntro({ data }: Props) {
   return (
     <section className="mb-24">
       <div className="grid md:grid-cols-[1fr_1fr] gap-8">
-        <div className="md:sticky md:top-4 self-start md:z-10">
-          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-            <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
-              {activeIdx + 1} / {SCENES.length}
+        <div className="sticky top-0 md:top-4 self-start z-10">
+          <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-3 md:p-6">
+            {/* Scene progress dots — visible on mobile where text is below the fold */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs text-(--color-muted) font-mono uppercase tracking-wide">
+                {activeIdx + 1} / {SCENES.length}
+              </span>
+              <div className="flex gap-1 ml-1">
+                {SCENES.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveIdx(i)}
+                    aria-label={`Go to scene ${i + 1}: ${SCENES[i].headline}`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${i === activeIdx ? "bg-(--color-accent) w-3" : "bg-(--color-border)"}`}
+                  />
+                ))}
+              </div>
             </div>
             <Chart
               series={visible}
