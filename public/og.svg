@@ -8,22 +8,22 @@
 
   <g transform="translate(72, 268)">
     <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#a78bfa" letter-spacing="-2">5.0×</text>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#a78bfa" letter-spacing="-2">5.2×</text>
     <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">House prices</text>
   </g>
 
   <g transform="translate(430, 268)">
     <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#60a5fa" letter-spacing="-2">2.6×</text>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#60a5fa" letter-spacing="-2">2.5×</text>
     <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">Median wage</text>
   </g>
 
   <g transform="translate(788, 268)">
     <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#34d399" letter-spacing="-2">2.1×</text>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#34d399" letter-spacing="-2">2.0×</text>
     <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">Inflation (CPIH)</text>
   </g>
 
-  <text x="72" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af">1995 → 2025 · UK</text>
+  <text x="72" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af">1995 → 2024 · UK</text>
   <text x="1128" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af" text-anchor="end">ONS · Bank of England · HM Land Registry</text>
 </svg>

@@ -127,6 +127,9 @@ async function main() {
   await writeFile(OUT_FILE, JSON.stringify(data, null, 2))
   console.log(`Wrote ${OUT_FILE} (${Object.keys(series).length} series)`)
 
+  // ── Regenerate OG image ───────────────────────────────────────────────────
+  await regenerateOgSvg(series)
+
   // ── Summary ───────────────────────────────────────────────────────────────
   const seedSources = results.filter((r) => r.usedSeed).map((r) => r.label)
   const failedSources = results.filter((r) => r.failed).map((r) => r.label)
@@ -151,6 +154,84 @@ async function main() {
     )
     process.exit(1)
   }
+}
+
+function computeGrowthRatio(
+  s: Series,
+  baseYear: number,
+  targetYear: number,
+): { ratio: number; latestYear: number } | null {
+  const sorted = [...s.points].sort((a, b) => a.year - b.year)
+  const base = sorted.find((p) => p.year === baseYear)
+  if (!base || base.value === 0) return null
+  // Use targetYear if available, otherwise the latest point
+  const target =
+    sorted.find((p) => p.year === targetYear) ?? sorted[sorted.length - 1]
+  if (!target) return null
+  return { ratio: target.value / base.value, latestYear: target.year }
+}
+
+async function regenerateOgSvg(series: Record<string, Series>): Promise<void> {
+  const OG_FILE = resolve("public", "og.svg")
+  const BASE_YEAR = 1995
+  const PREFERRED_YEAR = 2024
+
+  const hpSeries = series["house-price-nationwide"]
+  const wageSeries = series["median-wage"]
+  const cpihSeries = series["cpih"]
+
+  if (!hpSeries || !wageSeries || !cpihSeries) {
+    console.warn("  og.svg: one or more required series missing, skipping regeneration")
+    return
+  }
+
+  const hp = computeGrowthRatio(hpSeries, BASE_YEAR, PREFERRED_YEAR)
+  const wage = computeGrowthRatio(wageSeries, BASE_YEAR, PREFERRED_YEAR)
+  const cpih = computeGrowthRatio(cpihSeries, BASE_YEAR, PREFERRED_YEAR)
+
+  if (!hp || !wage || !cpih) {
+    console.warn("  og.svg: could not compute growth ratios, skipping regeneration")
+    return
+  }
+
+  const fmt = (r: number) => `${r.toFixed(1)}×`
+  const latestYear = Math.max(hp.latestYear, wage.latestYear, cpih.latestYear)
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+
+  <text x="72" y="120" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="96" font-weight="700" fill="#f5f4f0" letter-spacing="-3">avos<tspan fill="#c084fc">+</tspan>flix</text>
+  <text x="1128" y="115" font-family="ui-monospace, 'JetBrains Mono', Consolas, monospace" font-size="22" fill="#9ca3af" text-anchor="end">avos-flix.vercel.app</text>
+
+  <text x="72" y="200" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="38" fill="#9ca3af">The numbers behind the avocado-toast argument.</text>
+
+  <g transform="translate(72, 268)">
+    <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#a78bfa" letter-spacing="-2">${fmt(hp.ratio)}</text>
+    <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">House prices</text>
+  </g>
+
+  <g transform="translate(430, 268)">
+    <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#60a5fa" letter-spacing="-2">${fmt(wage.ratio)}</text>
+    <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">Median wage</text>
+  </g>
+
+  <g transform="translate(788, 268)">
+    <rect width="340" height="240" rx="20" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
+    <text x="32" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700" fill="#34d399" letter-spacing="-2">${fmt(cpih.ratio)}</text>
+    <text x="32" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#9ca3af">Inflation (CPIH)</text>
+  </g>
+
+  <text x="72" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af">${BASE_YEAR} → ${latestYear} · UK</text>
+  <text x="1128" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af" text-anchor="end">ONS · Bank of England · HM Land Registry</text>
+</svg>
+`
+
+  await writeFile(OG_FILE, svg)
+  console.log(
+    `  og.svg: house prices ${fmt(hp.ratio)}, wage ${fmt(wage.ratio)}, CPIH ${fmt(cpih.ratio)} (${BASE_YEAR}–${latestYear})`,
+  )
 }
 
 async function loadPrevious(): Promise<Record<string, Series>> {
