@@ -2,7 +2,7 @@ import { useMemo, useState, useRef } from "react"
 import { useChartColors } from "../../lib/useChartColors"
 import { motion, AnimatePresence } from "framer-motion"
 import { Group } from "@visx/group"
-import { LinePath } from "@visx/shape"
+import { LinePath, AreaClosed } from "@visx/shape"
 import { scaleLinear } from "@visx/scale"
 import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
@@ -112,6 +112,7 @@ function IndexedView({
   const [activeAnnoPos, setActiveAnnoPos] = useState<ActiveAnnotation | null>(null)
   const [hoveredRaw, setHoveredRaw] = useState<number | null>(null)
   const [pinned, setPinned] = useState<number | null>(null)
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
   const hovered = pinned ?? hoveredRaw
   const setHovered = setHoveredRaw
   const startYear = fromYear ?? baseYear
@@ -183,8 +184,13 @@ function IndexedView({
             const rect = e.currentTarget.getBoundingClientRect()
             const x = e.clientX - rect.left
             const year = Math.round(xScale.invert(x))
-            if (year >= startYear && year <= endYear) setHovered(year)
-            else setHovered(null)
+            if (year >= startYear && year <= endYear) {
+              setHovered(year)
+              setTooltipPos({ x: margin.left + x, y: margin.top })
+            } else {
+              setHovered(null)
+              setTooltipPos(null)
+            }
           }
 
           function yearFromTouchX(touch: React.Touch, currentTarget: SVGRectElement): number | null {
@@ -235,279 +241,313 @@ function IndexedView({
                 .sort((a, b) => a.cy - b.cy)
 
           return (
-            <svg
-              width={width}
-              height={height}
-              role="img"
-              aria-label={`Series indexed to ${baseYear} = 100`}
-            >
-              <Group left={margin.left} top={margin.top}>
-                <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
+            <>
+              <svg
+                width={width}
+                height={height}
+                role="img"
+                aria-label={`Series indexed to ${baseYear} = 100`}
+              >
+                <defs>
+                  {normalized.map((s) => (
+                    <linearGradient key={`grad-${s.meta.id}`} id={`area-grad-${s.meta.id}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={s.meta.color} stopOpacity={0.13} />
+                      <stop offset="100%" stopColor={s.meta.color} stopOpacity={0} />
+                    </linearGradient>
+                  ))}
+                  <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <Group left={margin.left} top={margin.top}>
+                  <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
 
-                <line
-                  x1={0}
-                  x2={innerW}
-                  y1={yScale(100)}
-                  y2={yScale(100)}
-                  stroke={MUTED}
-                  strokeOpacity={0.5}
-                  strokeDasharray="3,3"
-                />
+                  <line
+                    x1={0}
+                    x2={innerW}
+                    y1={yScale(100)}
+                    y2={yScale(100)}
+                    stroke={MUTED}
+                    strokeOpacity={0.5}
+                    strokeDasharray="3,3"
+                  />
 
-                {baseYear >= startYear && baseYear <= endYear && (
-                  <>
-                    <line
-                      x1={xScale(baseYear)}
-                      x2={xScale(baseYear)}
-                      y1={0}
-                      y2={innerH}
-                      stroke={MUTED}
-                      strokeOpacity={0.3}
-                      strokeDasharray="2,3"
-                    />
-                    <text x={xScale(baseYear) + 4} y={14} fill={MUTED} fontSize={11} opacity={0.8}>
-                      {baseYear} = 100
-                    </text>
-                  </>
-                )}
-
-                <AxisBottom
-                  top={innerH}
-                  scale={xScale}
-                  numTicks={Math.min(8, endYear - startYear)}
-                  tickFormat={(v) => `${v}`}
-                  stroke={GRID}
-                  tickStroke={GRID}
-                  tickLabelProps={{ fill: MUTED, fontSize: 12, textAnchor: "middle" }}
-                />
-                <AxisLeft
-                  scale={yScale}
-                  numTicks={5}
-                  tickFormat={(v) => `${v}`}
-                  stroke={GRID}
-                  tickStroke={GRID}
-                  tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
-                />
-
-                {annotations?.filter((a) => a.year >= startYear && a.year <= endYear).map((a) => {
-                  const cx = xScale(a.year)
-                  const annoId = `anno-${a.year}`
-                  const isHovered = hoveredAnno?.year === a.year
-                  const isActive = activeAnnotationId === annoId
-                  return (
-                    <g
-                      key={annoId}
-                      style={{ cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleAnnotationClick(
-                          a,
-                          annoId,
-                          cx,
-                          margin.left,
-                          margin.top,
-                          innerW,
-                          innerH,
-                        )
-                      }}
-                    >
+                  {baseYear >= startYear && baseYear <= endYear && (
+                    <>
                       <line
-                        x1={cx}
-                        x2={cx}
+                        x1={xScale(baseYear)}
+                        x2={xScale(baseYear)}
                         y1={0}
                         y2={innerH}
                         stroke={MUTED}
-                        strokeOpacity={isActive ? 0.7 : isHovered ? 0.6 : 0.18}
-                        strokeWidth={isActive ? 1.5 : 1}
+                        strokeOpacity={0.3}
                         strokeDasharray="2,3"
                       />
-                      <circle
-                        cx={cx}
-                        cy={innerH - 4}
-                        r={isActive ? 7 : isHovered ? 6 : 4}
-                        fill={isActive ? MUTED : SURFACE}
-                        stroke={MUTED}
-                        strokeOpacity={isActive ? 1 : isHovered ? 1 : 0.6}
-                        strokeWidth={1.5}
-                        onPointerEnter={() => setHoveredAnno(a)}
-                        onPointerLeave={() => setHoveredAnno(null)}
-                      />
-                      <text
-                        x={cx}
-                        y={innerH - 3}
-                        fill={isActive ? SURFACE : MUTED}
-                        fontSize={8}
-                        textAnchor="middle"
-                        pointerEvents="none"
-                        opacity={isActive ? 1 : isHovered ? 1 : 0.7}
-                      >
-                        ⓘ
+                      <text x={xScale(baseYear) + 4} y={14} fill={MUTED} fontSize={11} opacity={0.8}>
+                        {baseYear} = 100
                       </text>
-                    </g>
-                  )
-                })}
+                    </>
+                  )}
 
-                <AnimatePresence>
-                  {normalized.map((s) => {
-                    const sw = hovered === null ? 2.5 : 2
-                    const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
-                    const baseOpacity = dimmed ? 0.12 : 1
-                    const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                  <AxisBottom
+                    top={innerH}
+                    scale={xScale}
+                    numTicks={Math.min(8, endYear - startYear)}
+                    tickFormat={(v) => `${v}`}
+                    stroke={GRID}
+                    tickStroke={GRID}
+                    tickLabelProps={{ fill: MUTED, fontSize: 12, textAnchor: "middle" }}
+                  />
+                  <AxisLeft
+                    scale={yScale}
+                    numTicks={5}
+                    tickFormat={(v) => `${v}`}
+                    stroke={GRID}
+                    tickStroke={GRID}
+                    tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
+                  />
+
+                  {annotations?.filter((a) => a.year >= startYear && a.year <= endYear).map((a) => {
+                    const cx = xScale(a.year)
+                    const annoId = `anno-${a.year}`
+                    const isHovered = hoveredAnno?.year === a.year
+                    const isActive = activeAnnotationId === annoId
                     return (
-                      <motion.g
-                        key={s.meta.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: baseOpacity }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      <g
+                        key={annoId}
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAnnotationClick(
+                            a,
+                            annoId,
+                            cx,
+                            margin.left,
+                            margin.top,
+                            innerW,
+                            innerH,
+                          )
+                        }}
                       >
-                        {estimated.length > 1 && (
-                          <motion.path
-                            d={pathFromPoints(estimated, xScale, yScale)}
-                            stroke={s.meta.color}
-                            strokeWidth={sw}
-                            strokeDasharray="5,4"
-                            opacity={0.55 * baseOpacity}
-                            fill="none"
-                            initial={false}
-                            animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
-                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                          />
-                        )}
-                        {verified.length > 1 && (
-                          <motion.path
-                            d={pathFromPoints(verified, xScale, yScale)}
-                            stroke={s.meta.color}
-                            strokeWidth={sw}
-                            fill="none"
-                            initial={false}
-                            animate={{ d: pathFromPoints(verified, xScale, yScale) }}
-                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                          />
-                        )}
-                      </motion.g>
-                    )
-                  })}
-                </AnimatePresence>
-
-                {/* Right-hand value labels (only when no hover) */}
-                {hovered === null &&
-                  normalized.map((s) => {
-                    const last = s.points[s.points.length - 1]
-                    if (!last) return null
-                    return (
-                      <g key={`${s.meta.id}-label`}>
-                        <circle cx={xScale(last.year)} cy={yScale(last.value)} r={3.5} fill={s.meta.color} />
+                        <line
+                          x1={cx}
+                          x2={cx}
+                          y1={0}
+                          y2={innerH}
+                          stroke={MUTED}
+                          strokeOpacity={isActive ? 0.7 : isHovered ? 0.6 : 0.18}
+                          strokeWidth={isActive ? 1.5 : 1}
+                          strokeDasharray="2,3"
+                        />
+                        <circle
+                          cx={cx}
+                          cy={innerH - 4}
+                          r={isActive ? 7 : isHovered ? 6 : 4}
+                          fill={isActive ? MUTED : SURFACE}
+                          stroke={MUTED}
+                          strokeOpacity={isActive ? 1 : isHovered ? 1 : 0.6}
+                          strokeWidth={1.5}
+                          onPointerEnter={() => setHoveredAnno(a)}
+                          onPointerLeave={() => setHoveredAnno(null)}
+                        />
                         <text
-                          x={xScale(last.year) + 8}
-                          y={yScale(last.value) + 4}
-                          fill={s.meta.color}
-                          fontSize={12}
-                          fontWeight={600}
+                          x={cx}
+                          y={innerH - 3}
+                          fill={isActive ? SURFACE : MUTED}
+                          fontSize={8}
+                          textAnchor="middle"
+                          pointerEvents="none"
+                          opacity={isActive ? 1 : isHovered ? 1 : 0.7}
                         >
-                          {Math.round(last.value)}
+                          ⓘ
                         </text>
                       </g>
                     )
                   })}
 
-                {hovered !== null && (
-                  <g>
-                    <line
-                      x1={xScale(hovered)}
-                      x2={xScale(hovered)}
-                      y1={0}
-                      y2={innerH}
-                      stroke={pinned !== null ? "#c084fc" : TEXT}
-                      strokeOpacity={pinned !== null ? 0.7 : 0.4}
-                      strokeWidth={pinned !== null ? 1.5 : 1}
-                    />
-                    {tooltipItems.map((item) => (
-                      <circle
-                        key={item.id}
-                        cx={xScale(hovered)}
-                        cy={item.cy}
-                        r={4}
-                        fill={item.color}
-                        stroke={SURFACE}
-                        strokeWidth={2}
+                  <AnimatePresence>
+                    {normalized.map((s) => {
+                      const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
+                      const baseOpacity = dimmed ? 0.12 : 1
+                      const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                      return (
+                        <motion.g
+                          key={s.meta.id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: baseOpacity }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {verified.length > 1 && (
+                            <AreaClosed
+                              data={verified}
+                              x={(p) => xScale(p.year)}
+                              y={(p) => yScale(p.value)}
+                              yScale={yScale}
+                              fill={`url(#area-grad-${s.meta.id})`}
+                              curve={curveMonotoneX}
+                              opacity={dimmed ? 0.1 : 1}
+                            />
+                          )}
+                          {estimated.length > 1 && (
+                            <motion.path
+                              d={pathFromPoints(estimated, xScale, yScale)}
+                              stroke={s.meta.color}
+                              strokeWidth={dimmed ? 1 : 2}
+                              strokeDasharray="5,4"
+                              opacity={0.55 * baseOpacity}
+                              fill="none"
+                              initial={false}
+                              animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
+                              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                            />
+                          )}
+                          {verified.length > 1 && (
+                            <motion.path
+                              d={pathFromPoints(verified, xScale, yScale)}
+                              stroke={s.meta.color}
+                              strokeWidth={dimmed ? 1 : 2.5}
+                              fill="none"
+                              filter={dimmed ? undefined : "url(#line-glow)"}
+                              initial={false}
+                              animate={{ d: pathFromPoints(verified, xScale, yScale) }}
+                              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                            />
+                          )}
+                        </motion.g>
+                      )
+                    })}
+                  </AnimatePresence>
+
+                  {/* Right-hand value labels (only when no hover) */}
+                  {hovered === null &&
+                    normalized.map((s) => {
+                      const last = s.points[s.points.length - 1]
+                      if (!last) return null
+                      return (
+                        <g key={`${s.meta.id}-label`}>
+                          <circle cx={xScale(last.year)} cy={yScale(last.value)} r={3.5} fill={s.meta.color} />
+                          <text
+                            x={xScale(last.year) + 8}
+                            y={yScale(last.value) + 4}
+                            fill={s.meta.color}
+                            fontSize={12}
+                            fontWeight={600}
+                          >
+                            {Math.round(last.value)}
+                          </text>
+                        </g>
+                      )
+                    })}
+
+                  {hovered !== null && (
+                    <g>
+                      <line
+                        x1={xScale(hovered)}
+                        x2={xScale(hovered)}
+                        y1={0}
+                        y2={innerH}
+                        stroke={pinned !== null ? "#c084fc" : TEXT}
+                        strokeOpacity={pinned !== null ? 0.7 : 0.4}
+                        strokeWidth={pinned !== null ? 1.5 : 1}
                       />
-                    ))}
-                  </g>
-                )}
+                      {tooltipItems.map((item) => (
+                        <circle
+                          key={item.id}
+                          cx={xScale(hovered)}
+                          cy={item.cy}
+                          r={4}
+                          fill={item.color}
+                          stroke={SURFACE}
+                          strokeWidth={2}
+                        />
+                      ))}
+                    </g>
+                  )}
 
-                {hovered !== null && tooltipItems.length > 0 && (
-                  <TooltipBox
-                    year={hovered}
-                    pinned={pinned !== null}
-                    items={tooltipItems.map((i) => ({
-                      id: i.id,
-                      name: i.name,
-                      color: i.color,
-                      value: `${i.display} (${i.rawDisplay})`,
-                    }))}
-                    anchorX={xScale(hovered)}
-                    innerW={innerW}
-                  />
-                )}
+                  {hoveredAnno && !activeAnnotationId && (
+                    <AnnotationTooltip
+                      annotation={hoveredAnno}
+                      anchorX={xScale(hoveredAnno.year)}
+                      innerW={innerW}
+                      innerH={innerH}
+                    />
+                  )}
 
-                {hoveredAnno && !activeAnnotationId && (
-                  <AnnotationTooltip
-                    annotation={hoveredAnno}
-                    anchorX={xScale(hoveredAnno.year)}
-                    innerW={innerW}
-                    innerH={innerH}
-                  />
-                )}
-
-                <rect
-                  x={0}
-                  y={0}
-                  width={innerW}
-                  height={innerH}
-                  fill="transparent"
-                  tabIndex={0}
-                  style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default", touchAction: "none" }}
-                  onPointerMove={handleMove}
-                  onPointerLeave={() => pinned === null && setHovered(null)}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
-                  onClick={(e) => {
-                    // Dismiss annotation popover when clicking the chart background
-                    setActiveAnnotationId(null)
-                    setActiveAnnoPos(null)
-
-                    const rect = e.currentTarget.getBoundingClientRect()
-                    const x = e.clientX - rect.left
-                    const year = Math.round(xScale.invert(x))
-                    if (year < startYear || year > endYear) {
-                      setPinned(null)
-                      return
-                    }
-                    setPinned((p) => (p === year ? null : year))
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") {
-                      setPinned(null)
-                      setHovered(null)
+                  <rect
+                    x={0}
+                    y={0}
+                    width={innerW}
+                    height={innerH}
+                    fill="transparent"
+                    tabIndex={0}
+                    style={{ outline: "none", cursor: pinned !== null ? "crosshair" : "default", touchAction: "none" }}
+                    onPointerMove={handleMove}
+                    onPointerLeave={() => {
+                      if (pinned === null) {
+                        setHovered(null)
+                        setTooltipPos(null)
+                      }
+                    }}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
+                    onClick={(e) => {
+                      // Dismiss annotation popover when clicking the chart background
                       setActiveAnnotationId(null)
                       setActiveAnnoPos(null)
-                      return
-                    }
-                    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-                      e.preventDefault()
-                      const step = e.shiftKey ? 5 : 1
-                      const dir = e.key === "ArrowLeft" ? -step : step
-                      const current = hovered ?? Math.round((startYear + endYear) / 2)
-                      const next = Math.min(endYear, Math.max(startYear, current + dir))
-                      if (pinned !== null) setPinned(next)
-                      else setHovered(next)
-                    }
-                  }}
+
+                      const rect = e.currentTarget.getBoundingClientRect()
+                      const x = e.clientX - rect.left
+                      const year = Math.round(xScale.invert(x))
+                      if (year < startYear || year > endYear) {
+                        setPinned(null)
+                        return
+                      }
+                      setPinned((p) => (p === year ? null : year))
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") {
+                        setPinned(null)
+                        setHovered(null)
+                        setTooltipPos(null)
+                        setActiveAnnotationId(null)
+                        setActiveAnnoPos(null)
+                        return
+                      }
+                      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                        e.preventDefault()
+                        const step = e.shiftKey ? 5 : 1
+                        const dir = e.key === "ArrowLeft" ? -step : step
+                        const current = hovered ?? Math.round((startYear + endYear) / 2)
+                        const next = Math.min(endYear, Math.max(startYear, current + dir))
+                        if (pinned !== null) setPinned(next)
+                        else setHovered(next)
+                      }
+                    }}
+                  />
+                </Group>
+              </svg>
+              {hovered !== null && tooltipPos && tooltipItems.length > 0 && (
+                <HtmlTooltip
+                  year={hovered}
+                  pinned={pinned !== null}
+                  items={tooltipItems.map((i) => ({
+                    id: i.id,
+                    name: i.name,
+                    color: i.color,
+                    value: `${i.display} (${i.rawDisplay})`,
+                  }))}
+                  x={tooltipPos.x}
+                  y={tooltipPos.y}
+                  innerW={innerW + margin.left + margin.right}
                 />
-              </Group>
-            </svg>
+              )}
+            </>
           )
         }}
       </ParentSize>
@@ -610,8 +650,9 @@ function UnitPanel({
 }) {
   const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
   const touchDismissTimerRaw = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <div className="flex items-center justify-between mb-2 px-1">
         <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide">
           {UNIT_LABEL[unit]}
@@ -652,8 +693,13 @@ function UnitPanel({
             const rect = e.currentTarget.getBoundingClientRect()
             const x = e.clientX - rect.left
             const year = Math.round(xScale.invert(x))
-            if (year >= startYear && year <= endYear) onHover(year)
-            else onHover(null)
+            if (year >= startYear && year <= endYear) {
+              onHover(year)
+              setTooltipPos({ x: margin.left + x, y: margin.top })
+            } else {
+              onHover(null)
+              setTooltipPos(null)
+            }
           }
 
           function yearFromTouchXRaw(touch: React.Touch, currentTarget: SVGRectElement): number | null {
@@ -703,127 +749,136 @@ function UnitPanel({
                 .sort((a, b) => a.cy - b.cy)
 
           return (
-            <svg width={width} height={height} role="img" aria-label={`${UNIT_LABEL[unit]} time series`}>
-              <Group left={margin.left} top={margin.top}>
-                <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={4} />
-                <AxisBottom
-                  top={innerH}
-                  scale={xScale}
-                  numTicks={Math.min(7, endYear - startYear)}
-                  tickFormat={(v) => `${v}`}
-                  stroke={GRID}
-                  tickStroke={GRID}
-                  tickLabelProps={{ fill: MUTED, fontSize: 11, textAnchor: "middle" }}
-                />
-                <AxisLeft
-                  scale={yScale}
-                  numTicks={4}
-                  tickFormat={(v) => formatAxisValue(v as number, unit)}
-                  stroke={GRID}
-                  tickStroke={GRID}
-                  tickLabelProps={{ fill: MUTED, fontSize: 11, dx: -4, dy: 4, textAnchor: "end" }}
-                />
-
-                <AnimatePresence>
-                  {series.map((s) => {
-                    const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
-                    const { estimated, verified } = splitAtVerified(inRange, s.verifiedFrom)
-                    const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.id
-                    return (
-                      <motion.g
-                        key={s.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: dimmed ? 0.12 : 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        {estimated.length > 1 && (
-                          <LinePath
-                            data={estimated}
-                            x={(p) => xScale(p.year)}
-                            y={(p) => yScale(p.value)}
-                            stroke={s.color}
-                            strokeWidth={2}
-                            strokeDasharray="5,4"
-                            opacity={0.55}
-                            curve={curveMonotoneX}
-                          />
-                        )}
-                        {verified.length > 1 && (
-                          <LinePath
-                            data={verified}
-                            x={(p) => xScale(p.year)}
-                            y={(p) => yScale(p.value)}
-                            stroke={s.color}
-                            strokeWidth={2}
-                            curve={curveMonotoneX}
-                          />
-                        )}
-                      </motion.g>
-                    )
-                  })}
-                </AnimatePresence>
-
-                {/* Trailing dots when not hovered */}
-                {hovered === null &&
-                  series.map((s) => {
-                    const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
-                    const last = inRange[inRange.length - 1]
-                    if (!last) return null
-                    return <circle key={`${s.id}-tail`} cx={xScale(last.year)} cy={yScale(last.value)} r={2.5} fill={s.color} />
-                  })}
-
-                {/* Crosshair */}
-                {hovered !== null && hovered >= startYear && hovered <= endYear && (
-                  <g>
-                    <line
-                      x1={xScale(hovered)}
-                      x2={xScale(hovered)}
-                      y1={0}
-                      y2={innerH}
-                      stroke={TEXT}
-                      strokeOpacity={0.4}
-                      strokeWidth={1}
-                    />
-                    {tooltipItems.map((item) => (
-                      <circle
-                        key={item.id}
-                        cx={xScale(hovered)}
-                        cy={item.cy}
-                        r={3.5}
-                        fill={item.color}
-                        stroke={SURFACE}
-                        strokeWidth={2}
-                      />
-                    ))}
-                  </g>
-                )}
-
-                {hovered !== null && hovered >= startYear && hovered <= endYear && tooltipItems.length > 0 && (
-                  <TooltipBox
-                    year={hovered}
-                    items={tooltipItems}
-                    anchorX={xScale(hovered)}
-                    innerW={innerW}
-                    compact
+            <>
+              <svg width={width} height={height} role="img" aria-label={`${UNIT_LABEL[unit]} time series`}>
+                <Group left={margin.left} top={margin.top}>
+                  <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={4} />
+                  <AxisBottom
+                    top={innerH}
+                    scale={xScale}
+                    numTicks={Math.min(7, endYear - startYear)}
+                    tickFormat={(v) => `${v}`}
+                    stroke={GRID}
+                    tickStroke={GRID}
+                    tickLabelProps={{ fill: MUTED, fontSize: 11, textAnchor: "middle" }}
                   />
-                )}
+                  <AxisLeft
+                    scale={yScale}
+                    numTicks={4}
+                    tickFormat={(v) => formatAxisValue(v as number, unit)}
+                    stroke={GRID}
+                    tickStroke={GRID}
+                    tickLabelProps={{ fill: MUTED, fontSize: 11, dx: -4, dy: 4, textAnchor: "end" }}
+                  />
 
-                <rect
-                  x={0}
-                  y={0}
-                  width={innerW}
-                  height={innerH}
-                  fill="transparent"
-                  style={{ touchAction: "none" }}
-                  onPointerMove={handleMove}
-                  onPointerLeave={() => onHover(null)}
-                  onTouchStart={handleTouchStartRaw}
-                  onTouchMove={handleTouchMoveRaw}
-                  onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
+                  <AnimatePresence>
+                    {series.map((s) => {
+                      const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
+                      const { estimated, verified } = splitAtVerified(inRange, s.verifiedFrom)
+                      const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.id
+                      return (
+                        <motion.g
+                          key={s.id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: dimmed ? 0.12 : 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {estimated.length > 1 && (
+                            <LinePath
+                              data={estimated}
+                              x={(p) => xScale(p.year)}
+                              y={(p) => yScale(p.value)}
+                              stroke={s.color}
+                              strokeWidth={2}
+                              strokeDasharray="5,4"
+                              opacity={0.55}
+                              curve={curveMonotoneX}
+                            />
+                          )}
+                          {verified.length > 1 && (
+                            <LinePath
+                              data={verified}
+                              x={(p) => xScale(p.year)}
+                              y={(p) => yScale(p.value)}
+                              stroke={s.color}
+                              strokeWidth={2}
+                              curve={curveMonotoneX}
+                            />
+                          )}
+                        </motion.g>
+                      )
+                    })}
+                  </AnimatePresence>
+
+                  {/* Trailing dots when not hovered */}
+                  {hovered === null &&
+                    series.map((s) => {
+                      const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
+                      const last = inRange[inRange.length - 1]
+                      if (!last) return null
+                      return <circle key={`${s.id}-tail`} cx={xScale(last.year)} cy={yScale(last.value)} r={2.5} fill={s.color} />
+                    })}
+
+                  {/* Crosshair */}
+                  {hovered !== null && hovered >= startYear && hovered <= endYear && (
+                    <g>
+                      <line
+                        x1={xScale(hovered)}
+                        x2={xScale(hovered)}
+                        y1={0}
+                        y2={innerH}
+                        stroke={TEXT}
+                        strokeOpacity={0.4}
+                        strokeWidth={1}
+                      />
+                      {tooltipItems.map((item) => (
+                        <circle
+                          key={item.id}
+                          cx={xScale(hovered)}
+                          cy={item.cy}
+                          r={3.5}
+                          fill={item.color}
+                          stroke={SURFACE}
+                          strokeWidth={2}
+                        />
+                      ))}
+                    </g>
+                  )}
+
+                  <rect
+                    x={0}
+                    y={0}
+                    width={innerW}
+                    height={innerH}
+                    fill="transparent"
+                    style={{ touchAction: "none" }}
+                    onPointerMove={handleMove}
+                    onPointerLeave={() => {
+                      onHover(null)
+                      setTooltipPos(null)
+                    }}
+                    onTouchStart={handleTouchStartRaw}
+                    onTouchMove={handleTouchMoveRaw}
+                    onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
+                  />
+                </Group>
+              </svg>
+              {hovered !== null && hovered >= startYear && hovered <= endYear && tooltipPos && tooltipItems.length > 0 && (
+                <HtmlTooltip
+                  year={hovered}
+                  items={tooltipItems.map((i) => ({
+                    id: i.id,
+                    name: i.name,
+                    color: i.color,
+                    value: i.value,
+                  }))}
+                  x={tooltipPos.x}
+                  y={tooltipPos.y}
+                  innerW={innerW + margin.left + margin.right}
                 />
-              </Group>
-            </svg>
+              )}
+            </>
           )
         }}
       </ParentSize>
@@ -831,14 +886,61 @@ function UnitPanel({
   )
 }
 
-// ─── Shared tooltip box (SVG-native, auto-flips at right edge) ──────────────
+// ─── HTML Tooltip (replaces SVG TooltipBox for interactive charts) ────────────
 
-interface TooltipItem {
-  id: string
-  name: string
-  color: string
-  value: string
+function HtmlTooltip({
+  year,
+  pinned,
+  items,
+  x,
+  y,
+  innerW,
+}: {
+  year: number
+  pinned?: boolean
+  items: { id: string; name: string; color: string; value: string }[]
+  x: number
+  y: number
+  innerW: number
+}) {
+  const tooltipW = 240
+  const flipLeft = x + tooltipW + 16 > innerW
+  const left = flipLeft ? x - tooltipW - 8 : x + 8
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left,
+        top: y + 4,
+        width: tooltipW,
+        zIndex: 30,
+        pointerEvents: "none",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+      }}
+      className="rounded-xl border border-(--color-border) bg-(--color-surface)/85 shadow-lg px-3 py-2.5"
+    >
+      <div className="text-xs font-mono font-bold text-(--color-text) mb-2 pb-1.5 border-b border-(--color-border)">
+        {year}{pinned ? " · pinned" : ""}
+      </div>
+      {items.map((item) => (
+        <div key={item.id} className="flex items-center justify-between gap-3 py-0.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+            <span className="text-[11px] text-(--color-muted) truncate">
+              {item.name.length > 24 ? item.name.slice(0, 22) + "…" : item.name}
+            </span>
+          </div>
+          <span className="text-[11px] font-semibold text-(--color-text) tabular-nums flex-shrink-0">
+            {item.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
 }
+
+// ─── Shared tooltip box (SVG-native, auto-flips at right edge) ──────────────
 
 function AnnotationTooltip({
   annotation,
@@ -890,59 +992,4 @@ function wrapText(text: string, maxChars: number): string[] {
   }
   if (current) lines.push(current)
   return lines
-}
-
-function TooltipBox({
-  year,
-  items,
-  anchorX,
-  innerW,
-  compact = false,
-  pinned = false,
-}: {
-  year: number
-  items: TooltipItem[]
-  anchorX: number
-  innerW: number
-  compact?: boolean
-  pinned?: boolean
-}) {
-  const { surface: SURFACE, border: BORDER, text: TEXT, muted: MUTED } = useChartColors()
-  const rowH = compact ? 16 : 18
-  const padding = 10
-  const headerH = compact ? 18 : 22
-  const w = compact ? 200 : 240
-  const h = headerH + items.length * rowH + padding
-
-  const flipLeft = anchorX + w + 12 > innerW
-  const x = flipLeft ? anchorX - w - 10 : anchorX + 10
-  const y = 4
-
-  return (
-    <g transform={`translate(${x}, ${y})`} pointerEvents="none">
-      <rect
-        width={w}
-        height={h}
-        rx={8}
-        fill={SURFACE}
-        stroke={BORDER}
-        strokeWidth={1}
-        opacity={0.97}
-      />
-      <text x={padding} y={headerH - 6} fill={TEXT} fontSize={compact ? 11 : 12} fontWeight={700}>
-        {year}{pinned ? "  · pinned" : ""}
-      </text>
-      {items.map((item, i) => (
-        <g key={item.id} transform={`translate(${padding}, ${headerH + i * rowH + 4})`}>
-          <circle cx={4} cy={-4} r={3.5} fill={item.color} />
-          <text x={14} y={0} fill={MUTED} fontSize={compact ? 10 : 11}>
-            {item.name.length > 26 ? item.name.slice(0, 24) + "…" : item.name}
-          </text>
-          <text x={w - padding - 4} y={0} fill={TEXT} fontSize={compact ? 10 : 11} fontWeight={600} textAnchor="end">
-            {item.value}
-          </text>
-        </g>
-      ))}
-    </g>
-  )
 }
