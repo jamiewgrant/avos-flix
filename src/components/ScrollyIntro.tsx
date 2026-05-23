@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Chart } from "./charts/Chart"
 import type { Series, SeriesData } from "../types/series"
+import { HISTORICAL_EVENTS } from "../lib/annotations"
 
 interface Scene {
   id: string
@@ -9,13 +10,14 @@ interface Scene {
   body: string
   visibleIds: string[]
   baseYear: number
+  annotationYears?: number[]
 }
 
 const SCENES: Scene[] = [
   {
     id: "claim",
-    headline: "“It's the avocado toast.”",
-    body: "For a decade, older commentators have argued that younger workers' financial struggles come down to discretionary spending. We plotted the actual numbers to see if the rebuttal holds.",
+    headline: "“It’s the avocado toast.”",
+    body: "For a decade, older commentators have argued that younger workers’ financial struggles come down to discretionary spending. We plotted the actual numbers to see if the rebuttal holds.",
     visibleIds: ["median-wage"],
     baseYear: 1995,
   },
@@ -25,6 +27,7 @@ const SCENES: Scene[] = [
     body: "Median UK full-time wages grew about 2.5× since 1995. Visible motion — but a backdrop, not a sprint.",
     visibleIds: ["median-wage"],
     baseYear: 1995,
+    annotationYears: [2008],
   },
   {
     id: "houses",
@@ -32,6 +35,7 @@ const SCENES: Scene[] = [
     body: "Over the same window, the average UK house price grew roughly 5×. The gap between the lines is what cannot be closed by skipping toast.",
     visibleIds: ["median-wage", "house-price-nationwide"],
     baseYear: 1995,
+    annotationYears: [1997, 2008, 2020, 2022],
   },
   {
     id: "rest",
@@ -39,13 +43,15 @@ const SCENES: Scene[] = [
     body: "Rent, energy bills, the general price level — all moved against you.",
     visibleIds: ["median-wage", "house-price-nationwide", "rent-index", "cpih", "energy-cost"],
     baseYear: 1995,
+    annotationYears: [2008, 2020, 2022],
   },
   {
     id: "tuition",
-    headline: "Then they added bills that didn't exist.",
-    body: "A degree cost £0 a year in 1997 and £9,535 by 2025. Today's graduates walk into work owing ~£47,000 before they earn a pound. There's no equivalent line on a boomer's chart.",
+    headline: "Then they added bills that didn’t exist.",
+    body: "A degree cost £0 a year in 1997 and £9,535 by 2025. Today’s graduates walk into work owing ~£47,000 before they earn a pound. There’s no equivalent line on a boomer’s chart.",
     visibleIds: ["tuition-uk", "student-debt", "median-wage"],
     baseYear: 1997,
+    annotationYears: [1998, 2012],
   },
 ]
 
@@ -64,6 +70,13 @@ export function ScrollyIntro({ data }: Props) {
         (s) => activeScene.visibleIds.includes(s.id) && s.points.length > 0,
       ),
     [allSeries, activeScene],
+  )
+  const activeAnnotations = useMemo(
+    () =>
+      activeScene.annotationYears
+        ? HISTORICAL_EVENTS.filter((a) => activeScene.annotationYears!.includes(a.year))
+        : [],
+    [activeScene],
   )
 
   return (
@@ -94,6 +107,7 @@ export function ScrollyIntro({ data }: Props) {
               mode="indexed"
               baseYear={activeScene.baseYear}
               fromYear={activeScene.baseYear}
+              annotations={activeAnnotations}
             />
           </div>
         </div>
