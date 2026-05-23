@@ -479,6 +479,9 @@ function App() {
                 toYear={activeTo}
                 annotations={showAnnotations ? HISTORICAL_EVENTS : []}
                 spotlightId={spotlightId}
+                onRangeChange={(f, t) =>
+                  setState((prev) => ({ ...prev, range: [f, t] as [number, number] }))
+                }
               />
 
               <div className="mt-4 px-1">

@@ -24,6 +24,7 @@ interface ChartProps {
   toYear?: number
   annotations?: Annotation[]
   spotlightId?: string | null
+  onRangeChange?: (from: number, to: number) => void
 }
 
 // Colors injected via useChartColors at the component level
@@ -43,7 +44,7 @@ function pathFromPoints(
   )
 }
 
-export function Chart({ series, mode, baseYear, fromYear, toYear, annotations, spotlightId }: ChartProps) {
+export function Chart({ series, mode, baseYear, fromYear, toYear, annotations, spotlightId, onRangeChange }: ChartProps) {
   if (mode === "indexed") {
     return (
       <IndexedView
@@ -53,6 +54,7 @@ export function Chart({ series, mode, baseYear, fromYear, toYear, annotations, s
         toYear={toYear}
         annotations={annotations}
         spotlightId={spotlightId}
+        onRangeChange={onRangeChange}
       />
     )
   }
@@ -91,6 +93,12 @@ interface ActiveAnnotation {
   flipped: boolean
 }
 
+interface PinchState {
+  initialDistance: number
+  initialFrom: number
+  initialTo: number
+}
+
 function IndexedView({
   series,
   baseYear,
@@ -98,6 +106,7 @@ function IndexedView({
   toYear,
   annotations,
   spotlightId,
+  onRangeChange,
 }: {
   series: Series[]
   baseYear: number
@@ -105,6 +114,7 @@ function IndexedView({
   toYear?: number
   annotations?: Annotation[]
   spotlightId?: string | null
+  onRangeChange?: (from: number, to: number) => void
 }) {
   const { muted: MUTED, grid: GRID, surface: SURFACE, text: TEXT } = useChartColors()
   const [hoveredAnno, setHoveredAnno] = useState<Annotation | null>(null)
@@ -118,6 +128,7 @@ function IndexedView({
   const startYear = fromYear ?? baseYear
   const touchDismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const pinchRef = useRef<PinchState | null>(null)
 
   const normalized = useMemo(() => {
     return series
@@ -207,8 +218,26 @@ function IndexedView({
             }, 2500)
           }
 
+          function pinchDistance(touches: React.TouchList): number {
+            const dx = touches[1].clientX - touches[0].clientX
+            const dy = touches[1].clientY - touches[0].clientY
+            return Math.sqrt(dx * dx + dy * dy)
+          }
+
           function handleTouchStart(e: React.TouchEvent<SVGRectElement>) {
             e.preventDefault()
+            if (e.touches.length === 2) {
+              // Begin pinch — record initial state
+              pinchRef.current = {
+                initialDistance: pinchDistance(e.touches),
+                initialFrom: startYear,
+                initialTo: endYear,
+              }
+              // Clear tooltip during pinch
+              if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
+              setHovered(null)
+              return
+            }
             if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
             const year = yearFromTouchX(e.touches[0], e.currentTarget)
             setHovered(year)
@@ -216,6 +245,26 @@ function IndexedView({
           }
 
           function handleTouchMove(e: React.TouchEvent<SVGRectElement>) {
+            if (e.touches.length === 2 && pinchRef.current && onRangeChange) {
+              const { initialDistance, initialFrom, initialTo } = pinchRef.current
+              const currentDistance = pinchDistance(e.touches)
+              const scale = initialDistance / currentDistance // >1 = zoom out, <1 = zoom in
+              const mid = (initialFrom + initialTo) / 2
+              const halfSpan = ((initialTo - initialFrom) / 2) * scale
+              let newFrom = Math.round(mid - halfSpan)
+              let newTo = Math.round(mid + halfSpan)
+              // Clamp: minimum year 1970, minimum span 5 years
+              newFrom = Math.max(1970, newFrom)
+              newTo = Math.min(newTo, initialTo + 50) // don't expand beyond reasonable future
+              if (newTo - newFrom < 5) {
+                // Enforce min span of 5 symmetrically around mid
+                const clampedMid = Math.round(mid)
+                newFrom = clampedMid - 2
+                newTo = clampedMid + 3
+              }
+              onRangeChange(newFrom, newTo)
+              return
+            }
             if (touchDismissTimer.current) clearTimeout(touchDismissTimer.current)
             const year = yearFromTouchX(e.touches[0], e.currentTarget)
             setHovered(year)
@@ -495,7 +544,10 @@ function IndexedView({
                     }}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
-                    onTouchEnd={() => { /* dismiss handled by 2.5s timer */ }}
+                    onTouchEnd={() => {
+                      pinchRef.current = null
+                      /* tooltip dismiss handled by 2.5s timer */
+                    }}
                     onClick={(e) => {
                       // Dismiss annotation popover when clicking the chart background
                       setActiveAnnotationId(null)
