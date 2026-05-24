@@ -129,6 +129,19 @@ function App() {
 
   const [{ mode, baseYear, hiddenIds, realTerms, range, snap }, setState] = useUrlState(initialHidden)
 
+  // Apply default hidden set once data loads — useUrlState initialises before data
+  // is available so hiddenIds starts as an empty Set (show all). Apply the default
+  // the first time data arrives, unless the user already has a ?hidden= URL param.
+  const defaultsApplied = useRef(false)
+  useEffect(() => {
+    if (!data || defaultsApplied.current) return
+    defaultsApplied.current = true
+    const hasUrlHidden = new URLSearchParams(window.location.search).has("hidden")
+    if (!hasUrlHidden) {
+      setState((prev) => ({ ...prev, hiddenIds: initialHidden }))
+    }
+  }, [data, initialHidden, setState])
+
   // Derive the data span across visible series for the brush bounds.
   const dataSpan = useMemo<[number, number]>(() => {
     const yrs = allSeries.flatMap((s) => s.points.map((p) => p.year))

@@ -486,28 +486,34 @@ function IndexedView({
                     </AnimatePresence>
                   </g>
 
-                  {/* Right-hand value labels (only when no hover) */}
-                  {hovered === null &&
-                    normalized.map((s) => {
-                      // Use last point within visible range (points now cover all years)
-                      const inRange = s.points.filter((p) => p.year <= endYear)
-                      const last = inRange[inRange.length - 1]
-                      if (!last) return null
-                      return (
+                  {/* Right-hand value labels — de-collided, highest values win */}
+                  {hovered === null && (() => {
+                    const candidates = normalized
+                      .map((s) => {
+                        const inRange = s.points.filter((p) => p.year <= endYear)
+                        const last = inRange[inRange.length - 1]
+                        if (!last) return null
+                        return { s, last, y: yScale(last.value) }
+                      })
+                      .filter((x): x is NonNullable<typeof x> => x !== null)
+                      .sort((a, b) => a.y - b.y) // top of chart first (lowest y px)
+                    const MIN_GAP = 13
+                    const placed: number[] = []
+                    return candidates
+                      .filter(({ y }) => {
+                        const conflict = placed.some((py) => Math.abs(py - y) < MIN_GAP)
+                        if (!conflict) placed.push(y)
+                        return !conflict
+                      })
+                      .map(({ s, last, y }) => (
                         <g key={`${s.meta.id}-label`}>
-                          <circle cx={xScale(last.year)} cy={yScale(last.value)} r={3.5} fill={s.meta.color} />
-                          <text
-                            x={xScale(last.year) + 8}
-                            y={yScale(last.value) + 4}
-                            fill={s.meta.color}
-                            fontSize={12}
-                            fontWeight={600}
-                          >
+                          <circle cx={xScale(last.year)} cy={y} r={3.5} fill={s.meta.color} />
+                          <text x={xScale(last.year) + 8} y={y + 4} fill={s.meta.color} fontSize={12} fontWeight={600}>
                             {Math.round(last.value)}
                           </text>
                         </g>
-                      )
-                    })}
+                      ))
+                  })()}
 
                   {hovered !== null && (
                     <g>
