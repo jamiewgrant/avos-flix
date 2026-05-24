@@ -70,15 +70,16 @@ interface NormalizedSeries {
   points: YearValue[]
 }
 
-function normalize(s: Series, baseYear: number, fromYear: number): NormalizedSeries | null {
+function normalize(s: Series, baseYear: number): NormalizedSeries | null {
   let base = s.points.find((p) => p.year === baseYear)
   if (!base) {
     base = s.points.find((p) => p.year > baseYear && p.year <= baseYear + 3)
   }
   if (!base || base.value === 0) return null
-  const points = s.points
-    .filter((p) => p.year >= fromYear)
-    .map((p) => ({ year: p.year, value: (p.value / base!.value) * 100 }))
+  // Always include ALL points (no fromYear filter) so path topology stays
+  // constant when startYear changes — the visible range is enforced by a
+  // <clipPath> on the SVG instead, which lets motion.path interpolate smoothly.
+  const points = s.points.map((p) => ({ year: p.year, value: (p.value / base!.value) * 100 }))
   return { meta: s, baseYearActual: base.year, baseValue: base.value, points }
 }
 
@@ -132,9 +133,9 @@ function IndexedView({
 
   const normalized = useMemo(() => {
     return series
-      .map((s) => normalize(s, baseYear, startYear))
+      .map((s) => normalize(s, baseYear))
       .filter((s): s is NormalizedSeries => s !== null && s.points.length > 1)
-  }, [series, baseYear, startYear])
+  }, [series, baseYear])
 
   function handleAnnotationClick(
     a: Annotation,
@@ -180,9 +181,13 @@ function IndexedView({
             )
           }
 
+          // Use all years for domain calculation, but clip visible range via clipPath
           const allYears = normalized.flatMap((s) => s.points.map((p) => p.year))
-          const allValues = normalized.flatMap((s) => s.points.map((p) => p.value))
           const endYear = toYear ?? Math.max(...allYears)
+          // For y-scale domain, only consider points within the visible range
+          const allValues = normalized.flatMap((s) =>
+            s.points.filter((p) => p.year >= startYear && p.year <= endYear).map((p) => p.value)
+          )
 
           const xScale = scaleLinear<number>({ domain: [startYear, endYear], range: [0, innerW] })
           const yScale = scaleLinear<number>({
@@ -289,14 +294,18 @@ function IndexedView({
                 .filter((x): x is NonNullable<typeof x> => x !== null)
                 .sort((a, b) => a.cy - b.cy)
 
+          const chartTitleId = `chart-title-indexed-${baseYear}`
+          const chartTitleText = `Indexed chart, base year ${baseYear}. ${normalized.length} series shown from ${startYear} to ${endYear}. ${normalized.slice(0, 3).map((s) => s.meta.name).join(", ")}${normalized.length > 3 ? ` and ${normalized.length - 3} more` : ""}.`
+
           return (
             <>
               <svg
                 width={width}
                 height={height}
                 role="img"
-                aria-label={`Series indexed to ${baseYear} = 100`}
+                aria-labelledby={chartTitleId}
               >
+                <title id={chartTitleId}>{chartTitleText}</title>
                 <defs>
                   {normalized.map((s) => (
                     <linearGradient key={`grad-${s.meta.id}`} id={`area-grad-${s.meta.id}`} x1="0" y1="0" x2="0" y2="1">
@@ -311,6 +320,9 @@ function IndexedView({
                       <feMergeNode in="SourceGraphic" />
                     </feMerge>
                   </filter>
+                  <clipPath id="chart-area-indexed">
+                    <rect x={0} y={0} width={innerW} height={innerH} />
+                  </clipPath>
                 </defs>
                 <Group left={margin.left} top={margin.top}>
                   <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={5} />
@@ -418,64 +430,68 @@ function IndexedView({
                     )
                   })}
 
-                  <AnimatePresence>
-                    {normalized.map((s) => {
-                      const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
-                      const baseOpacity = dimmed ? 0.12 : 1
-                      const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
-                      return (
-                        <motion.g
-                          key={s.meta.id}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: baseOpacity }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                        >
-                          {verified.length > 1 && (
-                            <AreaClosed
-                              data={verified}
-                              x={(p) => xScale(p.year)}
-                              y={(p) => yScale(p.value)}
-                              yScale={yScale}
-                              fill={`url(#area-grad-${s.meta.id})`}
-                              curve={curveMonotoneX}
-                              opacity={dimmed ? 0.1 : 1}
-                            />
-                          )}
-                          {estimated.length > 1 && (
-                            <motion.path
-                              d={pathFromPoints(estimated, xScale, yScale)}
-                              stroke={s.meta.color}
-                              strokeWidth={dimmed ? 1 : 2}
-                              strokeDasharray="5,4"
-                              opacity={0.55 * baseOpacity}
-                              fill="none"
-                              initial={false}
-                              animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
-                              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                            />
-                          )}
-                          {verified.length > 1 && (
-                            <motion.path
-                              d={pathFromPoints(verified, xScale, yScale)}
-                              stroke={s.meta.color}
-                              strokeWidth={dimmed ? 1 : 2.5}
-                              fill="none"
-                              filter={dimmed ? undefined : "url(#line-glow)"}
-                              initial={false}
-                              animate={{ d: pathFromPoints(verified, xScale, yScale) }}
-                              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                            />
-                          )}
-                        </motion.g>
-                      )
-                    })}
-                  </AnimatePresence>
+                  <g clipPath="url(#chart-area-indexed)">
+                    <AnimatePresence>
+                      {normalized.map((s) => {
+                        const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
+                        const baseOpacity = dimmed ? 0.12 : 1
+                        const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                        return (
+                          <motion.g
+                            key={s.meta.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: baseOpacity }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            {verified.length > 1 && (
+                              <AreaClosed
+                                data={verified}
+                                x={(p) => xScale(p.year)}
+                                y={(p) => yScale(p.value)}
+                                yScale={yScale}
+                                fill={`url(#area-grad-${s.meta.id})`}
+                                curve={curveMonotoneX}
+                                opacity={dimmed ? 0.1 : 1}
+                              />
+                            )}
+                            {estimated.length > 1 && (
+                              <motion.path
+                                d={pathFromPoints(estimated, xScale, yScale)}
+                                stroke={s.meta.color}
+                                strokeWidth={dimmed ? 1 : 2}
+                                strokeDasharray="5,4"
+                                opacity={0.55 * baseOpacity}
+                                fill="none"
+                                initial={false}
+                                animate={{ d: pathFromPoints(estimated, xScale, yScale) }}
+                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                              />
+                            )}
+                            {verified.length > 1 && (
+                              <motion.path
+                                d={pathFromPoints(verified, xScale, yScale)}
+                                stroke={s.meta.color}
+                                strokeWidth={dimmed ? 1 : 2.5}
+                                fill="none"
+                                filter={dimmed ? undefined : "url(#line-glow)"}
+                                initial={false}
+                                animate={{ d: pathFromPoints(verified, xScale, yScale) }}
+                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                              />
+                            )}
+                          </motion.g>
+                        )
+                      })}
+                    </AnimatePresence>
+                  </g>
 
                   {/* Right-hand value labels (only when no hover) */}
                   {hovered === null &&
                     normalized.map((s) => {
-                      const last = s.points[s.points.length - 1]
+                      // Use last point within visible range (points now cover all years)
+                      const inRange = s.points.filter((p) => p.year <= endYear)
+                      const last = inRange[inRange.length - 1]
                       if (!last) return null
                       return (
                         <g key={`${s.meta.id}-label`}>
@@ -802,7 +818,15 @@ function UnitPanel({
 
           return (
             <>
-              <svg width={width} height={height} role="img" aria-label={`${UNIT_LABEL[unit]} time series`}>
+              <svg
+                width={width}
+                height={height}
+                role="img"
+                aria-labelledby={`chart-title-raw-${unit}`}
+              >
+                <title id={`chart-title-raw-${unit}`}>
+                  {`${UNIT_LABEL[unit]} time series from ${startYear} to ${endYear}. ${series.map((s) => s.name).join(", ")}.`}
+                </title>
                 <Group left={margin.left} top={margin.top}>
                   <GridRows scale={yScale} width={innerW} stroke={GRID} strokeDasharray="2,4" numTicks={4} />
                   <AxisBottom

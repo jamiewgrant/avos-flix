@@ -255,6 +255,7 @@ function App() {
       range: null,
       snap: {},
       embed: false,
+      birthYear: null,
     }))
     setSearch("")
     setSpotlightId(null)

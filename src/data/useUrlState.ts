@@ -23,6 +23,7 @@ export interface UrlState {
   range: [number, number] | null
   snap: SnapState
   embed: boolean
+  birthYear: number | null
 }
 
 const DEFAULTS: UrlState = {
@@ -33,6 +34,7 @@ const DEFAULTS: UrlState = {
   range: null,
   snap: {},
   embed: false,
+  birthYear: null,
 }
 
 function parseUrl(search: string): Partial<UrlState> {
@@ -83,6 +85,9 @@ function parseUrl(search: string): Partial<UrlState> {
 
   if (params.get("embed") === "true" || params.get("embed") === "1") out.embed = true
 
+  const born = Number(params.get("born"))
+  if (Number.isFinite(born) && born >= 1940 && born <= 2005) out.birthYear = born
+
   return out
 }
 
@@ -108,6 +113,8 @@ function stringify(state: UrlState): string {
   // embed — preserve in URL so iframes keep it when navigating
   if (state.embed) params.set("embed", "true")
 
+  if (state.birthYear !== null) params.set("born", String(state.birthYear))
+
   const s = params.toString()
   return s ? `?${s}` : ""
 }
@@ -123,6 +130,7 @@ export function useUrlState(initialHidden: Set<string>) {
       range: parsed.range ?? DEFAULTS.range,
       snap: parsed.snap ?? DEFAULTS.snap,
       embed: parsed.embed ?? DEFAULTS.embed,
+      birthYear: parsed.birthYear ?? DEFAULTS.birthYear,
     }
   })
 

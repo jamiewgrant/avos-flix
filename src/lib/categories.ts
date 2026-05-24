@@ -50,6 +50,7 @@ const MAP: Record<string, Category> = {
   "cpih": "macro",
   "boe-rate": "macro",
   "food-cpi": "macro",
+  "savings-ratio": "macro",
 }
 
 export function categoryOf(id: string): Category {
