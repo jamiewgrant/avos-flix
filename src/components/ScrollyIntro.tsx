@@ -53,6 +53,22 @@ const SCENES: Scene[] = [
     baseYear: 1997,
     annotationYears: [1998, 2012],
   },
+  {
+    id: "childcare",
+    headline: "Then they had kids.",
+    body: "Full-time nursery for one child under 2 now costs over £15,000 a year in England — before any government support. In 1995 the equivalent was around £3,000. That’s a cost that simply didn’t exist for most boomers at the same life stage.",
+    visibleIds: ["childcare-cost", "median-wage"],
+    baseYear: 1995,
+    annotationYears: [2020],
+  },
+  {
+    id: "total",
+    headline: "This is the full picture.",
+    body: "Stack it all together: house prices, rent, energy, childcare, tuition, student debt. Every line outpaced wages. This isn’t a spending problem. It’s a structural cost problem.",
+    visibleIds: ["median-wage", "house-price-nationwide", "rent-index", "energy-cost", "childcare-cost", "tuition-uk"],
+    baseYear: 1995,
+    annotationYears: [2008, 2020, 2022],
+  },
 ]
 
 interface Props {
