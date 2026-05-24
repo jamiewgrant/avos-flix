@@ -81,6 +81,9 @@ import { SourceStrip } from "./components/SourceStrip"
 import { ScrollProgress } from "./components/ScrollProgress"
 import { SectionDivider } from "./components/SectionDivider"
 import { RevealOnScroll } from "./components/RevealOnScroll"
+import { CohortWindow } from "./components/CohortWindow"
+import { Changelog } from "./components/Changelog"
+import SectionShare from "./components/SectionShare"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { applyPalette } from "./lib/palette"
@@ -719,11 +722,24 @@ function App() {
         </div>
       )}
 
+      {!embedMode && data && wage && housePriceNationwide && (
+        <section className="mb-20">
+          <CohortWindow
+            series={[wage, housePriceNationwide]}
+            onApply={(from, to) => setState((prev) => ({ ...prev, range: [from, to] as [number, number], birthYear: from - 22 }))}
+            onClear={() => setState((prev) => ({ ...prev, range: null, birthYear: null }))}
+          />
+        </section>
+      )}
+
       {!embedMode && <SectionDivider />}
 
       {!embedMode && canShowAffordability && (
         <section className="mb-20" id="housing" style={{ scrollMarginTop: "4rem" }}>
-          <span className="section-num">02 / Housing</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="section-num">02 / Housing</span>
+            <SectionShare title="House price-to-wage ratio, UK 1995–2025" />
+          </div>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             "But interest rates were 15%!"
           </h2>
@@ -915,6 +931,12 @@ function App() {
       {!embedMode && <div id="faq" style={{ scrollMarginTop: "4rem" }}><Faq /></div>}
 
       {!embedMode && <About />}
+
+      {!embedMode && (
+        <section className="mb-12 mt-4">
+          <Changelog />
+        </section>
+      )}
 
       {!embedMode && (
         <footer className="mt-4 mb-8 pt-8 border-t border-(--color-border) flex items-center justify-between text-xs text-(--color-muted) font-mono">
