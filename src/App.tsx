@@ -84,6 +84,8 @@ import { RevealOnScroll } from "./components/RevealOnScroll"
 import { CohortWindow } from "./components/CohortWindow"
 import { Changelog } from "./components/Changelog"
 import SectionShare from "./components/SectionShare"
+import { StoryPresets, PRESETS } from "./components/StoryPresets"
+import type { Preset } from "./components/StoryPresets"
 import { deflateSeries } from "./lib/deflate"
 import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { applyPalette } from "./lib/palette"
@@ -174,6 +176,29 @@ function App() {
       else next.add(id)
       return { ...prev, hiddenIds: next }
     })
+  }
+
+  // Derive active preset from current hiddenIds — reverse lookup so no extra state needed.
+  const activePresetId = useMemo(() => {
+    const visibleIds = new Set(allSeries.filter((s) => !hiddenIds.has(s.id)).map((s) => s.id))
+    for (const preset of PRESETS) {
+      if (!preset.visibleIds) continue
+      const presetSet = new Set(preset.visibleIds)
+      if (preset.visibleIds.every((id) => visibleIds.has(id)) && visibleIds.size === presetSet.size) {
+        return preset.id
+      }
+    }
+    return "custom"
+  }, [hiddenIds, allSeries])
+
+  function selectPreset(preset: Preset) {
+    if (!preset.visibleIds) return // "custom" — do nothing, just let user use legend
+    const allIds = new Set(allSeries.map((s) => s.id))
+    const keep = new Set(preset.visibleIds)
+    setState((prev) => ({
+      ...prev,
+      hiddenIds: new Set([...allIds].filter((id) => !keep.has(id))),
+    }))
   }
 
   function selectRegion(key: RegionKey) {
@@ -689,17 +714,25 @@ function App() {
                 </div>
               )}
 
-              <SeriesLegend
-                allSeries={allSeries}
-                palettedAllSeries={palettedAllSeries}
-                hiddenIds={hiddenIds}
-                spotlightId={spotlightId}
-                search={search}
-                onSearch={setSearch}
-                onToggle={toggle}
-                onSpotlight={setSpotlightId}
-                visibleCount={visible.length}
+              <StoryPresets
+                activePresetId={activePresetId}
+                onSelect={selectPreset}
               />
+
+              {/* On mobile, hide the full legend unless user is in Custom mode */}
+              <div className={activePresetId === "custom" ? "" : "hidden md:block"}>
+                <SeriesLegend
+                  allSeries={allSeries}
+                  palettedAllSeries={palettedAllSeries}
+                  hiddenIds={hiddenIds}
+                  spotlightId={spotlightId}
+                  search={search}
+                  onSearch={setSearch}
+                  onToggle={toggle}
+                  onSpotlight={setSpotlightId}
+                  visibleCount={visible.length}
+                />
+              </div>
               <div className="px-1">
                 <SourceStrip series={visible} />
               </div>
