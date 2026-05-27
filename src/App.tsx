@@ -103,13 +103,11 @@ const REGION_OPTIONS: { label: string; key: RegionKey; seriesId: string }[] = [
   { label: "North East", key: "northeast", seriesId: "house-price-northeast" },
 ]
 
+// Must match PRESETS[0].visibleIds exactly so fresh load → "Wages vs Houses" preset active
 const DEFAULT_VISIBLE_IDS = new Set([
   "median-wage",
   "house-price-nationwide",
-  "household-income",
   "cpih",
-  "rent-index",
-  "energy-cost",
 ])
 
 function App() {
