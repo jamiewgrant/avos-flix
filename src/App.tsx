@@ -544,15 +544,16 @@ function App() {
                 />
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 px-1 text-sm">
+              {/* Toolbar — row 1: primary controls */}
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
                 <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>View</span>
+                  <span className="text-xs">View</span>
                   <div className="flex gap-1">
                     {(["indexed", "raw"] as const).map((m) => (
                       <button
                         key={m}
                         onClick={() => setState((p) => ({ ...p, mode: m }))}
-                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                           mode === m
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -566,13 +567,13 @@ function App() {
 
                 {mode === "indexed" && (
                   <div className="flex items-center gap-2 text-(--color-muted)">
-                    <span>Base</span>
+                    <span className="text-xs">Base</span>
                     <div className="flex gap-1">
                       {BASE_YEAR_OPTIONS.map((y) => (
                         <button
                           key={y}
                           onClick={() => setState((p) => ({ ...p, baseYear: y }))}
-                          className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                          className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                             baseYear === y
                               ? "bg-(--color-accent) text-white"
                               : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -585,14 +586,15 @@ function App() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>Region</span>
+                {/* Secondary controls — hidden on mobile, shown md+ */}
+                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Region</span>
                   <div className="flex gap-1">
                     {REGION_OPTIONS.map((opt) => (
                       <button
                         key={opt.key}
                         onClick={() => selectRegion(opt.key)}
-                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                           activeRegion === opt.key
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -605,14 +607,14 @@ function App() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>Strip inflation</span>
+                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Strip inflation</span>
                   <div className="flex gap-1">
                     {(["nominal", "real"] as const).map((v) => (
                       <button
                         key={v}
                         onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
-                        className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                           (v === "real") === realTerms
                             ? "bg-(--color-accent) text-white"
                             : "bg-(--color-surface-2) hover:text-(--color-text)"
@@ -630,10 +632,10 @@ function App() {
                 </div>
 
                 <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>Events</span>
+                  <span className="text-xs">Events</span>
                   <button
                     onClick={() => setShowAnnotations((v) => !v)}
-                    className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                       showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Show/hide historical event markers"
@@ -642,11 +644,11 @@ function App() {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span>Palette</span>
+                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Palette</span>
                   <button
                     onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
-                    className={`px-2.5 py-2 rounded-md font-mono text-xs transition ${
+                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
                       palette === "cb" ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
                     }`}
                     title="Swap to a colour-blind-safe (Okabe-Ito) palette"
@@ -655,12 +657,15 @@ function App() {
                   </button>
                 </div>
 
+                {/* Action buttons — desktop: full labels; mobile: icon-only for secondary */}
                 <div className="ml-auto flex items-center gap-1.5 chart-actions">
-                  <EmbedCodeButton />
+                  <span className="hidden md:contents">
+                    <EmbedCodeButton />
+                  </span>
                   <button
                     onClick={toggleFullscreen}
                     aria-label="Toggle fullscreen for the main chart"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Toggle fullscreen"
                   >
                     ⤢ Full
@@ -671,7 +676,7 @@ function App() {
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Download visible series as CSV"
                   >
-                    ↓ CSV
+                    <span className="hidden md:inline">↓ </span>CSV
                   </button>
                   <button
                     onClick={shareView}
@@ -679,12 +684,12 @@ function App() {
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Copy a link to this exact view"
                   >
-                    ↗ Share
+                    <span className="hidden md:inline">↗ </span>Share
                   </button>
                   <ShareButton
                     title="avos+flix — the numbers behind the avocado-toast argument"
                     stats={palettedVisible.slice(0, 4).map((s) => s.name)}
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                   />
                   <button
                     onClick={resetToDefaults}
@@ -692,17 +697,65 @@ function App() {
                     className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
                     title="Reset all controls to defaults"
                   >
-                    ↺ Reset
+                    <span className="hidden md:inline">↺ Reset</span>
+                    <span className="md:hidden">↺</span>
                   </button>
                   <button
                     onClick={downloadSnapshot}
                     disabled={snapshotting}
                     aria-label="Download this chart as a PNG"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
+                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
                     title="Download this chart as a PNG"
                   >
                     {snapshotting ? "saving…" : "↓ PNG"}
                   </button>
+                </div>
+              </div>
+
+              {/* Mobile-only secondary controls row */}
+              <div className="md:hidden mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Region</span>
+                  <div className="flex gap-1">
+                    {REGION_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => selectRegion(opt.key)}
+                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
+                          activeRegion === opt.key
+                            ? "bg-(--color-accent) text-white"
+                            : "bg-(--color-surface-2) hover:text-(--color-text)"
+                        }`}
+                        title={`Show ${opt.label} house prices`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Inflation</span>
+                  <div className="flex gap-1">
+                    {(["nominal", "real"] as const).map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
+                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
+                          (v === "real") === realTerms
+                            ? "bg-(--color-accent) text-white"
+                            : "bg-(--color-surface-2) hover:text-(--color-text)"
+                        }`}
+                        title={
+                          v === "nominal"
+                            ? "Show values as published"
+                            : `Divide every price-like series by CPIH so growth is in real terms (${refYear}=ref)`
+                        }
+                      >
+                        {v === "nominal" ? "Off" : "On"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
