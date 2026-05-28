@@ -538,13 +538,13 @@ function App() {
                   }
                   presets={[
                     { label: "All", range: dataSpan },
-                    { label: "Last 30y", range: [Math.max(dataSpan[0], dataSpan[1] - 30), dataSpan[1]] },
-                    { label: "Post-2008", range: [Math.max(dataSpan[0], 2008), dataSpan[1]] },
+                    { label: "30y", range: [Math.max(dataSpan[0], dataSpan[1] - 30), dataSpan[1]] },
+                    { label: "2008+", range: [Math.max(dataSpan[0], 2008), dataSpan[1]] },
                   ]}
                 />
               </div>
 
-              {/* Toolbar — row 1: primary controls */}
+              {/* Toolbar — controls */}
               <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
                 <div className="flex items-center gap-2 text-(--color-muted)">
                   <span className="text-xs">View</span>
@@ -586,7 +586,20 @@ function App() {
                   </div>
                 )}
 
-                {/* Secondary controls — hidden on mobile, shown md+ */}
+                <div className="flex items-center gap-2 text-(--color-muted)">
+                  <span className="text-xs">Events</span>
+                  <button
+                    onClick={() => setShowAnnotations((v) => !v)}
+                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
+                      showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
+                    }`}
+                    title="Show/hide historical event markers"
+                  >
+                    {showAnnotations ? "On" : "Off"}
+                  </button>
+                </div>
+
+                {/* Desktop-only controls */}
                 <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
                   <span className="text-xs">Region</span>
                   <div className="flex gap-1">
@@ -631,19 +644,6 @@ function App() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Events</span>
-                  <button
-                    onClick={() => setShowAnnotations((v) => !v)}
-                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                      showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
-                    }`}
-                    title="Show/hide historical event markers"
-                  >
-                    {showAnnotations ? "On" : "Off"}
-                  </button>
-                </div>
-
                 <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
                   <span className="text-xs">Palette</span>
                   <button
@@ -656,63 +656,9 @@ function App() {
                     {palette === "cb" ? "CB-safe" : "Default"}
                   </button>
                 </div>
-
-                {/* Action buttons — desktop: full labels; mobile: icon-only for secondary */}
-                <div className="ml-auto flex items-center gap-1.5 chart-actions">
-                  <span className="hidden md:contents">
-                    <EmbedCodeButton />
-                  </span>
-                  <button
-                    onClick={toggleFullscreen}
-                    aria-label="Toggle fullscreen for the main chart"
-                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                    title="Toggle fullscreen"
-                  >
-                    ⤢ Full
-                  </button>
-                  <button
-                    onClick={exportCsv}
-                    aria-label="Download visible series as CSV"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                    title="Download visible series as CSV"
-                  >
-                    <span className="hidden md:inline">↓ </span>CSV
-                  </button>
-                  <button
-                    onClick={shareView}
-                    aria-label="Copy a link to this exact view"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                    title="Copy a link to this exact view"
-                  >
-                    <span className="hidden md:inline">↗ </span>Share
-                  </button>
-                  <ShareButton
-                    title="avos+flix — the numbers behind the avocado-toast argument"
-                    stats={palettedVisible.slice(0, 4).map((s) => s.name)}
-                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                  />
-                  <button
-                    onClick={resetToDefaults}
-                    aria-label="Reset all controls to defaults"
-                    className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                    title="Reset all controls to defaults"
-                  >
-                    <span className="hidden md:inline">↺ Reset</span>
-                    <span className="md:hidden">↺</span>
-                  </button>
-                  <button
-                    onClick={downloadSnapshot}
-                    disabled={snapshotting}
-                    aria-label="Download this chart as a PNG"
-                    className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
-                    title="Download this chart as a PNG"
-                  >
-                    {snapshotting ? "saving…" : "↓ PNG"}
-                  </button>
-                </div>
               </div>
 
-              {/* Mobile-only secondary controls row */}
+              {/* Mobile-only secondary controls */}
               <div className="md:hidden mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
                 <div className="flex items-center gap-2 text-(--color-muted)">
                   <span className="text-xs">Region</span>
@@ -757,6 +703,59 @@ function App() {
                     ))}
                   </div>
                 </div>
+              </div>
+
+              {/* Action buttons — own row, right-aligned */}
+              <div className="mt-2 flex items-center justify-end gap-1.5 px-1 chart-actions">
+                <span className="hidden md:contents">
+                  <EmbedCodeButton />
+                </span>
+                <button
+                  onClick={toggleFullscreen}
+                  aria-label="Toggle fullscreen for the main chart"
+                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                  title="Toggle fullscreen"
+                >
+                  ⤢ Full
+                </button>
+                <button
+                  onClick={exportCsv}
+                  aria-label="Download visible series as CSV"
+                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                  title="Download visible series as CSV"
+                >
+                  ↓ CSV
+                </button>
+                <button
+                  onClick={shareView}
+                  aria-label="Copy a link to this exact view"
+                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                  title="Copy a link to this exact view"
+                >
+                  ↗ Share
+                </button>
+                <ShareButton
+                  title="avos+flix — the numbers behind the avocado-toast argument"
+                  stats={palettedVisible.slice(0, 4).map((s) => s.name)}
+                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                />
+                <button
+                  onClick={resetToDefaults}
+                  aria-label="Reset all controls to defaults"
+                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
+                  title="Reset all controls to defaults"
+                >
+                  ↺ Reset
+                </button>
+                <button
+                  onClick={downloadSnapshot}
+                  disabled={snapshotting}
+                  aria-label="Download this chart as a PNG"
+                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
+                  title="Download this chart as a PNG"
+                >
+                  {snapshotting ? "saving…" : "↓ PNG"}
+                </button>
               </div>
 
               {shareToast && (
