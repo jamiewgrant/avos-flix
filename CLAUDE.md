@@ -35,6 +35,12 @@ npm test           # vitest
 `npm install` should use `--legacy-peer-deps` (set in `.npmrc`) because
 Visx 3.x peer-deps cap at React 18 even though the library works with 19.
 
+## Shipping
+
+The owner wants finished changes — fixes especially — merged to `main` without
+asking first; Vercel deploys from `main`. Run `npm run lint`, `npm test` and
+`npm run build` before merging, and don't merge if any of them fail.
+
 ## Repository layout
 
 ```
