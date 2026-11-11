@@ -1,5 +1,4 @@
 import { lazy, Suspense, useRef, useMemo, useState } from "react"
-import { toPng } from "html-to-image"
 import type { Series } from "../types/series"
 import {
   PERSONAS,
@@ -119,7 +118,7 @@ export function CostStackSection({ series, embedMode = false }: Props) {
     if (!wageAtLast) return null
     const share = Math.round((last.total / wageAtLast.value) * 100)
     return { personaLabel: altPersona.shortLabel, year: last.year, share }
-  }, [series, altPersona, altBenchmark, housingMode, startYear])
+  }, [series, altPersona, altBenchmark, housingMode, mortgageRegion, startYear])
 
   function handlePersonaChange(id: PersonaId) {
     const p = personaById(id)
@@ -132,8 +131,10 @@ export function CostStackSection({ series, embedMode = false }: Props) {
     if (!cardRef.current || snapshotting) return
     setSnapshotting(true)
     try {
+      // Loaded on demand; background follows the active theme.
+      const { toPng } = await import("html-to-image")
       const dataUrl = await toPng(cardRef.current, {
-        backgroundColor: "#16171d",
+        backgroundColor: getComputedStyle(cardRef.current).backgroundColor,
         pixelRatio: 2,
         style: { borderRadius: "0px" },
       })

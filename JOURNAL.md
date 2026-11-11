@@ -252,6 +252,42 @@ these would be fabrication, not estimation, since the products didn't exist.
 - "Solid = ONS published, dashed = modelled estimate or proxy" — viewers can
   now see the rigor boundary directly in the chart.
 
+## 2026-11-11 — Review pass: URL state, units, honesty and tooling fixes
+
+### URL state
+- The visible series are now encoded as `show=` (default view omitted, `show=all`
+  for everything) instead of a ~600-character `hidden=` list written on every
+  load. `hidden=` is still parsed so old links work.
+- Params the hook doesn't own (`embed`, `boomer`, `utm_*`) are preserved instead
+  of being stripped on first render; `embed=1` and `embed=true` both work;
+  `born=` is restored into the cohort input.
+
+### Data honesty
+- `savings-ratio` used unit `"pct"` (not a real unit) and got an untitled panel;
+  first-time-buyer age was plotted as a "rate per 1,000" and persons-per-household
+  as "count (thousands)". Added `years` and `persons` units. ETL scripts are now
+  type-checked (`tsconfig.node.json`) so this can't recur silently.
+- New `estimated: true` flag for series that are hand-compiled throughout
+  (homeownership bands, avocado) — they render dashed end to end. Why: they had
+  no `verifiedFrom`, so they were drawn solid like a National Statistic.
+- The og:image chart scaled each line to its own maximum, so wages and house
+  prices ended at the same height. Both now share one scale. Image is also
+  rasterised to PNG because social platforms don't render SVG previews.
+- Indexed mode now says which visible series are not drawn for lack of data at
+  the base year, instead of dropping them silently.
+- Duplicate series colours removed; Land Registry's near-white line recoloured
+  so it is visible in the light theme.
+
+### Housekeeping
+- "Current year" is derived from the data (`latestCommonYear`) rather than a
+  hardcoded 2025.
+- Region selector is a real switch and only highlights a region that is on the chart.
+- Error boundaries (app + per lazy section), pre-paint theme script, PNG export
+  follows the theme, lint is green, CI workflow added.
+- `xlsx`/`papaparse` moved to devDependencies; unused `@vercel/og` and dead
+  template assets removed.
+- Not done: data refresh (`npm run etl`) — series.json is from May 2026.
+
 ---
 
 ## Format

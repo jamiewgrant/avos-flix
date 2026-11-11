@@ -14,3 +14,9 @@ export function splitAtVerified<T extends { year: number }>(
     verified: points.slice(idx),
   }
 }
+
+// The verifiedFrom boundary to feed splitAtVerified for a series. A series
+// flagged `estimated` has no verified portion at all, so everything is dashed.
+export function verifiedBoundary(s: { verifiedFrom?: number; estimated?: boolean }): number | undefined {
+  return s.estimated ? Infinity : s.verifiedFrom
+}

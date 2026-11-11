@@ -4,6 +4,9 @@ import { generateShareCard } from "../lib/shareImage"
 interface Props {
   title: string
   stats: string[]
+  /** Button text. Defaults to "Share". */
+  label?: string
+  /** When given, replaces the default button styling entirely. */
   className?: string
 }
 
@@ -16,7 +19,14 @@ function dataUrlToFile(dataUrl: string, filename: string): File {
   return new File([bytes], filename, { type: mime })
 }
 
-export function ShareButton({ title, stats, className = "" }: Props) {
+const DEFAULT_CLASS =
+  "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium " +
+  "border border-(--color-border) bg-(--color-surface) text-(--color-text) " +
+  "hover:bg-(--color-bg) transition-colors duration-150"
+
+export function ShareButton({ title, stats, label = "Share", className }: Props) {
+  const compact = className !== undefined
+  const iconSize = compact ? 12 : 16
   const [loading, setLoading] = useState(false)
 
   async function handleShare() {
@@ -62,37 +72,30 @@ export function ShareButton({ title, stats, className = "" }: Props) {
       onClick={handleShare}
       disabled={loading}
       aria-label={loading ? "Generating share image…" : "Share as image"}
-      className={[
-        "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium",
-        "border border-(--color-border) bg-(--color-surface) text-(--color-text)",
-        "hover:bg-(--color-bg) transition-colors duration-150",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      title="Download or share a summary image of this view"
+      className={`${className ?? DEFAULT_CLASS} disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {loading ? (
         <>
-          <Spinner />
+          <Spinner size={iconSize} />
           <span>Generating…</span>
         </>
       ) : (
         <>
-          <ShareIcon />
-          <span>Share</span>
+          <ShareIcon size={iconSize} />
+          <span>{label}</span>
         </>
       )}
     </button>
   )
 }
 
-function Spinner() {
+function Spinner({ size }: { size: number }) {
   return (
     <svg
       className="animate-spin"
-      width={16}
-      height={16}
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -105,11 +108,11 @@ function Spinner() {
   )
 }
 
-function ShareIcon() {
+function ShareIcon({ size }: { size: number }) {
   return (
     <svg
-      width={16}
-      height={16}
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

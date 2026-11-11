@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react"
+import { latestCommonYear } from "../lib/latestYear"
 import type { Series } from "../types/series"
 import { fmt } from "../lib/format"
 import { useCountUp } from "../lib/useCountUp"
@@ -83,9 +84,12 @@ export function HomeBuyingCalculator({ series }: Props) {
   const hpSeries = series.find((s) => s.id === "house-price-nationwide")
   const wageSeries = series.find((s) => s.id === "median-wage")
 
+  // Latest year the house-price series covers — "today" for this calculator.
+  const nowYear = latestCommonYear(hpSeries) ?? new Date().getFullYear()
+
   const result = useMemo(() => {
     const purchasePriceThen = getPoint(hpSeries, purchaseYear)
-    const currentHouseValue = getPoint(hpSeries, 2025) ?? getPoint(hpSeries, 2024)
+    const currentHouseValue = getPoint(hpSeries, nowYear)
     const medianWageThen = getPoint(wageSeries, purchaseYear)
 
     if (purchasePriceThen === null || currentHouseValue === null) return null
@@ -95,7 +99,7 @@ export function HomeBuyingCalculator({ series }: Props) {
     const annualRate = getSVR(purchaseYear)
     const monthlyPaymentThen = monthlyRepayment(mortgageThen, annualRate, 300)
 
-    const yearsElapsed = Math.min(2025 - purchaseYear, 25)
+    const yearsElapsed = Math.min(nowYear - purchaseYear, 25)
     const remainingFraction = Math.max(0, (25 - yearsElapsed) / 25)
     const equityNow = currentHouseValue - mortgageThen * remainingFraction
 
@@ -112,7 +116,7 @@ export function HomeBuyingCalculator({ series }: Props) {
       medianWageThen,
       annualRate,
     }
-  }, [hpSeries, wageSeries, purchaseYear, depositPct])
+  }, [hpSeries, wageSeries, purchaseYear, depositPct, nowYear])
 
   const diff = result ? result.rentNow - result.monthlyPaymentThen : 0
   const isRecent = purchaseYear >= 2020
@@ -121,7 +125,7 @@ export function HomeBuyingCalculator({ series }: Props) {
   const animCurrentHouseValue = useCountUp(result?.currentHouseValue ?? 0)
   const animEquityNow = useCountUp(result?.equityNow ?? 0)
   const animRemainingMortgage = useCountUp(
-    result ? result.mortgageThen * Math.max(0, (25 - Math.min(2025 - purchaseYear, 25)) / 25) : 0
+    result ? result.mortgageThen * Math.max(0, (25 - Math.min(nowYear - purchaseYear, 25)) / 25) : 0
   )
   const animPurchasePrice = useCountUp(result?.purchasePriceThen ?? 0)
   const animDeposit = useCountUp(result?.depositThen ?? 0)
@@ -208,7 +212,7 @@ export function HomeBuyingCalculator({ series }: Props) {
           {isRecent && (
             <div className="mt-5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
               This is recent enough that data may be incomplete — house price series may not yet
-              reflect 2025 final figures.
+              reflect {nowYear} final figures.
             </div>
           )}
 

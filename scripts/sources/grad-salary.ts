@@ -5,7 +5,7 @@ const META = {
   name: "Graduate starting salary (median, UK)",
   description: "Median annual starting salary for new UK graduates entering full-time employment. Combines HECSU 'What Do Graduates Do?' and ISE Student Recruitment Survey medians. Nominal £.",
   unit: "GBP" as const,
-  color: "#60a5fa",
+  color: "#818cf8",
   source: {
     name: "HECSU / Prospects + Institute of Student Employers",
     url: "https://luminate.prospects.ac.uk/what-do-graduates-do",

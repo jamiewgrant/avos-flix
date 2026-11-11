@@ -27,7 +27,9 @@ Live: https://avos-flix.vercel.app/
 npm run dev        # vite dev server, http://localhost:5173
 npm run build      # tsc -b && vite build — verifies type errors and prod build
 npm run etl        # tsx scripts/etl.ts — fetches all sources, writes public/data/series.json
+npm run og         # regenerate public/og.svg + og.png from the committed series.json
 npm run lint       # eslint
+npm test           # vitest
 ```
 
 `npm install` should use `--legacy-peer-deps` (set in `.npmrc`) because
@@ -38,6 +40,7 @@ Visx 3.x peer-deps cap at React 18 even though the library works with 19.
 ```
 scripts/
   etl.ts                    # entry; runs all sources in parallel, writes series.json
+  og.ts                     # social preview image (og.svg + og.png), run by the ETL
   sources/<name>.ts         # one file per data series, each exports fetchSeries()
   seed/<name>.csv           # offline fallback data, committed
 src/
@@ -49,7 +52,12 @@ src/
   lib/
     deflate.ts              # CPIH-deflate £ series to a reference year
     splitAtVerified.ts      # split points at verifiedFrom for dashed-line rendering
+    indexing.ts             # basePoint(): the point a series is rebased against
+    latestYear.ts           # latestCommonYear(): "now" derived from the data
+    presets.ts              # story presets + base-year options
   components/
+    ChartToolbar.tsx        # view/base/region/inflation controls + export actions
+    ErrorBoundary.tsx       # wraps the app and each lazy section
     StatCallouts.tsx        # auto-computed headline numbers
     AvosToastCalculator.tsx # interactive calculator widget
     ScrollyIntro.tsx        # scroll-triggered intro section
@@ -68,8 +76,9 @@ public/
 1. Create `scripts/sources/<name>.ts` with an async `fetchSeries(): Promise<Series>`.
 2. Register the function in the `SOURCES` array in `scripts/etl.ts`.
 3. If the upstream fetch can fail, fall back to a seed CSV in `scripts/seed/`.
-4. If any portion is a modelled estimate or proxy, set `verifiedFrom: <year>` in the META — pre-`verifiedFrom` points render dashed.
-5. Pick a distinct hex `color` (Tailwind-palette-style works well — see existing series for the palette in use).
+4. If any portion is a modelled estimate or proxy, set `verifiedFrom: <year>` in the META — pre-`verifiedFrom` points render dashed. If the *whole* series is hand-compiled or illustrative, set `estimated: true` instead — it renders dashed throughout.
+5. Pick a hex `color` no other series uses, and that is visible on both the dark and the light (white) chart surface — no near-white or near-black.
+5a. Use the right `unit` (`GBP | percent | index | count | rate | years | persons`). Raw mode gives each unit its own panel, so a wrong unit puts the line on the wrong axis. `count` is thousands; `rate` is per 1,000.
 6. Re-run `npm run etl` and commit the updated `public/data/series.json`.
 
 ### Data honesty principles (load-bearing)
@@ -81,15 +90,19 @@ public/
 
 ### Editing the chart
 
-- Both `Chart.tsx` (indexed + raw modes) and `AffordabilityChart.tsx` use the same `splitAtVerified` helper to render estimated portions dashed. If you add a new chart, do the same.
+- Both `Chart.tsx` (indexed + raw modes) and `AffordabilityChart.tsx` use the same `splitAtVerified` helper to render estimated portions dashed. If you add a new chart, do the same (pass `verifiedBoundary(series)` so `estimated` series are handled too).
+- Don't hardcode "the current year" in components — use `latestCommonYear()` so copy and maths follow the data.
 - AnimatePresence wraps each series in `motion.g` keyed by series id. Don't break this — premature key collisions kill the toggle animations.
 
 ### URL state
 
-`useUrlState` encodes `mode`, `baseYear`, `hiddenIds`, `realTerms`, and
-`range` into search params. Defaults are omitted from the URL. To add a new
-piece of state, extend the `UrlState` interface, `parseUrl`, and `stringify`
-together.
+`useUrlState` encodes `mode`, `baseYear`, the visible series (`show=`),
+`realTerms`, `range`, `born` and the `snap_*` snapshot inputs into search
+params. Defaults are omitted from the URL, so a fresh visit keeps a clean
+address. `show=all` means every series; the older `hidden=` form is still
+parsed for existing links. Params the hook doesn't own (`embed`, `boomer`,
+`utm_*`) are passed through untouched. To add a new piece of state, extend
+the `UrlState` interface, `OWNED_PARAMS`, `parseUrl`, and `stringify` together.
 
 ## Known quirks
 
@@ -105,6 +118,12 @@ together.
   `scripts/sources/landRegistry.ts` when a newer release supersedes it.
 - The **Bank of England Bank Rate** doesn't serve a clean CSV at the BoE's
   own URL — we use the datahub.io mirror.
+- **`xlsx` (SheetJS)** is a devDependency used only by the ETL. The npm
+  build (0.18.5) has open advisories with no npm fix; SheetJS ships fixed
+  versions only from `cdn.sheetjs.com`. It only ever parses ONS spreadsheets
+  at ETL time and never ships to the browser.
+- **og:image must be a PNG** — social platforms don't render SVG previews.
+  `scripts/og.ts` rasterises `og.svg` to `og.png` with `sharp`.
 - **Building for Vercel**: `vercel.json` isn't needed; Vite auto-detects.
   `.npmrc` with `legacy-peer-deps=true` is required (Visx peer conflict).
 

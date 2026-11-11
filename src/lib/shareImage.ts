@@ -47,7 +47,7 @@ export async function generateShareCard(
   ctx.font = "600 56px system-ui, -apple-system, sans-serif"
 
   // Wrap title if long
-  const titleLines = wrapText(ctx, title, W - 120, 56)
+  const titleLines = wrapText(ctx, title, W - 120)
   const titleLineHeight = 68
   const titleBlockH = titleLines.length * titleLineHeight
   const statCount = Math.min(statLines.length, 4)
@@ -87,7 +87,6 @@ function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
-  _fontSize: number,
 ): string[] {
   const words = text.split(" ")
   const lines: string[] = []

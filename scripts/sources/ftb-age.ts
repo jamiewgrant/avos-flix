@@ -4,7 +4,7 @@ const META = {
   id: "ftb-age",
   name: "First-time buyer average age (UK)",
   description: "Average age of UK first-time buyers based on mortgage completions. Combines HMRC / CML / UK Finance / Halifax FTB tracker historical figures. Pre-1995 reflects industry estimates (dashed).",
-  unit: "rate" as const,
+  unit: "years" as const,
   color: "#a3a3a3",
   source: {
     name: "UK Finance / Halifax First-Time Buyer Review",

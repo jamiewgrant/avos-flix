@@ -21,7 +21,7 @@ const REGIONS: RegionSpec[] = [
     id: "house-price-landreg",
     name: "House prices (HM Land Registry, UK)",
     description: "UK average property price from the official UK HPI, monthly aggregated to annual mean. Methodology dates from 1968.",
-    color: "#f5f4f0",
+    color: "#94a3b8",
     region: "uk",
     regionName: "United Kingdom",
   },

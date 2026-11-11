@@ -16,7 +16,7 @@ const META = {
   description:
     "ONS CPIH food and non-alcoholic beverages sub-index, 2015 = 100. Food rose ~39% from 2015 to 2023, vs 29% for CPIH overall — the 2022-23 cost-of-living spike was disproportionately a food crisis. Pre-2005 estimated from RPI food component.",
   unit: "index" as const,
-  color: "#fbbf24",
+  color: "#ca8a04",
   source: {
     name: "ONS — CPIH food & non-alcoholic beverages sub-index",
     url: "https://www.ons.gov.uk/economy/inflationandpriceindices",

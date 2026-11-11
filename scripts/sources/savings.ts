@@ -7,8 +7,8 @@ const META = {
   name: "Household saving ratio (%)",
   description:
     "ONS household saving ratio as % of disposable income. Near-zero or negative for recent years shows millennials can't save — not won't. Pre-2000 from historical ONS releases.",
-  unit: "pct" as const,
-  color: "#fb923c",
+  unit: "percent" as const,
+  color: "#0ea5e9",
   source: {
     name: "ONS — Sector accounts: household saving ratio",
     url: "https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/bulletins/quarterlysectoraccounts/latest",

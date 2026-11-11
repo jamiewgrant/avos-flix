@@ -6,7 +6,7 @@ const META = {
   description:
     "Annual out-of-pocket NHS costs for a typical working-age adult: 12 prescription items + 2 dental check-ups + 1 Band 2 treatment. Pre-2000 NHS was effectively free at point of use for most; charges have risen above inflation since. Figures exclude private healthcare.",
   unit: "GBP" as const,
-  color: "#f43f5e",
+  color: "#be185d",
   source: {
     name: "NHS England — prescription charge history; NHS dental charge bands",
     url: "https://www.nhsbsa.nhs.uk/pharmacies-gp-practices-and-appliance-contractors/drug-tariff/drug-tariff-part-ix",

@@ -105,7 +105,12 @@ export function MethodologyModal({ open, onClose, series }: Props) {
                         >
                           {s.source.name}
                         </a>
-                        {s.verifiedFrom && (
+                        {s.estimated && (
+                          <span className="text-xs text-(--color-muted) italic">
+                            Hand-compiled / illustrative · drawn dashed throughout
+                          </span>
+                        )}
+                        {!s.estimated && s.verifiedFrom && (
                           <span className="text-xs text-(--color-muted) italic">
                             Verified from {s.verifiedFrom} · estimated/modelled pre-{s.verifiedFrom}
                           </span>

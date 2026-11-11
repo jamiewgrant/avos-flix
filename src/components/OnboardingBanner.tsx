@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 const STORAGE_KEY = "avos-flix.onboarding.seen.v1"
 
 export function OnboardingBanner() {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    const seen = window.localStorage.getItem(STORAGE_KEY)
-    if (!seen) setVisible(true)
-  }, [])
+  const [visible, setVisible] = useState(() => {
+    try {
+      return !window.localStorage.getItem(STORAGE_KEY)
+    } catch {
+      // Storage blocked (private mode, sandboxed iframe) — just show the banner.
+      return true
+    }
+  })
 
   function dismiss() {
     setVisible(false)

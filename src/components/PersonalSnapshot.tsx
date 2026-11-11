@@ -36,7 +36,7 @@ const SEGMENTS: Array<{
 
 // ── Waterfall bar for one snapshot ─────────────────────────────────────────
 function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; label: string }) {
-  const [tooltip, setTooltip] = useState<{ seg: (typeof SEGMENTS)[0]; x: number; y: number } | null>(null)
+  const [tooltip, setTooltip] = useState<{ seg: (typeof SEGMENTS)[0]; x: number; y: number; barWidth: number } | null>(null)
   const barRef = useRef<HTMLDivElement>(null)
 
   const displayDisposable = Math.max(0, breakdown.disposable)
@@ -55,7 +55,7 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
     (seg: (typeof SEGMENTS)[0], e: React.MouseEvent) => {
       const rect = barRef.current?.getBoundingClientRect()
       if (!rect) return
-      setTooltip({ seg, x: e.clientX - rect.left, y: e.clientY - rect.top })
+      setTooltip({ seg, x: e.clientX - rect.left, y: e.clientY - rect.top, barWidth: rect.width })
     },
     [],
   )
@@ -87,7 +87,7 @@ function WaterfallBar({ breakdown, label }: { breakdown: SnapshotBreakdown; labe
           <div
             className="absolute z-10 px-2 py-1 rounded text-xs pointer-events-none"
             style={{
-              left: Math.min(tooltip.x + 8, (barRef.current?.offsetWidth ?? 200) - 140),
+              left: Math.min(tooltip.x + 8, tooltip.barWidth - 140),
               top: tooltip.y - 36,
               background: "var(--color-bg)",
               border: "1px solid var(--color-border)",

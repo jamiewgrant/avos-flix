@@ -35,11 +35,11 @@ function formatGBP(v: number): string {
 }
 
 export function AvosToastCalculator({ housePrice }: Props) {
-  const latest = housePrice.points[housePrice.points.length - 1]
-  if (!latest) return null
-
   const [sacrificeKey, setSacrificeKey] = useState(SACRIFICES[0].key)
   const [perWeek, setPerWeek] = useState(5)
+
+  const latest = housePrice.points[housePrice.points.length - 1]
+  if (!latest) return null
 
   const sacrifice = SACRIFICES.find((s) => s.key === sacrificeKey) ?? SACRIFICES[0]
   const annual = annualCost(sacrifice, perWeek)

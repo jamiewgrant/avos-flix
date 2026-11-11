@@ -4,7 +4,7 @@ const META = {
   id: "persons-per-household",
   name: "Persons per household (avg)",
   description: "Average UK household size from census + ONS Families and Households. Slow-moving but unmistakable downward trend: more solo earners absorbing the costs that used to be split.",
-  unit: "count" as const,
+  unit: "persons" as const,
   color: "#d8b4fe",
   source: {
     name: "ONS — Families and households / UK Census + General Register Office (pre-1961)",

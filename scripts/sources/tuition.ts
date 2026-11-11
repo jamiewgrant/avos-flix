@@ -5,7 +5,7 @@ const META = {
   name: "Undergraduate tuition fees (England, max)",
   description: "Maximum annual undergraduate tuition fee chargeable by English universities. Pre-1998 = £0 (no fees). Top-up fees raised the cap to £3,000 in 2006; the Browne reforms tripled it to £9,000 in 2012. Held flat at £9,250 since 2017.",
   unit: "GBP" as const,
-  color: "#fb923c",
+  color: "#d946ef",
   source: {
     name: "Department for Education / Office for Students fee cap history",
     url: "https://www.officeforstudents.org.uk/advice-and-guidance/fees-and-funding/",

@@ -11,6 +11,8 @@ const META = {
     url: "https://www.ons.gov.uk/economy/inflationandpriceindices",
   },
   region: "uk",
+  // No canonical source — illustrative, so dashed throughout.
+  estimated: true,
 }
 
 // Approximate single-avocado retail price at major UK supermarkets, year-end.

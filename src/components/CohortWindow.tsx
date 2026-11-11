@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react"
 import type { Series } from "../types/series"
 import { fmt } from "../lib/format"
+import { latestCommonYear } from "../lib/latestYear"
 
 interface Props {
   series: Series[]
+  /** Birth year restored from the URL (?born=), if any. */
+  initialBirthYear?: number | null
   onApply: (from: number, to: number) => void
   onClear: () => void
 }
-
-const CURRENT_YEAR = 2025
 
 function valueAt(series: Series, year: number): number | null {
   const exact = series.points.find((p) => p.year === year)
@@ -25,13 +26,15 @@ function fmtMultiple(x: number): string {
   return x >= 10 ? `${x.toFixed(0)}×` : `${x.toFixed(1)}×`
 }
 
-export function CohortWindow({ series, onApply, onClear }: Props) {
-  const [input, setInput] = useState("")
-  const [applied, setApplied] = useState<number | null>(null)
+export function CohortWindow({ series, initialBirthYear = null, onApply, onClear }: Props) {
+  const [input, setInput] = useState(initialBirthYear !== null ? String(initialBirthYear) : "")
+  const [applied, setApplied] = useState<number | null>(initialBirthYear)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const houseSeries = series.find((s) => s.id === "house-price-nationwide")
   const wageSeries = series.find((s) => s.id === "median-wage")
+  // Latest year both series cover — the end of the "working life" window.
+  const CURRENT_YEAR = latestCommonYear(houseSeries, wageSeries) ?? new Date().getFullYear()
 
   function computeCallout(birthYear: number): {
     from: number
@@ -43,6 +46,7 @@ export function CohortWindow({ series, onApply, onClear }: Props) {
     wageTo: string
   } | null {
     const from = birthYear + 22
+    if (from >= CURRENT_YEAR) return null
     if (!houseSeries || !wageSeries) return null
     const houseFromVal = valueAt(houseSeries, from)
     const houseToVal = valueAt(houseSeries, CURRENT_YEAR)

@@ -45,7 +45,7 @@ const BANDS: AgeBand[] = [
   {
     id: "homeownership-55-64",
     name: "Homeownership rate (55–64)",
-    color: "#34d399",
+    color: "#10b981",
     points: [
       { year: 1981, value: 56 },
       { year: 1991, value: 68 },
@@ -70,11 +70,13 @@ export async function fetchSeries(): Promise<Series[]> {
   return BANDS.map((b) => ({
     id: b.id,
     name: b.name,
-    description: "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+    description: "Share of household reference persons in this age band who own their home (with or without a mortgage). Hand-compiled from English Housing Survey, ONS LFS and Census tenure tables, which use different methodologies — so the whole line is drawn dashed as an estimate.",
     unit: "percent" as const,
     color: b.color,
     source: SOURCE,
     region: "england",
     points: b.points,
+    // Hand-compiled across surveys with different methods — dashed throughout.
+    estimated: true,
   }))
 }

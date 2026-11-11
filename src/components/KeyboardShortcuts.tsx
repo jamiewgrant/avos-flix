@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { BASE_YEAR_OPTIONS } from "../lib/presets"
 
 const ROWS: Array<{ keys: string[]; description: string }> = [
   { keys: ["?"], description: "Open this cheatsheet" },
   { keys: ["i"], description: "Switch to Indexed mode" },
   { keys: ["r"], description: "Switch to Raw mode" },
-  { keys: ["1", "2", "3", "4", "5"], description: "Set base year (1953, 1970, 1980, 1995, 2008)" },
+  {
+    keys: BASE_YEAR_OPTIONS.map((_, i) => String(i + 1)),
+    description: `Set base year in Indexed mode (${BASE_YEAR_OPTIONS.join(", ")})`,
+  },
   { keys: ["←", "→"], description: "Move brush handles (when focused)" },
   { keys: ["Shift + ←/→"], description: "Move brush in 5-year steps" },
   { keys: ["Esc"], description: "Close any open modal" },
@@ -17,13 +21,9 @@ function dispatchShortcut(action: string, value: string | number) {
   )
 }
 
-const BASE_YEARS: Record<string, number> = {
-  "1": 1953,
-  "2": 1970,
-  "3": 1980,
-  "4": 1995,
-  "5": 2008,
-}
+const BASE_YEARS: Record<string, number> = Object.fromEntries(
+  BASE_YEAR_OPTIONS.map((year, i) => [String(i + 1), year]),
+)
 
 export function KeyboardShortcuts() {
   const [open, setOpen] = useState(false)
@@ -35,6 +35,7 @@ export function KeyboardShortcuts() {
       if (
         target.tagName === "INPUT" ||
         target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
         target.isContentEditable
       ) {
         return
@@ -58,13 +59,8 @@ export function KeyboardShortcuts() {
         case "r":
           dispatchShortcut("setMode", "raw")
           break
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-          dispatchShortcut("setBaseYear", BASE_YEARS[e.key])
-          break
+        default:
+          if (e.key in BASE_YEARS) dispatchShortcut("setBaseYear", BASE_YEARS[e.key])
       }
     }
 

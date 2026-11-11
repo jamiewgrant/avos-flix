@@ -11,13 +11,13 @@
     "etl": "tsx scripts/etl.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "audit": "tsx scripts/audit-snapshot.ts"
+    "audit": "tsx scripts/audit-snapshot.ts",
+    "og": "tsx scripts/og.ts",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
-    "@types/d3-shape": "^3.1.8",
     "@vercel/analytics": "^2.0.1",
-    "@vercel/og": "^0.11.1",
     "@vercel/speed-insights": "^2.0.0",
     "@visx/axis": "^3.12.0",
     "@visx/grid": "^3.12.0",
@@ -30,14 +30,13 @@
     "d3-shape": "^3.2.0",
     "framer-motion": "^12.38.0",
     "html-to-image": "^1.11.13",
-    "papaparse": "^5.5.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "tailwindcss": "^4.3.0",
-    "xlsx": "^0.18.5"
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/d3-shape": "^3.1.8",
     "@types/node": "^24.12.3",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.14",
@@ -48,10 +47,13 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "fast-check": "^3.23.2",
     "globals": "^17.6.0",
+    "papaparse": "^5.5.3",
+    "sharp": "^0.34.5",
     "tsx": "^4.22.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "xlsx": "^0.18.5"
   }
 }

@@ -143,7 +143,7 @@ export function InternationalComparison({ series }: Props) {
           {/* Series lines + labels */}
           {resolved.map(({ label, s }) => {
             const pts = [...s.points].sort((a, b) => a.year - b.year)
-            const verifiedFrom = s.verifiedFrom ?? -Infinity
+            const verifiedFrom = s.estimated ? Infinity : (s.verifiedFrom ?? -Infinity)
 
             // Split into dashed (before verifiedFrom) and solid (from verifiedFrom)
             const dashed = pts.filter((p) => p.year < verifiedFrom)

@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import type { SeriesData } from "../types/series"
 import { netPayDetail } from "../lib/costBasket"
+import { latestCommonYear } from "../lib/latestYear"
 
 interface Props {
   data: SeriesData
@@ -10,7 +11,6 @@ const ACCENT = "#c084fc"
 const MUTED = "#9ca3af"
 
 const YEAR_A = 1995
-const YEAR_B = 2025
 
 function findValue(
   data: SeriesData,
@@ -51,6 +51,10 @@ function mortgagePayment(price: number, boeRate: number): number {
 }
 
 export function BoomerVsMillennial({ data }: Props) {
+  // "Now" is the latest year both headline series cover, not a hardcoded date.
+  const YEAR_B =
+    latestCommonYear(data.series["house-price-nationwide"], data.series["median-wage"]) ??
+    new Date().getFullYear()
   const rows = useMemo(() => {
     const houseA = findValue(data, "house-price-nationwide", YEAR_A)
     const houseB = findValue(data, "house-price-nationwide", YEAR_B)
@@ -90,7 +94,7 @@ export function BoomerVsMillennial({ data }: Props) {
       { label: "University tuition (annual)", hint: "Max England tuition fee", a: tuitionA, b: tuitionB, unit: "GBP" as Unit, worseIsHigher: true },
       { label: "Bank Rate", hint: "Official rate — context for mortgage cost", a: boeA, b: boeB, unit: "percent" as Unit, worseIsHigher: false },
     ]
-  }, [data])
+  }, [data, YEAR_B])
 
   return (
     <section className="mb-20">
@@ -98,15 +102,15 @@ export function BoomerVsMillennial({ data }: Props) {
         Same age, different economy.
       </h2>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
-        A 30-year-old in 1995 vs a 30-year-old in 2025. Same milestone — trying
+        A 30-year-old in {YEAR_A} vs a 30-year-old in {YEAR_B}. Same milestone — trying
         to get a foothold — radically different numbers.
       </p>
 
       <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
         <div className="hidden md:grid grid-cols-[1fr_auto_auto] text-xs font-mono text-(--color-muted) uppercase tracking-wider px-5 py-3 border-b border-(--color-border) bg-(--color-bg)">
           <span />
-          <span className="w-36 text-right">Born 1965, age 30</span>
-          <span className="w-36 text-right" style={{ color: ACCENT }}>Born 1995, age 30</span>
+          <span className="w-36 text-right">Born {YEAR_A - 30}, age 30</span>
+          <span className="w-36 text-right" style={{ color: ACCENT }}>Born {YEAR_B - 30}, age 30</span>
         </div>
 
         {rows.map((row, i) => {
@@ -130,13 +134,13 @@ export function BoomerVsMillennial({ data }: Props) {
                 <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>{row.hint}</div>
               </div>
               <div className="md:w-36 text-left md:text-right mb-1 md:mb-0">
-                <span className="text-xs md:hidden font-mono" style={{ color: MUTED }}>1995: </span>
+                <span className="text-xs md:hidden font-mono" style={{ color: MUTED }}>{YEAR_A}: </span>
                 <span className="text-sm tabular-nums" style={{ color: MUTED }}>
                   {row.a !== null ? fmt(row.a, row.unit) : "—"}
                 </span>
               </div>
               <div className="md:w-36 text-left md:text-right">
-                <span className="text-xs md:hidden font-mono" style={{ color: ACCENT }}>2025: </span>
+                <span className="text-xs md:hidden font-mono" style={{ color: ACCENT }}>{YEAR_B}: </span>
                 <span
                   className="text-sm font-semibold tabular-nums"
                   style={{ color: isWorse ? "#ef4444" : ACCENT }}
@@ -155,7 +159,7 @@ export function BoomerVsMillennial({ data }: Props) {
       </div>
 
       <p className="mt-3 text-[11px] font-mono opacity-70" style={{ color: MUTED }}>
-        Sources: Land Registry / Nationwide (house price), ONS ASHE (wage), Bank of England (rate), ONS PIPR / rent-index, UCEA (tuition). Tax model applies each year's real PA, basic rate, NI. 2025 values use most recent available data.
+        Sources: Land Registry / Nationwide (house price), ONS ASHE (wage), Bank of England (rate), ONS PIPR / rent-index, UCEA (tuition). Tax model applies each year's real PA, basic rate, NI. {YEAR_B} values use most recent available data.
       </p>
     </section>
   )

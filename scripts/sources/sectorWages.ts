@@ -69,7 +69,7 @@ const publicSector: Series = {
   description:
     "ONS ASHE median full-time weekly earnings, public sector employees. Includes NHS, teaching, civil service etc.",
   unit: "GBP",
-  color: "#34d399",
+  color: "#2dd4bf",
   source: SOURCE,
   region: "uk",
   verifiedFrom: 2002,
@@ -82,7 +82,7 @@ const privateSector: Series = {
   description:
     "ONS ASHE median full-time weekly earnings, private sector employees.",
   unit: "GBP",
-  color: "#f97316",
+  color: "#e11d48",
   source: SOURCE,
   region: "uk",
   verifiedFrom: 2002,

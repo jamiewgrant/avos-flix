@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react"
 
 // Encode app state into URL search params so a link reproduces the view.
-// Format: ?mode=raw&base=1995&hidden=boe-rate,avocado-uk&real=1&range=1968-2025
+// Format: ?mode=raw&base=1995&show=median-wage,boe-rate&real=1&range=1968-2025
+// `show` lists the visible series ("all" = every series) and is omitted when it
+// matches the default view. The older `hidden=` form is still read so existing
+// shared links keep working. Params this hook doesn't own (embed, boomer,
+// utm_*, …) are passed through untouched.
 // Snapshot params: snap_salary, snap_housing, snap_mhousing, snap_children,
 //   snap_earners, snap_plan, snap_pension, snap_year
 export interface SnapState {
@@ -18,23 +22,49 @@ export interface SnapState {
 export interface UrlState {
   mode: "indexed" | "raw"
   baseYear: number
-  hiddenIds: Set<string>
+  /** Ids of visible series. The single token "all" means every series. */
+  visibleIds: Set<string>
+  /** Legacy `?hidden=` list, resolved into visibleIds once the data has loaded. */
+  legacyHidden: Set<string> | null
   realTerms: boolean
   range: [number, number] | null
   snap: SnapState
-  embed: boolean
   birthYear: number | null
+}
+
+export const SHOW_ALL = "all"
+
+// Must match PRESETS[0].visibleIds so a fresh load lands on "Wages vs Houses".
+export const DEFAULT_VISIBLE_IDS: readonly string[] = [
+  "median-wage",
+  "house-price-nationwide",
+  "cpih",
+]
+
+// Params owned by this hook; everything else in the query string is preserved.
+const OWNED_PARAMS = [
+  "mode", "base", "show", "hidden", "real", "range", "born",
+  "snap_salary", "snap_housing", "snap_mhousing", "snap_children",
+  "snap_earners", "snap_plan", "snap_pension", "snap_year",
+]
+
+function sameSet(a: Set<string>, b: readonly string[]): boolean {
+  return a.size === b.length && b.every((id) => a.has(id))
 }
 
 const DEFAULTS: UrlState = {
   mode: "indexed",
   baseYear: 1995,
-  hiddenIds: new Set(),
+  visibleIds: new Set(DEFAULT_VISIBLE_IDS),
+  legacyHidden: null,
   realTerms: false,
   range: null,
   snap: {},
-  embed: false,
   birthYear: null,
+}
+
+export function defaultUrlState(): UrlState {
+  return { ...DEFAULTS, visibleIds: new Set(DEFAULT_VISIBLE_IDS), snap: {} }
 }
 
 function parseUrl(search: string): Partial<UrlState> {
@@ -44,8 +74,10 @@ function parseUrl(search: string): Partial<UrlState> {
   if (mode === "indexed" || mode === "raw") out.mode = mode
   const base = Number(params.get("base"))
   if (Number.isFinite(base) && base >= 1900 && base <= 2100) out.baseYear = base
+  const show = params.get("show")
   const hidden = params.get("hidden")
-  if (hidden) out.hiddenIds = new Set(hidden.split(",").filter(Boolean))
+  if (show) out.visibleIds = new Set(show.split(",").filter(Boolean))
+  else if (hidden) out.legacyHidden = new Set(hidden.split(",").filter(Boolean))
   if (params.get("real") === "1") out.realTerms = true
   const range = params.get("range")
   if (range) {
@@ -83,19 +115,26 @@ function parseUrl(search: string): Partial<UrlState> {
   if (snapYear >= 1900 && snapYear <= 2100) snap.compareYear = snapYear
   if (Object.keys(snap).length > 0) out.snap = snap
 
-  if (params.get("embed") === "true" || params.get("embed") === "1") out.embed = true
-
   const born = Number(params.get("born"))
   if (Number.isFinite(born) && born >= 1940 && born <= 2005) out.birthYear = born
 
   return out
 }
 
-function stringify(state: UrlState): string {
-  const params = new URLSearchParams()
+function stringify(state: UrlState, currentSearch: string): string {
+  const params = new URLSearchParams(currentSearch)
+  for (const key of OWNED_PARAMS) params.delete(key)
   if (state.mode !== DEFAULTS.mode) params.set("mode", state.mode)
   if (state.baseYear !== DEFAULTS.baseYear) params.set("base", String(state.baseYear))
-  if (state.hiddenIds.size > 0) params.set("hidden", [...state.hiddenIds].sort().join(","))
+  if (state.legacyHidden) {
+    // Not resolved yet (data still loading) — keep the link as it arrived.
+    params.set("hidden", [...state.legacyHidden].sort().join(","))
+  } else if (!sameSet(state.visibleIds, DEFAULT_VISIBLE_IDS)) {
+    params.set(
+      "show",
+      state.visibleIds.has(SHOW_ALL) ? SHOW_ALL : [...state.visibleIds].sort().join(","),
+    )
+  }
   if (state.realTerms) params.set("real", "1")
   if (state.range) params.set("range", `${state.range[0]}-${state.range[1]}`)
 
@@ -110,26 +149,24 @@ function stringify(state: UrlState): string {
   if (snap.pensionPct !== undefined && snap.pensionPct !== 5) params.set("snap_pension", String(snap.pensionPct))
   if (snap.compareYear) params.set("snap_year", String(snap.compareYear))
 
-  // embed — preserve in URL so iframes keep it when navigating
-  if (state.embed) params.set("embed", "true")
-
   if (state.birthYear !== null) params.set("born", String(state.birthYear))
 
-  const s = params.toString()
+  // Keep commas readable — they're legal in a query string.
+  const s = params.toString().replace(/%2C/g, ",")
   return s ? `?${s}` : ""
 }
 
-export function useUrlState(initialHidden: Set<string>) {
+export function useUrlState() {
   const [state, setState] = useState<UrlState>(() => {
     const parsed = typeof window === "undefined" ? {} : parseUrl(window.location.search)
     return {
       mode: parsed.mode ?? DEFAULTS.mode,
       baseYear: parsed.baseYear ?? DEFAULTS.baseYear,
-      hiddenIds: parsed.hiddenIds ?? initialHidden,
+      visibleIds: parsed.visibleIds ?? new Set(DEFAULT_VISIBLE_IDS),
+      legacyHidden: parsed.legacyHidden ?? null,
       realTerms: parsed.realTerms ?? DEFAULTS.realTerms,
       range: parsed.range ?? DEFAULTS.range,
       snap: parsed.snap ?? DEFAULTS.snap,
-      embed: parsed.embed ?? DEFAULTS.embed,
       birthYear: parsed.birthYear ?? DEFAULTS.birthYear,
     }
   })
@@ -140,9 +177,9 @@ export function useUrlState(initialHidden: Set<string>) {
       mounted.current = true
       return
     }
-    const search = stringify(state)
-    const url = search || window.location.pathname
-    window.history.replaceState(null, "", url)
+    const search = stringify(state, window.location.search)
+    if (search === window.location.search) return
+    window.history.replaceState(null, "", window.location.pathname + search + window.location.hash)
   }, [state])
 
   return [state, setState] as const

@@ -11,7 +11,8 @@ import { curveMonotoneX } from "@visx/curve"
 import { line as d3Line, curveMonotoneX as d3CurveMonotoneX } from "d3-shape"
 import type { Series, Unit, YearValue } from "../../types/series"
 import { UNIT_LABEL, formatAxisValue, formatValue } from "../../types/series"
-import { splitAtVerified } from "../../lib/splitAtVerified"
+import { splitAtVerified, verifiedBoundary } from "../../lib/splitAtVerified"
+import { basePoint } from "../../lib/indexing"
 import type { Annotation } from "../../lib/annotations"
 
 export type ChartMode = "indexed" | "raw"
@@ -71,15 +72,12 @@ interface NormalizedSeries {
 }
 
 function normalize(s: Series, baseYear: number): NormalizedSeries | null {
-  let base = s.points.find((p) => p.year === baseYear)
-  if (!base) {
-    base = s.points.find((p) => p.year > baseYear && p.year <= baseYear + 3)
-  }
-  if (!base || base.value === 0) return null
+  const base = basePoint(s, baseYear)
+  if (!base) return null
   // Always include ALL points (no fromYear filter) so path topology stays
   // constant when startYear changes — the visible range is enforced by a
   // <clipPath> on the SVG instead, which lets motion.path interpolate smoothly.
-  const points = s.points.map((p) => ({ year: p.year, value: (p.value / base!.value) * 100 }))
+  const points = s.points.map((p) => ({ year: p.year, value: (p.value / base.value) * 100 }))
   return { meta: s, baseYearActual: base.year, baseValue: base.value, points }
 }
 
@@ -175,7 +173,7 @@ function IndexedView({
             return (
               <svg width={width} height={height}>
                 <text x={width / 2} y={height / 2} fill={MUTED} fontSize={13} textAnchor="middle">
-                  No series have data at base year {baseYear}. Pick an earlier base or different series.
+                  No visible series has data at base year {baseYear}. Pick a later base year or different series.
                 </text>
               </svg>
             )
@@ -435,7 +433,7 @@ function IndexedView({
                       {normalized.map((s) => {
                         const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
                         const baseOpacity = dimmed ? 0.12 : 1
-                        const { estimated, verified } = splitAtVerified(s.points, s.meta.verifiedFrom)
+                        const { estimated, verified } = splitAtVerified(s.points, verifiedBoundary(s.meta))
                         return (
                           <motion.g
                             key={s.meta.id}
@@ -727,11 +725,11 @@ function UnitPanel({
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
   return (
     <div style={{ position: "relative" }}>
-      <div className="flex items-center justify-between mb-2 px-1">
-        <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide">
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 mb-2 px-1">
+        <div className="shrink-0 text-xs text-(--color-muted) font-mono uppercase tracking-wide">
           {UNIT_LABEL[unit]}
         </div>
-        <div className="flex flex-wrap gap-3 text-xs">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs min-w-0">
           {series.map((s) => (
             <span key={s.id} className="flex items-center gap-1.5" style={{ color: s.color }}>
               <span className="size-2 rounded-full" style={{ background: s.color }} />
@@ -856,7 +854,7 @@ function UnitPanel({
                   <AnimatePresence>
                     {series.map((s) => {
                       const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
-                      const { estimated, verified } = splitAtVerified(inRange, s.verifiedFrom)
+                      const { estimated, verified } = splitAtVerified(inRange, verifiedBoundary(s))
                       const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.id
                       return (
                         <motion.g

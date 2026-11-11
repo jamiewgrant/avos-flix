@@ -8,7 +8,8 @@ const PRESETS: Record<Preset, { width: number; height: number; label: string }> 
 }
 
 function buildSnippet(width: number, height: number): string {
-  return `<iframe\n  src="https://avos-flix.vercel.app/?embed=1"\n  width="${width}"\n  height="${height}"\n  frameborder="0"\n  style="border-radius:12px"\n></iframe>`
+  // Use whichever origin the dashboard is being served from (prod, preview, local).
+  return `<iframe\n  src="${window.location.origin}/?embed=1"\n  width="${width}"\n  height="${height}"\n  frameborder="0"\n  style="border-radius:12px"\n></iframe>`
 }
 
 export function EmbedCodeButton() {
@@ -22,10 +23,15 @@ export function EmbedCodeButton() {
   const snippet = buildSnippet(width, height)
 
   function handleCopy() {
-    navigator.clipboard.writeText(snippet).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    })
+    navigator.clipboard
+      .writeText(snippet)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      })
+      .catch(() => {
+        // Clipboard blocked — the snippet is still selectable in the box above.
+      })
   }
 
   // Close on outside click

@@ -13,11 +13,11 @@ export default async function handler(req: Request): Promise<Response> {
   // Fetch the static file from the same Vercel deployment origin —
   // Edge Functions can't read the filesystem directly.
   const origin = new URL(req.url).origin
-  const upstream = await fetch(`${origin}/data/series.json`)
+  const upstream = await fetch(`${origin}/data/series.json`).catch(() => null)
 
-  if (!upstream.ok) {
+  if (!upstream || !upstream.ok) {
     return new Response(JSON.stringify({ error: "series.json not found" }), {
-      status: 500,
+      status: 502,
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     })
   }

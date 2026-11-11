@@ -1,16 +1,46 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react"
-import { toPng } from "html-to-image"
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSeries } from "./data/useSeries"
-import { useUrlState } from "./data/useUrlState"
+import { useUrlState, defaultUrlState, SHOW_ALL } from "./data/useUrlState"
 import { useTheme } from "./lib/useTheme"
 import { Chart } from "./components/charts/Chart"
 import { AffordabilityChart } from "./components/charts/AffordabilityChart"
 import { MortgageChart } from "./components/charts/MortgageChart"
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts"
 import { ChartInsight } from "./components/ChartInsight"
-import { EmbedCodeButton } from "./components/EmbedCodeButton"
-import { ShareButton } from "./components/ShareButton"
+import { ChartToolbar } from "./components/ChartToolbar"
+import { ErrorBoundary } from "./components/ErrorBoundary"
+import type { RegionKey } from "./components/ChartToolbar"
 import { MethodologyModal } from "./components/MethodologyModal"
+import { StatCallouts } from "./components/StatCallouts"
+import { GenerationView } from "./components/GenerationView"
+import { ScrollyIntro } from "./components/ScrollyIntro"
+import { PullQuote } from "./components/PullQuote"
+import { Faq } from "./components/Faq"
+import { WhatIfCallout } from "./components/WhatIfCallout"
+import { CostStackSection } from "./components/CostStackSection"
+import { YearRangeBrush } from "./components/YearRangeBrush"
+import { About } from "./components/About"
+import { OnboardingBanner } from "./components/OnboardingBanner"
+import { ChartSkeleton } from "./components/ChartSkeleton"
+import { SourceStrip } from "./components/SourceStrip"
+import { ScrollProgress } from "./components/ScrollProgress"
+import { SectionDivider } from "./components/SectionDivider"
+import { RevealOnScroll } from "./components/RevealOnScroll"
+import { CohortWindow } from "./components/CohortWindow"
+import { Changelog } from "./components/Changelog"
+import SectionShare from "./components/SectionShare"
+import { StoryPresets } from "./components/StoryPresets"
+import { SeriesLegend } from "./components/SeriesLegend"
+import { PRESETS } from "./lib/presets"
+import type { Preset } from "./lib/presets"
+import { deflateSeries } from "./lib/deflate"
+import { basePoint } from "./lib/indexing"
+import { latestCommonYear } from "./lib/latestYear"
+import { HISTORICAL_EVENTS } from "./lib/annotations"
+import { applyPalette } from "./lib/palette"
+import type { PaletteMode } from "./lib/palette"
+import { seriesToCsv, downloadCsv } from "./lib/csv"
+import type { Series } from "./types/series"
 
 const RentToIncomeChart = lazy(() =>
   import("./components/charts/RentToIncomeChart").then((m) => ({ default: m.RentToIncomeChart })),
@@ -61,54 +91,32 @@ const InternationalComparisonLazy = lazy(() =>
   import("./components/InternationalComparison").then((m) => ({ default: m.InternationalComparison })),
 )
 
+const SectionError = () => (
+  <div className="h-[120px] grid place-items-center text-(--color-muted) text-xs font-mono">
+    This section failed to load.
+  </div>
+)
+
 const ChartFallback = () => (
   <div className="h-[300px] grid place-items-center text-(--color-muted) text-xs font-mono">
     loading section…
   </div>
 )
-import { StatCallouts } from "./components/StatCallouts"
-import { GenerationView } from "./components/GenerationView"
-import { ScrollyIntro } from "./components/ScrollyIntro"
-import { PullQuote } from "./components/PullQuote"
-import { Faq } from "./components/Faq"
-import { WhatIfCallout } from "./components/WhatIfCallout"
-import { CostStackSection } from "./components/CostStackSection"
-import { YearRangeBrush } from "./components/YearRangeBrush"
-import { About } from "./components/About"
-import { OnboardingBanner } from "./components/OnboardingBanner"
-import { ChartSkeleton } from "./components/ChartSkeleton"
-import { SourceStrip } from "./components/SourceStrip"
-import { ScrollProgress } from "./components/ScrollProgress"
-import { SectionDivider } from "./components/SectionDivider"
-import { RevealOnScroll } from "./components/RevealOnScroll"
-import { CohortWindow } from "./components/CohortWindow"
-import { Changelog } from "./components/Changelog"
-import SectionShare from "./components/SectionShare"
-import { StoryPresets, PRESETS } from "./components/StoryPresets"
-import type { Preset } from "./components/StoryPresets"
-import { deflateSeries } from "./lib/deflate"
-import { HISTORICAL_EVENTS } from "./lib/annotations"
-import { applyPalette } from "./lib/palette"
-import type { PaletteMode } from "./lib/palette"
-import { seriesToCsv, downloadCsv } from "./lib/csv"
-import { SeriesLegend } from "./components/SeriesLegend"
-import type { Series } from "./types/series"
 
-const BASE_YEAR_OPTIONS = [1953, 1970, 1980, 1995, 2008]
-
-type RegionKey = "uk" | "london" | "northeast"
-const REGION_OPTIONS: { label: string; key: RegionKey; seriesId: string }[] = [
-  { label: "UK", key: "uk", seriesId: "house-price-landreg" },
-  { label: "London", key: "london", seriesId: "house-price-london" },
-  { label: "North East", key: "northeast", seriesId: "house-price-northeast" },
+// The house-price selector is a real switch: picking a region shows that
+// region's series and hides the other regions'. "UK" covers both national
+// series (Nationwide is the default; Land Registry can be added from the legend).
+const REGION_OPTIONS: { label: string; key: RegionKey; seriesIds: string[] }[] = [
+  { label: "UK", key: "uk", seriesIds: ["house-price-nationwide", "house-price-landreg"] },
+  { label: "London", key: "london", seriesIds: ["house-price-london"] },
+  { label: "North East", key: "northeast", seriesIds: ["house-price-northeast"] },
 ]
 
-// Must match PRESETS[0].visibleIds exactly so fresh load → "Wages vs Houses" preset active
-const DEFAULT_VISIBLE_IDS = new Set([
-  "median-wage",
-  "house-price-nationwide",
-  "cpih",
-])
+function flagParam(name: string): boolean {
+  if (typeof window === "undefined") return false
+  const v = new URLSearchParams(window.location.search).get(name)
+  return v === "1" || v === "true"
+}
 
 function App() {
   const { theme, toggle: toggleTheme } = useTheme()
@@ -119,34 +127,58 @@ function App() {
     () => (data ? Object.values(data.series) : []),
     [data],
   )
+  const allIds = useMemo(() => allSeries.map((s) => s.id), [allSeries])
 
-  const initialHidden = useMemo(() => {
-    if (!data) return new Set<string>()
-    return new Set(
-      Object.keys(data.series).filter((id) => !DEFAULT_VISIBLE_IDS.has(id)),
-    )
-  }, [data])
+  const [{ mode, baseYear, visibleIds, legacyHidden, realTerms, range, snap, birthYear }, setState] =
+    useUrlState()
 
-  const [{ mode, baseYear, hiddenIds, realTerms, range, snap }, setState] = useUrlState(initialHidden)
-
-  // Apply default hidden set once data loads — useUrlState initialises before data
-  // is available so hiddenIds starts as an empty Set (show all). Apply the default
-  // the first time data arrives, unless the user already has a ?hidden= URL param.
-  const defaultsApplied = useRef(false)
+  // Older shared links used ?hidden=a,b. That can only be turned into a
+  // visible set once we know every series id, i.e. after the data has loaded.
   useEffect(() => {
-    if (!data || defaultsApplied.current) return
-    defaultsApplied.current = true
-    const hasUrlHidden = new URLSearchParams(window.location.search).has("hidden")
-    if (!hasUrlHidden) {
-      setState((prev) => ({ ...prev, hiddenIds: initialHidden }))
-    }
-  }, [data, initialHidden, setState])
+    if (!data || !legacyHidden) return
+    setState((prev) => {
+      if (!prev.legacyHidden) return prev
+      const hidden = prev.legacyHidden
+      const next = new Set(Object.keys(data.series).filter((id) => !hidden.has(id)))
+      return { ...prev, legacyHidden: null, visibleIds: next.size === Object.keys(data.series).length ? new Set([SHOW_ALL]) : next }
+    })
+  }, [data, legacyHidden, setState])
 
-  // Derive the data span across visible series for the brush bounds.
+  // Everything downstream works with "hidden" ids; derive them from the
+  // URL's visible set ("all" expands to every series).
+  const hiddenIds = useMemo(() => {
+    if (legacyHidden) return legacyHidden
+    if (visibleIds.has(SHOW_ALL)) return new Set<string>()
+    return new Set(allIds.filter((id) => !visibleIds.has(id)))
+  }, [allIds, visibleIds, legacyHidden])
+
+  /** Update the visible set. Collapses "everything on" to the short `all` token. */
+  const updateVisible = useCallback(
+    (fn: (current: Set<string>) => Set<string>) => {
+      setState((prev) => {
+        const current = prev.visibleIds.has(SHOW_ALL)
+          ? new Set(allIds)
+          : new Set(allIds.filter((id) => prev.visibleIds.has(id)))
+        const next = fn(current)
+        const everything = allIds.length > 0 && allIds.every((id) => next.has(id))
+        return { ...prev, legacyHidden: null, visibleIds: everything ? new Set([SHOW_ALL]) : next }
+      })
+    },
+    [allIds, setState],
+  )
+
+  // Derive the data span across all series for the brush bounds.
   const dataSpan = useMemo<[number, number]>(() => {
-    const yrs = allSeries.flatMap((s) => s.points.map((p) => p.year))
-    if (yrs.length === 0) return [1950, new Date().getFullYear()]
-    return [Math.min(...yrs), Math.max(...yrs)]
+    let lo = Infinity
+    let hi = -Infinity
+    for (const s of allSeries) {
+      for (const p of s.points) {
+        if (p.year < lo) lo = p.year
+        if (p.year > hi) hi = p.year
+      }
+    }
+    if (lo > hi) return [1950, new Date().getFullYear()]
+    return [lo, hi]
   }, [allSeries])
   const activeRange: [number, number] = range ?? dataSpan
   const [activeFrom, activeTo] = activeRange
@@ -162,72 +194,78 @@ function App() {
     return deflateSeries(filtered, cpihPoints).series
   }, [allSeries, hiddenIds, realTerms, cpihPoints])
 
+  // Series that are switched on but can't be drawn in Indexed mode because
+  // they have no data at the chosen base year. Surfaced below the chart so
+  // lines never just silently vanish.
+  const missingAtBase = useMemo(
+    () => (mode === "indexed" ? visible.filter((s) => !basePoint(s, baseYear)) : []),
+    [mode, visible, baseYear],
+  )
+
   const refYear = useMemo(
     () => (cpihPoints.length > 0 ? cpihPoints[cpihPoints.length - 1].year : new Date().getFullYear()),
     [cpihPoints],
   )
 
   function toggle(id: string) {
-    setState((prev) => {
-      const next = new Set(prev.hiddenIds)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return { ...prev, hiddenIds: next }
+    updateVisible((cur) => {
+      if (cur.has(id)) cur.delete(id)
+      else cur.add(id)
+      return cur
     })
   }
 
-  // Derive active preset from current hiddenIds — reverse lookup so no extra state needed.
+  // Derive active preset from the visible set — reverse lookup so no extra state needed.
   const activePresetId = useMemo(() => {
-    const visibleIds = new Set(allSeries.filter((s) => !hiddenIds.has(s.id)).map((s) => s.id))
+    const visibleNow = allIds.filter((id) => !hiddenIds.has(id))
     for (const preset of PRESETS) {
       if (!preset.visibleIds) continue
-      const presetSet = new Set(preset.visibleIds)
-      if (preset.visibleIds.every((id) => visibleIds.has(id)) && visibleIds.size === presetSet.size) {
+      const wanted = preset.visibleIds.filter((id) => allIds.includes(id))
+      if (wanted.length === visibleNow.length && wanted.every((id) => !hiddenIds.has(id))) {
         return preset.id
       }
     }
     return "custom"
-  }, [hiddenIds, allSeries])
+  }, [hiddenIds, allIds])
 
   function selectPreset(preset: Preset) {
     if (!preset.visibleIds) return // "custom" — do nothing, just let user use legend
-    const allIds = new Set(allSeries.map((s) => s.id))
-    const keep = new Set(preset.visibleIds)
-    setState((prev) => ({
-      ...prev,
-      hiddenIds: new Set([...allIds].filter((id) => !keep.has(id))),
-    }))
+    const keep = preset.visibleIds
+    updateVisible(() => new Set(keep))
   }
 
   function selectRegion(key: RegionKey) {
-    setState((prev) => {
-      const next = new Set(prev.hiddenIds)
+    updateVisible((cur) => {
       for (const opt of REGION_OPTIONS) {
         if (opt.key === key) {
-          next.delete(opt.seriesId)
+          // Keep whichever of this region's series is already on; otherwise show its primary one.
+          if (!opt.seriesIds.some((id) => cur.has(id))) cur.add(opt.seriesIds[0])
         } else {
-          next.add(opt.seriesId)
+          for (const id of opt.seriesIds) cur.delete(id)
         }
       }
-      return { ...prev, hiddenIds: next }
+      return cur
     })
   }
 
-  const activeRegion: RegionKey = (() => {
-    for (const opt of REGION_OPTIONS) {
-      if (!hiddenIds.has(opt.seriesId)) return opt.key
-    }
-    return "uk"
-  })()
+  // Highlight a region only when its series is actually on the chart.
+  const activeRegion: RegionKey | null =
+    REGION_OPTIONS.find((opt) => opt.seriesIds.some((id) => allIds.includes(id) && !hiddenIds.has(id)))
+      ?.key ?? null
 
   const snapshotRef = useRef<HTMLDivElement>(null)
   const [snapshotting, setSnapshotting] = useState(false)
   async function downloadSnapshot() {
-    if (!snapshotRef.current || snapshotting) return
+    const node = snapshotRef.current
+    if (!node || snapshotting) return
     setSnapshotting(true)
     try {
-      const dataUrl = await toPng(snapshotRef.current, {
-        backgroundColor: "#16171d",
+      // Loaded on demand — it's only needed for this button.
+      const { toPng } = await import("html-to-image")
+      // Match the card's real background so light-theme exports aren't dark.
+      const backgroundColor = getComputedStyle(node).backgroundColor
+      const dataUrl = await toPng(node, {
+        backgroundColor,
         pixelRatio: 2,
         style: { borderRadius: "0px" },
       })
@@ -246,6 +284,10 @@ function App() {
   const wage = data?.series["median-wage"]
   const boeRate = data?.series["boe-rate"]
   const canShowAffordability = housePriceNationwide && wage && boeRate
+  const housingYears =
+    housePriceNationwide && wage
+      ? `${Math.max(housePriceNationwide.points[0]?.year ?? 0, wage.points[0]?.year ?? 0)}–${latestCommonYear(housePriceNationwide, wage)}`
+      : ""
 
   const [search, setSearch] = useState("")
 
@@ -260,14 +302,13 @@ function App() {
     downloadCsv(csv, `avos-flix-${new Date().toISOString().slice(0, 10)}.csv`)
   }
 
-  const chartContainerRef = useRef<HTMLDivElement>(null)
   async function toggleFullscreen() {
-    if (!chartContainerRef.current) return
+    if (!snapshotRef.current) return
     if (document.fullscreenElement) {
       await document.exitFullscreen()
     } else {
       try {
-        await chartContainerRef.current.requestFullscreen()
+        await snapshotRef.current.requestFullscreen()
       } catch {
         // Some browsers / sandboxed iframes block fullscreen — ignore
       }
@@ -275,6 +316,10 @@ function App() {
   }
 
   const [shareToast, setShareToast] = useState<string | null>(null)
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => {
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+  }, [])
   async function shareView() {
     try {
       await navigator.clipboard.writeText(window.location.href)
@@ -282,35 +327,20 @@ function App() {
     } catch {
       setShareToast(`Copy failed. URL: ${window.location.href}`)
     }
-    setTimeout(() => setShareToast(null), 2800)
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setShareToast(null), 2800)
   }
 
   function resetToDefaults() {
-    setState(() => ({
-      mode: "indexed",
-      baseYear: 1995,
-      hiddenIds: new Set(initialHidden),
-      realTerms: false,
-      range: null,
-      snap: {},
-      embed: false,
-      birthYear: null,
-    }))
+    setState(() => defaultUrlState())
     setSearch("")
     setSpotlightId(null)
     setShowAnnotations(true)
     setPalette("default")
   }
 
-  const embedMode = useMemo(() => {
-    if (typeof window === "undefined") return false
-    return new URLSearchParams(window.location.search).get("embed") === "1"
-  }, [])
-
-  const boomerMode = useMemo(() => {
-    if (typeof window === "undefined") return false
-    return new URLSearchParams(window.location.search).get("boomer") === "1"
-  }, [])
+  const embedMode = useMemo(() => flagParam("embed"), [])
+  const boomerMode = useMemo(() => flagParam("boomer"), [])
 
   // Handle keyboard shortcuts dispatched by KeyboardShortcuts component
   useEffect(() => {
@@ -319,7 +349,8 @@ function App() {
       if (detail.action === "setMode") {
         setState((p) => ({ ...p, mode: detail.value as "indexed" | "raw" }))
       } else if (detail.action === "setBaseYear") {
-        setState((p) => ({ ...p, baseYear: detail.value as number }))
+        // Base year only means something in Indexed mode.
+        setState((p) => (p.mode === "indexed" ? { ...p, baseYear: detail.value as number } : p))
       }
     }
     window.addEventListener("avos:shortcut", onShortcut)
@@ -497,10 +528,7 @@ function App() {
         {!embedMode && data && <PullQuote series={palettedVisible} baseYear={baseYear} />}
 
         <div
-          ref={(node) => {
-            snapshotRef.current = node
-            chartContainerRef.current = node
-          }}
+          ref={snapshotRef}
           className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6 card-primary"
         >
           {loading && <ChartSkeleton />}
@@ -544,222 +572,41 @@ function App() {
                 />
               </div>
 
-              {/* Toolbar — controls */}
-              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">View</span>
-                  <div className="flex gap-1">
-                    {(["indexed", "raw"] as const).map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => setState((p) => ({ ...p, mode: m }))}
-                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                          mode === m
-                            ? "bg-(--color-accent) text-white"
-                            : "bg-(--color-surface-2) hover:text-(--color-text)"
-                        }`}
-                      >
-                        {m === "indexed" ? "Indexed" : "Raw"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              {missingAtBase.length > 0 && (
+                <p role="status" className="mt-3 px-1 text-xs text-(--color-warn) leading-relaxed">
+                  Not drawn — no data at base year {baseYear}:{" "}
+                  {missingAtBase.map((m) => `${m.name} (starts ${m.points[0].year})`).join(", ")}.
+                  Pick a later base year, or switch to Raw view.
+                </p>
+              )}
 
-                {mode === "indexed" && (
-                  <div className="flex items-center gap-2 text-(--color-muted)">
-                    <span className="text-xs">Base</span>
-                    <div className="flex gap-1">
-                      {BASE_YEAR_OPTIONS.map((y) => (
-                        <button
-                          key={y}
-                          onClick={() => setState((p) => ({ ...p, baseYear: y }))}
-                          className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                            baseYear === y
-                              ? "bg-(--color-accent) text-white"
-                              : "bg-(--color-surface-2) hover:text-(--color-text)"
-                          }`}
-                        >
-                          {y}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Events</span>
-                  <button
-                    onClick={() => setShowAnnotations((v) => !v)}
-                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                      showAnnotations ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
-                    }`}
-                    title="Show/hide historical event markers"
-                  >
-                    {showAnnotations ? "On" : "Off"}
-                  </button>
-                </div>
-
-                {/* Desktop-only controls */}
-                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Region</span>
-                  <div className="flex gap-1">
-                    {REGION_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.key}
-                        onClick={() => selectRegion(opt.key)}
-                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                          activeRegion === opt.key
-                            ? "bg-(--color-accent) text-white"
-                            : "bg-(--color-surface-2) hover:text-(--color-text)"
-                        }`}
-                        title={`Show ${opt.label} house prices`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Strip inflation</span>
-                  <div className="flex gap-1">
-                    {(["nominal", "real"] as const).map((v) => (
-                      <button
-                        key={v}
-                        onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
-                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                          (v === "real") === realTerms
-                            ? "bg-(--color-accent) text-white"
-                            : "bg-(--color-surface-2) hover:text-(--color-text)"
-                        }`}
-                        title={
-                          v === "nominal"
-                            ? "Show values as published"
-                            : `Divide every price-like series by CPIH so growth is in real terms (${refYear}=ref)`
-                        }
-                      >
-                        {v === "nominal" ? "Off" : "On"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="hidden md:flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Palette</span>
-                  <button
-                    onClick={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
-                    className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                      palette === "cb" ? "bg-(--color-accent) text-white" : "bg-(--color-surface-2) hover:text-(--color-text)"
-                    }`}
-                    title="Swap to a colour-blind-safe (Okabe-Ito) palette"
-                  >
-                    {palette === "cb" ? "CB-safe" : "Default"}
-                  </button>
-                </div>
-              </div>
-
-              {/* Mobile-only secondary controls */}
-              <div className="md:hidden mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 px-1 text-sm">
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Region</span>
-                  <div className="flex gap-1">
-                    {REGION_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.key}
-                        onClick={() => selectRegion(opt.key)}
-                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                          activeRegion === opt.key
-                            ? "bg-(--color-accent) text-white"
-                            : "bg-(--color-surface-2) hover:text-(--color-text)"
-                        }`}
-                        title={`Show ${opt.label} house prices`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 text-(--color-muted)">
-                  <span className="text-xs">Inflation</span>
-                  <div className="flex gap-1">
-                    {(["nominal", "real"] as const).map((v) => (
-                      <button
-                        key={v}
-                        onClick={() => setState((p) => ({ ...p, realTerms: v === "real" }))}
-                        className={`px-2.5 py-1.5 rounded-md font-mono text-xs transition ${
-                          (v === "real") === realTerms
-                            ? "bg-(--color-accent) text-white"
-                            : "bg-(--color-surface-2) hover:text-(--color-text)"
-                        }`}
-                        title={
-                          v === "nominal"
-                            ? "Show values as published"
-                            : `Divide every price-like series by CPIH so growth is in real terms (${refYear}=ref)`
-                        }
-                      >
-                        {v === "nominal" ? "Off" : "On"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action buttons — own row, right-aligned */}
-              <div className="mt-2 flex items-center justify-end gap-1.5 px-1 chart-actions">
-                <span className="hidden md:contents">
-                  <EmbedCodeButton />
-                </span>
-                <button
-                  onClick={toggleFullscreen}
-                  aria-label="Toggle fullscreen for the main chart"
-                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                  title="Toggle fullscreen"
-                >
-                  ⤢ Full
-                </button>
-                <button
-                  onClick={exportCsv}
-                  aria-label="Download visible series as CSV"
-                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                  title="Download visible series as CSV"
-                >
-                  ↓ CSV
-                </button>
-                <button
-                  onClick={shareView}
-                  aria-label="Copy a link to this exact view"
-                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                  title="Copy a link to this exact view"
-                >
-                  ↗ Share
-                </button>
-                <ShareButton
-                  title="avos+flix — the numbers behind the avocado-toast argument"
-                  stats={palettedVisible.slice(0, 4).map((s) => s.name)}
-                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                />
-                <button
-                  onClick={resetToDefaults}
-                  aria-label="Reset all controls to defaults"
-                  className="px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition"
-                  title="Reset all controls to defaults"
-                >
-                  ↺ Reset
-                </button>
-                <button
-                  onClick={downloadSnapshot}
-                  disabled={snapshotting}
-                  aria-label="Download this chart as a PNG"
-                  className="hidden md:block px-3 py-1.5 rounded-md font-mono text-xs bg-(--color-surface-2) border border-(--color-border) text-(--color-muted) hover:text-(--color-text) hover:border-(--color-muted) transition disabled:opacity-40"
-                  title="Download this chart as a PNG"
-                >
-                  {snapshotting ? "saving…" : "↓ PNG"}
-                </button>
-              </div>
+              <ChartToolbar
+                mode={mode}
+                onMode={(m) => setState((p) => ({ ...p, mode: m }))}
+                baseYear={baseYear}
+                onBaseYear={(y) => setState((p) => ({ ...p, baseYear: y }))}
+                showAnnotations={showAnnotations}
+                onToggleAnnotations={() => setShowAnnotations((v) => !v)}
+                regions={REGION_OPTIONS}
+                activeRegion={activeRegion}
+                onRegion={selectRegion}
+                realTerms={realTerms}
+                onRealTerms={(v) => setState((p) => ({ ...p, realTerms: v }))}
+                refYear={refYear}
+                palette={palette}
+                onTogglePalette={() => setPalette((p) => (p === "default" ? "cb" : "default"))}
+                shareTitle="avos+flix — the numbers behind the avocado-toast argument"
+                shareStats={palettedVisible.slice(0, 4).map((x) => x.name)}
+                snapshotting={snapshotting}
+                onFullscreen={toggleFullscreen}
+                onExportCsv={exportCsv}
+                onCopyLink={shareView}
+                onReset={resetToDefaults}
+                onSnapshot={downloadSnapshot}
+              />
 
               {shareToast && (
-                <div className="mt-3 px-3 py-2 rounded-md bg-(--color-bg) border border-(--color-accent-border) text-xs text-(--color-accent)" style={{ borderColor: "rgba(192, 132, 252, 0.4)" }}>
+                <div role="status" className="mt-3 px-3 py-2 rounded-md bg-(--color-bg) border border-(--color-accent)/40 text-xs text-(--color-accent)">
                   {shareToast}
                 </div>
               )}
@@ -822,6 +669,7 @@ function App() {
         <section className="mb-20">
           <CohortWindow
             series={[wage, housePriceNationwide]}
+            initialBirthYear={birthYear}
             onApply={(from, to) => setState((prev) => ({ ...prev, range: [from, to] as [number, number], birthYear: from - 22 }))}
             onClear={() => setState((prev) => ({ ...prev, range: null, birthYear: null }))}
           />
@@ -834,7 +682,7 @@ function App() {
         <section className="mb-20" id="housing" style={{ scrollMarginTop: "4rem" }}>
           <div className="flex items-center justify-between mb-1">
             <span className="section-num">02 / Housing</span>
-            <SectionShare title="House price-to-wage ratio, UK 1995–2025" />
+            <SectionShare title={`House price-to-wage ratio, UK ${housingYears}`} />
           </div>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             "But interest rates were 15%!"
@@ -876,18 +724,18 @@ function App() {
             Rent on a typical UK 2-bed flat as a share of median take-home pay. The 30% line is the ceiling banks and benefit calculators traditionally call "affordable" — the line has lived above it for most of the last decade.
           </p>
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-            <Suspense fallback={<ChartFallback />}>
+            <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
               <RentToIncomeChart rentIndex={data.series["rent-index"]} wage={wage} />
-            </Suspense>
+            </Suspense></ErrorBoundary>
           </div>
         </section>
       )}
 
       {!embedMode && data && (
         <section className="mb-20">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <InternationalComparisonLazy series={allSeries} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
@@ -903,9 +751,9 @@ function App() {
           </p>
           <RevealOnScroll>
             <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-              <Suspense fallback={<ChartFallback />}>
+              <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
                 <WhatIfChart housePrice={housePriceNationwide} wage={wage} />
-              </Suspense>
+              </Suspense></ErrorBoundary>
             </div>
           </RevealOnScroll>
         </section>
@@ -920,23 +768,23 @@ function App() {
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
             Pick the year you could theoretically have bought and a deposit size. See what your mortgage would be today — vs. renting.
           </p>
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <HomeBuyingCalculatorLazy series={allSeries} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
       {!embedMode && housePriceNationwide && wage && (
-        <Suspense fallback={<ChartFallback />}>
+        <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <DepositTimelineSectionLazy housePrice={housePriceNationwide} wage={wage} />
-        </Suspense>
+        </Suspense></ErrorBoundary>
       )}
 
       {!embedMode && data && (
         <section className="mb-20">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <WealthGapSectionLazy series={allSeries} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
@@ -951,9 +799,9 @@ function App() {
           </p>
           <RevealOnScroll>
             <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
-              <Suspense fallback={<ChartFallback />}>
+              <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
                 <RealTakeHomeChart wage={wage} taxBurden={data.series["tax-burden-median"]} cpih={cpihSeries} />
-              </Suspense>
+              </Suspense></ErrorBoundary>
             </div>
           </RevealOnScroll>
         </section>
@@ -966,61 +814,61 @@ function App() {
       )}
 
       {!embedMode && data && (
-        <Suspense fallback={<ChartFallback />}>
+        <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <BoomerVsMillennialLazy data={data} />
-        </Suspense>
+        </Suspense></ErrorBoundary>
       )}
 
       {!embedMode && data && (
         <section className="mb-20">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <GradDebtCalloutLazy series={allSeries} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
       {!embedMode && housePriceNationwide && (
         <section className="mb-20">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <AvosToastCalculatorLazy housePrice={housePriceNationwide} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
       {!embedMode && <SectionDivider />}
 
       {!embedMode && data && (
-        <Suspense fallback={<ChartFallback />}>
+        <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <PersonalSnapshotLazy
             series={data.series}
             urlSnap={snap}
             onSnapChange={(next) => setState((p) => ({ ...p, snap: next }))}
           />
-        </Suspense>
+        </Suspense></ErrorBoundary>
       )}
 
       {!embedMode && data && (
-        <Suspense fallback={<ChartFallback />}>
+        <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <PensionAdequacyLazy defaultSalary={snap.grossSalary ?? 35000} />
-        </Suspense>
+        </Suspense></ErrorBoundary>
       )}
 
       {!embedMode && data && cpihSeries && (
         <section className="mb-20 grid gap-6 md:grid-cols-2">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <TodaysMoneyLazy cpih={cpihSeries} />
-          </Suspense>
-          <Suspense fallback={<ChartFallback />}>
+          </Suspense></ErrorBoundary>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <ThenVsNowLazy series={visible} />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 
       {!embedMode && data && (
         <section className="mb-6">
-          <Suspense fallback={<ChartFallback />}>
+          <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <PolicyDifferencesNoteLazy />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         </section>
       )}
 

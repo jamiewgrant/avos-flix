@@ -29,10 +29,18 @@ export function ChartInsight({ series, baseYear, fromYear, toYear, mode }: Props
   // For indexed mode use baseYear as the start, otherwise fromYear
   const startYear = mode === "indexed" ? baseYear : fromYear
 
+  // The brush can extend past the last year these particular series cover
+  // (some series run a year ahead of others). Clamp so the sentence never
+  // names a year the compared series have no data for.
+  const lastYears = series.filter((s) => s.points.length > 0).map((s) => s.points[s.points.length - 1].year)
+  if (lastYears.length === 0) return null
+  const endYear = Math.min(toYear, Math.min(...lastYears))
+  if (endYear <= startYear) return null
+
   // Compute growth ratio for each series that has data at both ends
   const withRatios = series.flatMap((s) => {
     const start = valueAt(s, startYear)
-    const end = valueAt(s, toYear)
+    const end = valueAt(s, endYear)
     if (start == null || end == null || start === 0) return []
     return [{ s, ratio: end / start }]
   })
@@ -45,7 +53,7 @@ export function ChartInsight({ series, baseYear, fromYear, toYear, mode }: Props
       <p className="text-sm text-(--color-muted)">
         {s.name} grew{" "}
         <strong className="text-(--color-text)">{fmtMultiple(ratio)}</strong>{" "}
-        from {startYear} to {toYear}.
+        from {startYear} to {endYear}.
       </p>
     )
   }
@@ -61,7 +69,7 @@ export function ChartInsight({ series, baseYear, fromYear, toYear, mode }: Props
       <p className="text-sm text-(--color-muted)">
         {highest.s.name} grew{" "}
         <strong className="text-(--color-text)">{fmtMultiple(highest.ratio)}</strong>{" "}
-        from {startYear} to {toYear}.
+        from {startYear} to {endYear}.
       </p>
     )
   }
@@ -70,7 +78,7 @@ export function ChartInsight({ series, baseYear, fromYear, toYear, mode }: Props
 
   return (
     <p className="text-sm text-(--color-muted)">
-      From {startYear} to {toYear}: {highest.s.name} grew{" "}
+      From {startYear} to {endYear}: {highest.s.name} grew{" "}
       <strong className="text-(--color-text)">{fmtMultiple(highest.ratio)}</strong> — {lowest.s.name}{" "}
       grew{" "}
       <strong className="text-(--color-text)">{fmtMultiple(lowest.ratio)}</strong>. That&apos;s a{" "}

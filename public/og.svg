@@ -8,40 +8,40 @@
   <g transform="translate(72, 155)">
     <rect width="1056" height="235" rx="12" fill="#16171d"/>
     <!-- Grid lines at index 200 and 400 -->
-    <line x1="0" y1="150.6" x2="1056" y2="150.6" stroke="#2e303a" stroke-width="1"/>
-    <line x1="0" y1="66.2" x2="1056" y2="66.2" stroke="#2e303a" stroke-width="1"/>
+    <line x1="0" y1="157.9" x2="1056" y2="157.9" stroke="#2e303a" stroke-width="1"/>
+    <line x1="0" y1="80.9" x2="1056" y2="80.9" stroke="#2e303a" stroke-width="1"/>
     <!-- House price line -->
-    <polyline points="0.0,192.8 35.2,191.0 70.4,186.3 105.6,181.3 140.8,176.4 176.0,168.8 211.2,161.9 246.4,147.4 281.6,130.2 316.8,112.6 352.0,106.3 387.2,97.9 422.4,85.7 457.6,95.9 492.8,106.1 528.0,98.7 563.2,99.0 598.4,100.3 633.6,95.9 668.8,82.2 704.0,75.3 739.2,67.2 774.4,62.1 809.6,58.7 844.8,57.7 880.0,51.3 915.2,34.3 950.4,14.8 985.6,21.0 1020.8,16.6 1056.0,11.2" fill="none" stroke="#a78bfa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline points="0.0,196.5 35.2,194.9 70.4,190.5 105.6,186.0 140.8,181.5 176.0,174.6 211.2,168.2 246.4,155.0 281.6,139.3 316.8,123.2 352.0,117.5 387.2,109.8 422.4,98.6 457.6,108.0 492.8,117.3 528.0,110.6 563.2,110.9 598.4,112.0 633.6,108.0 668.8,95.4 704.0,89.2 739.2,81.8 774.4,77.2 809.6,74.0 844.8,73.1 880.0,67.3 915.2,51.7 950.4,34.0 985.6,39.6 1020.8,35.6 1056.0,30.7" fill="none" stroke="#a78bfa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
     <!-- Wage line -->
-    <polyline points="0.0,150.2 35.2,147.1 70.4,141.4 105.6,137.2 140.8,134.1 176.0,130.2 211.2,125.3 246.4,120.9 281.6,117.1 352.0,109.1 422.4,101.4 457.6,95.1 492.8,92.4 528.0,89.5 563.2,89.5 598.4,87.2 633.6,83.9 668.8,83.7 704.0,81.1 739.2,77.8 774.4,74.4 809.6,69.1 844.8,64.2 880.0,64.0 915.2,57.0 950.4,47.6 985.6,34.4 1020.8,22.4 1056.0,11.2" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline points="0.0,196.5 35.2,195.0 70.4,192.5 105.6,190.6 140.8,189.1 176.0,187.4 211.2,185.1 246.4,183.1 281.6,181.4 352.0,177.8 422.4,174.3 457.6,171.4 492.8,170.2 528.0,168.8 563.2,168.9 598.4,167.8 633.6,166.3 668.8,166.2 704.0,165.0 739.2,163.5 774.4,162.0 809.6,159.6 844.8,157.3 880.0,157.3 915.2,154.1 950.4,149.8 985.6,143.8 1020.8,138.3 1056.0,133.3" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
     <!-- Labels at right edge -->
-    <text x="1048" y="54.2" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#a78bfa" text-anchor="end">House prices 5.2×</text>
-    <text x="1048" y="223.0" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#60a5fa" text-anchor="end">Wages 2.5×</text>
+    <text x="1048" y="18.7" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#a78bfa" text-anchor="end">House prices 5.3×</text>
+    <text x="1048" y="121.3" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#60a5fa" text-anchor="end">Wages 2.6×</text>
     <!-- Year axis labels -->
     <text x="4" y="229.0" font-family="ui-monospace, monospace" font-size="16" fill="#4b5563">1995</text>
     <text x="528.0" y="229.0" font-family="ui-monospace, monospace" font-size="16" fill="#4b5563" text-anchor="middle">2010</text>
-    <text x="1052" y="229.0" font-family="ui-monospace, monospace" font-size="16" fill="#4b5563" text-anchor="end">2024</text>
+    <text x="1052" y="229.0" font-family="ui-monospace, monospace" font-size="16" fill="#4b5563" text-anchor="end">2025</text>
   </g>
 
   <!-- Stat cards -->
   <g transform="translate(72, 405)">
     <rect width="340" height="140" rx="16" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#a78bfa" letter-spacing="-2">5.2×</text>
+    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#a78bfa" letter-spacing="-2">5.3×</text>
     <text x="32" y="114" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#9ca3af">House prices</text>
   </g>
 
   <g transform="translate(430, 405)">
     <rect width="340" height="140" rx="16" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#60a5fa" letter-spacing="-2">2.5×</text>
+    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#60a5fa" letter-spacing="-2">2.6×</text>
     <text x="32" y="114" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#9ca3af">Median wage</text>
   </g>
 
   <g transform="translate(788, 405)">
     <rect width="340" height="140" rx="16" fill="#16171d" stroke="#2e303a" stroke-width="2"/>
-    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#34d399" letter-spacing="-2">2.0×</text>
+    <text x="32" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#34d399" letter-spacing="-2">2.1×</text>
     <text x="32" y="114" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#9ca3af">Inflation (CPIH)</text>
   </g>
 
-  <text x="72" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af">1995 → 2024 · UK</text>
+  <text x="72" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af">1995 → 2025 · UK</text>
   <text x="1128" y="586" font-family="ui-monospace, monospace" font-size="20" fill="#9ca3af" text-anchor="end">ONS · Bank of England · HM Land Registry</text>
 </svg>

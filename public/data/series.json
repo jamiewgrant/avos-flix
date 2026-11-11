@@ -207,7 +207,7 @@
       "name": "House prices (HM Land Registry, UK)",
       "description": "UK average property price from the official UK HPI, monthly aggregated to annual mean. Methodology dates from 1968.",
       "unit": "GBP",
-      "color": "#f5f4f0",
+      "color": "#94a3b8",
       "source": {
         "name": "HM Land Registry UK House Price Index",
         "url": "https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads"
@@ -2149,7 +2149,8 @@
           "year": 2025,
           "value": 1.2
         }
-      ]
+      ],
+      "estimated": true
     },
     "birth-rate": {
       "id": "birth-rate",
@@ -2336,7 +2337,7 @@
       "id": "persons-per-household",
       "name": "Persons per household (avg)",
       "description": "Average UK household size from census + ONS Families and Households. Slow-moving but unmistakable downward trend: more solo earners absorbing the costs that used to be split.",
-      "unit": "count",
+      "unit": "persons",
       "color": "#d8b4fe",
       "source": {
         "name": "ONS — Families and households / UK Census + General Register Office (pre-1961)",
@@ -2392,7 +2393,7 @@
       "name": "Undergraduate tuition fees (England, max)",
       "description": "Maximum annual undergraduate tuition fee chargeable by English universities. Pre-1998 = £0 (no fees). Top-up fees raised the cap to £3,000 in 2006; the Browne reforms tripled it to £9,000 in 2012. Held flat at £9,250 since 2017.",
       "unit": "GBP",
-      "color": "#fb923c",
+      "color": "#d946ef",
       "source": {
         "name": "Department for Education / Office for Students fee cap history",
         "url": "https://www.officeforstudents.org.uk/advice-and-guidance/fees-and-funding/"
@@ -2530,7 +2531,7 @@
       "name": "Council Tax (England, Band D average)",
       "description": "Average council tax bill for a Band D property in England. Council tax replaced the community charge in 1993. Pre-1993 figures show domestic rates / community charge equivalents for context (modelled, dashed).",
       "unit": "GBP",
-      "color": "#84cc16",
+      "color": "#65a30d",
       "source": {
         "name": "Department for Levelling Up, Housing & Communities / MHCLG council-tax statistics",
         "url": "https://www.gov.uk/government/collections/council-tax-statistics"
@@ -3194,7 +3195,7 @@
     "homeownership-25-34": {
       "id": "homeownership-25-34",
       "name": "Homeownership rate (25–34)",
-      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Hand-compiled from English Housing Survey, ONS LFS and Census tenure tables, which use different methodologies — so the whole line is drawn dashed as an estimate.",
       "unit": "percent",
       "color": "#f87171",
       "source": {
@@ -3243,12 +3244,13 @@
           "year": 2025,
           "value": 39
         }
-      ]
+      ],
+      "estimated": true
     },
     "homeownership-35-44": {
       "id": "homeownership-35-44",
       "name": "Homeownership rate (35–44)",
-      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Hand-compiled from English Housing Survey, ONS LFS and Census tenure tables, which use different methodologies — so the whole line is drawn dashed as an estimate.",
       "unit": "percent",
       "color": "#fbbf24",
       "source": {
@@ -3297,14 +3299,15 @@
           "year": 2025,
           "value": 57
         }
-      ]
+      ],
+      "estimated": true
     },
     "homeownership-55-64": {
       "id": "homeownership-55-64",
       "name": "Homeownership rate (55–64)",
-      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Compiled from the English Housing Survey / ONS LFS / Census tenure tables.",
+      "description": "Share of household reference persons in this age band who own their home (with or without a mortgage). Hand-compiled from English Housing Survey, ONS LFS and Census tenure tables, which use different methodologies — so the whole line is drawn dashed as an estimate.",
       "unit": "percent",
-      "color": "#34d399",
+      "color": "#10b981",
       "source": {
         "name": "ONS / English Housing Survey — Tenure by age",
         "url": "https://www.gov.uk/government/collections/english-housing-survey"
@@ -3351,13 +3354,14 @@
           "year": 2025,
           "value": 73
         }
-      ]
+      ],
+      "estimated": true
     },
     "ftb-age": {
       "id": "ftb-age",
       "name": "First-time buyer average age (UK)",
       "description": "Average age of UK first-time buyers based on mortgage completions. Combines HMRC / CML / UK Finance / Halifax FTB tracker historical figures. Pre-1995 reflects industry estimates (dashed).",
-      "unit": "rate",
+      "unit": "years",
       "color": "#a3a3a3",
       "source": {
         "name": "UK Finance / Halifax First-Time Buyer Review",
@@ -3544,7 +3548,7 @@
       "name": "Graduate starting salary (median, UK)",
       "description": "Median annual starting salary for new UK graduates entering full-time employment. Combines HECSU 'What Do Graduates Do?' and ISE Student Recruitment Survey medians. Nominal £.",
       "unit": "GBP",
-      "color": "#60a5fa",
+      "color": "#818cf8",
       "source": {
         "name": "HECSU / Prospects + Institute of Student Employers",
         "url": "https://luminate.prospects.ac.uk/what-do-graduates-do"
@@ -3631,7 +3635,7 @@
       "name": "Food & drink price index (CPIH)",
       "description": "ONS CPIH food and non-alcoholic beverages sub-index, 2015 = 100. Food rose ~39% from 2015 to 2023, vs 29% for CPIH overall — the 2022-23 cost-of-living spike was disproportionately a food crisis. Pre-2005 estimated from RPI food component.",
       "unit": "index",
-      "color": "#fbbf24",
+      "color": "#ca8a04",
       "source": {
         "name": "ONS — CPIH food & non-alcoholic beverages sub-index",
         "url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
@@ -4008,7 +4012,7 @@
       "name": "Petrol pump price (pence per litre)",
       "description": "Annual average UK unleaded petrol pump price (pence per litre). Pre-2000 estimated from BEIS historical data; solid from 2000.",
       "unit": "index",
-      "color": "#f97316",
+      "color": "#b45309",
       "source": {
         "name": "BEIS / RAC Foundation — UK average unleaded pump price",
         "url": "https://www.racfoundation.org/data/uk-pump-prices-over-time"
@@ -4151,7 +4155,7 @@
       "name": "Median household wealth, age 25–34",
       "description": "Median total net household wealth (nominal £) for households headed by someone aged 25–34. ONS Wealth & Assets Survey biennial waves.",
       "unit": "GBP",
-      "color": "#38bdf8",
+      "color": "#3b82f6",
       "source": {
         "name": "ONS — Wealth & Assets Survey",
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/bulletins/totalwealthingreatbritain/latest"
@@ -4206,7 +4210,7 @@
       "name": "Median household wealth, age 55–64",
       "description": "Median total net household wealth (nominal £) for households headed by someone aged 55–64. ONS Wealth & Assets Survey biennial waves.",
       "unit": "GBP",
-      "color": "#fb923c",
+      "color": "#ea580c",
       "source": {
         "name": "ONS — Wealth & Assets Survey",
         "url": "https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/incomeandwealth/bulletins/totalwealthingreatbritain/latest"
@@ -4261,7 +4265,7 @@
       "name": "NHS out-of-pocket costs (dental + prescriptions)",
       "description": "Annual out-of-pocket NHS costs for a typical working-age adult: 12 prescription items + 2 dental check-ups + 1 Band 2 treatment. Pre-2000 NHS was effectively free at point of use for most; charges have risen above inflation since. Figures exclude private healthcare.",
       "unit": "GBP",
-      "color": "#f43f5e",
+      "color": "#be185d",
       "source": {
         "name": "NHS England — prescription charge history; NHS dental charge bands",
         "url": "https://www.nhsbsa.nhs.uk/pharmacies-gp-practices-and-appliance-contractors/drug-tariff/drug-tariff-part-ix"
@@ -4340,7 +4344,7 @@
       "name": "Median wage — public sector",
       "description": "ONS ASHE median full-time weekly earnings, public sector employees. Includes NHS, teaching, civil service etc.",
       "unit": "GBP",
-      "color": "#34d399",
+      "color": "#2dd4bf",
       "source": {
         "name": "ONS ASHE — sector breakdown",
         "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/publicsectorandprivatesectorearningsasa"
@@ -4451,7 +4455,7 @@
       "name": "Median wage — private sector",
       "description": "ONS ASHE median full-time weekly earnings, private sector employees.",
       "unit": "GBP",
-      "color": "#f97316",
+      "color": "#e11d48",
       "source": {
         "name": "ONS ASHE — sector breakdown",
         "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/publicsectorandprivatesectorearningsasa"
@@ -4562,7 +4566,7 @@
       "name": "UK house-price-to-median-wage ratio",
       "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
       "unit": "index",
-      "color": "#c084fc",
+      "color": "#8b5cf6",
       "source": {
         "name": "OECD / national statistics (modelled)",
         "url": "https://data.oecd.org/price/housing-prices.htm"
@@ -4621,7 +4625,7 @@
       "name": "Germany house-price-to-median-wage ratio",
       "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
       "unit": "index",
-      "color": "#fbbf24",
+      "color": "#f59e0b",
       "source": {
         "name": "OECD / national statistics (modelled)",
         "url": "https://data.oecd.org/price/housing-prices.htm"
@@ -4672,7 +4676,7 @@
       "name": "Canada house-price-to-median-wage ratio",
       "description": "Years of median gross annual wage required to purchase the average home. Derived from OECD housing price data and national median wage statistics. Pre-verifiedFrom points are modelled estimates.",
       "unit": "index",
-      "color": "#f87171",
+      "color": "#dc2626",
       "source": {
         "name": "OECD / national statistics (modelled)",
         "url": "https://data.oecd.org/price/housing-prices.htm"
@@ -4722,8 +4726,8 @@
       "id": "savings-ratio",
       "name": "Household saving ratio (%)",
       "description": "ONS household saving ratio as % of disposable income. Near-zero or negative for recent years shows millennials can't save — not won't. Pre-2000 from historical ONS releases.",
-      "unit": "pct",
-      "color": "#fb923c",
+      "unit": "percent",
+      "color": "#0ea5e9",
       "source": {
         "name": "ONS — Sector accounts: household saving ratio",
         "url": "https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/bulletins/quarterlysectoraccounts/latest"

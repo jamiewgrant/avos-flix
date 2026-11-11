@@ -9,7 +9,7 @@ const META = {
   name: "Petrol pump price (pence per litre)",
   description: "Annual average UK unleaded petrol pump price (pence per litre). Pre-2000 estimated from BEIS historical data; solid from 2000.",
   unit: "index" as const,
-  color: "#f97316",
+  color: "#b45309",
   source: {
     name: "BEIS / RAC Foundation — UK average unleaded pump price",
     url: "https://www.racfoundation.org/data/uk-pump-prices-over-time",

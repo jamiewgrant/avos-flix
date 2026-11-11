@@ -18,9 +18,7 @@ export const config = { runtime: "edge" };
  *   ></iframe>
  */
 
-const APP_URL = "https://avos-flix.vercel.app/?embed=1";
-
-const HTML = `<!DOCTYPE html>
+const renderHtml = (APP_URL: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -60,8 +58,10 @@ const HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export default async function handler(_req: Request): Promise<Response> {
-  return new Response(HTML, {
+export default async function handler(req: Request): Promise<Response> {
+  // Point the snippet at whichever deployment served this request.
+  const appUrl = `${new URL(req.url).origin}/?embed=1`;
+  return new Response(renderHtml(appUrl), {
     status: 200,
     headers: {
       "Content-Type": "text/html; charset=utf-8",

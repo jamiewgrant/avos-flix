@@ -8,6 +8,7 @@
  * Usage:  npm run audit   (or: tsx scripts/audit-snapshot.ts)
  */
 
+import type { SeriesData } from "../src/types/series.ts"
 import { readFileSync } from "fs"
 import { fileURLToPath } from "url"
 import path from "path"
@@ -18,27 +19,13 @@ const seriesRaw = readFileSync(
   path.join(__dirname, "../public/data/series.json"),
   "utf-8",
 )
-const seriesData = JSON.parse(seriesRaw) as {
-  series: Record<
-    string,
-    {
-      id: string
-      name: string
-      unit: string
-      color: string
-      source: unknown
-      region: string
-      points: Array<{ year: number; value: number }>
-    }
-  >
-}
+const seriesData = JSON.parse(seriesRaw) as SeriesData
 const SERIES = seriesData.series
 
 // ─── Import functions under test ──────────────────────────────────────────────
 // tsx handles TypeScript imports natively at runtime.
 import {
   computeSnapshot,
-  computeTaxNI,
   type PersonalInputs,
 } from "../src/lib/personalSnapshot.js"
 

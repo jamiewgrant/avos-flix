@@ -12,6 +12,9 @@ interface Props {
 const ACCENT = "#c084fc"
 const TRACK_HEIGHT = 8
 const HANDLE_R = 11
+// The track is inset by the handle radius so handles and their year labels
+// stay fully inside the SVG at both extremes instead of being clipped.
+const PAD = HANDLE_R + 3
 
 export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Props) {
   const { border: BORDER, bg: BG, muted: MUTED } = useChartColors()
@@ -33,17 +36,10 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
     return () => ro.disconnect()
   }, [])
 
-  function yearAt(clientX: number): number {
-    const rect = ref.current?.getBoundingClientRect()
-    if (!rect || rect.width === 0) return min
-    const x = clientX - rect.left
-    const t = Math.max(0, Math.min(1, x / rect.width))
-    return Math.round(min + t * (max - min))
-  }
-
+  const trackW = Math.max(0, width - PAD * 2)
   function xAt(year: number): number {
-    if (max === min) return 0
-    return ((year - min) / (max - min)) * width
+    if (max === min) return PAD
+    return PAD + ((year - min) / (max - min)) * trackW
   }
 
   function handleDown(which: "from" | "to" | "window", e: React.PointerEvent) {
@@ -54,6 +50,14 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
 
   useEffect(() => {
     if (!drag) return
+    function yearAt(clientX: number): number {
+      const rect = ref.current?.getBoundingClientRect()
+      if (!rect || rect.width === 0) return min
+      const usable = rect.width - PAD * 2
+      if (usable <= 0) return min
+      const t = Math.max(0, Math.min(1, (clientX - rect.left - PAD) / usable))
+      return Math.round(min + t * (max - min))
+    }
     function move(e: PointerEvent) {
       if (!dragStart.current) return
       const start = dragStart.current
@@ -67,7 +71,8 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
         onChange([next[0], Math.min(max, next[1])])
       } else {
         const dxYears =
-          ((e.clientX - start.clientX) / (ref.current?.getBoundingClientRect().width || 1)) *
+          ((e.clientX - start.clientX) /
+            Math.max(1, (ref.current?.getBoundingClientRect().width ?? 0) - PAD * 2)) *
           (max - min)
         const len = start.to - start.from
         let newFrom = Math.round(start.from + dxYears)
@@ -107,8 +112,8 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
     if (e.key === "ArrowRight") { e.preventDefault(); onChange([clampedFrom, Math.min(max, clampedTo + step)]) }
   }
 
-  const height = 36
-  const trackY = height / 2
+  const height = 44
+  const trackY = 16
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -121,9 +126,9 @@ export function YearRangeBrush({ min, max, value, onChange, presets = [] }: Prop
         >
           {/* Track */}
           <rect
-            x={0}
+            x={PAD}
             y={trackY - TRACK_HEIGHT / 2}
-            width={width}
+            width={trackW}
             height={TRACK_HEIGHT}
             rx={TRACK_HEIGHT / 2}
             fill={BORDER}

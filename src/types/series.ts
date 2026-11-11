@@ -1,6 +1,6 @@
 export type YearValue = { year: number; value: number }
 
-export type Unit = "GBP" | "percent" | "index" | "count" | "rate"
+export type Unit = "GBP" | "percent" | "index" | "count" | "rate" | "years" | "persons"
 
 export interface Source {
   name: string
@@ -19,6 +19,8 @@ export interface Series {
   // Points before this year are modelled estimates / proxies, drawn dashed.
   // Omit when the entire series is observed data.
   verifiedFrom?: number
+  // Whole series is hand-compiled / illustrative — drawn dashed throughout.
+  estimated?: boolean
 }
 
 export interface SeriesData {
@@ -34,6 +36,8 @@ export const UNIT_LABEL: Record<Unit, string> = {
   index: "Index",
   count: "Count (thousands)",
   rate: "Rate (per 1,000)",
+  years: "Age (years)",
+  persons: "People per household",
 }
 
 export function formatValue(value: number, unit: Unit): string {
@@ -51,6 +55,10 @@ export function formatValue(value: number, unit: Unit): string {
       return `${Math.round(value).toLocaleString("en-GB")}k`
     case "rate":
       return value.toFixed(1)
+    case "years":
+      return `${Math.round(value * 10) / 10} yrs`
+    case "persons":
+      return value.toFixed(2)
   }
 }
 
@@ -66,7 +74,9 @@ export function formatAxisValue(value: number, unit: Unit): string {
       if (Math.abs(value) >= 1000) return `${(value / 1000).toFixed(0)}k`
       return `${Math.round(value)}k`
     case "rate":
+    case "persons":
       return value.toFixed(1)
+    case "years":
     case "index":
     default:
       return `${Math.round(value)}`

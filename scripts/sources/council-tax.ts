@@ -5,7 +5,7 @@ const META = {
   name: "Council Tax (England, Band D average)",
   description: "Average council tax bill for a Band D property in England. Council tax replaced the community charge in 1993. Pre-1993 figures show domestic rates / community charge equivalents for context (modelled, dashed).",
   unit: "GBP" as const,
-  color: "#84cc16",
+  color: "#65a30d",
   source: {
     name: "Department for Levelling Up, Housing & Communities / MHCLG council-tax statistics",
     url: "https://www.gov.uk/government/collections/council-tax-statistics",

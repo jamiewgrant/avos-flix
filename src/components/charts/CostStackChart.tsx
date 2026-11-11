@@ -37,14 +37,12 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
   )
 
   // Deflation helper: when realTerms=true, scale values to cpihRef money.
-  const deflate = useMemo(() => {
-    if (!realTerms || !cpihMap) return (v: number, _year: number) => v
-    return (v: number, year: number) => {
-      const idx = cpihMap.get(year)
-      if (!idx || idx === 0) return v
-      return v * (cpihRef / idx)
-    }
-  }, [realTerms, cpihMap, cpihRef])
+  function deflate(v: number, year: number): number {
+    if (!realTerms || !cpihMap) return v
+    const idx = cpihMap.get(year)
+    if (!idx) return v
+    return v * (cpihRef / idx)
+  }
 
   const filteredStack = useMemo(
     () => stack.filter((p) => p.year >= startYear),
