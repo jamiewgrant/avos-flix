@@ -161,6 +161,28 @@ function IndexedView({
 
   return (
     <div ref={wrapperRef} style={{ position: "relative" }}>
+      {/* Legend — names each line; a dashed swatch marks wholly-estimated series. */}
+      {normalized.length > 0 && (
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 mb-2 px-1 text-xs list-none" aria-label="Chart legend">
+          {normalized.map((s) => {
+            const dimmed = !!spotlightId && spotlightId !== s.meta.id
+            return (
+              <li
+                key={s.meta.id}
+                className="flex items-center gap-1.5 text-(--color-text)"
+                style={{ opacity: dimmed ? 0.35 : 1 }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-block w-4 shrink-0"
+                  style={{ borderTop: `3px ${s.meta.estimated ? "dashed" : "solid"} ${s.meta.color}` }}
+                />
+                {s.meta.name}
+              </li>
+            )
+          })}
+        </ul>
+      )}
       <ParentSize>
         {({ width }) => {
           if (width === 0) return null

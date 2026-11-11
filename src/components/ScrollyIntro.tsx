@@ -98,7 +98,8 @@ export function ScrollyIntro({ data }: Props) {
   return (
     <section className="mb-24">
       <div className="grid md:grid-cols-[1fr_1fr] gap-8">
-        <div className="sticky top-0 md:top-4 self-start z-10">
+        {/* Offset by the sticky page header (h-14) so the card isn't hidden under it. */}
+        <div className="sticky top-16 md:top-[4.5rem] self-start z-10">
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-3 md:p-6">
             {/* Scene progress dots — visible on mobile where text is below the fold */}
             <div className="flex items-center gap-2 mb-2">
