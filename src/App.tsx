@@ -180,8 +180,6 @@ function App() {
     if (lo > hi) return [1950, new Date().getFullYear()]
     return [lo, hi]
   }, [allSeries])
-  const activeRange: [number, number] = range ?? dataSpan
-  const [activeFrom, activeTo] = activeRange
 
   const cpihSeries = data?.series["cpih"]
   const cpihPoints = useMemo(() => cpihSeries?.points ?? [], [cpihSeries])
@@ -201,6 +199,31 @@ function App() {
     () => (mode === "indexed" ? visible.filter((s) => !basePoint(s, baseYear)) : []),
     [mode, visible, baseYear],
   )
+
+  // The slider covers exactly what the chart can show: the years the visible
+  // series span and, in Indexed mode, nothing before the base year (lines start
+  // there). Previously it ran 1950–2026 regardless, so its ends meant nothing.
+  const brushSpan = useMemo<[number, number]>(() => {
+    const drawn = visible.filter((s) => mode !== "indexed" || basePoint(s, baseYear))
+    let lo = Infinity
+    let hi = -Infinity
+    for (const s of drawn) {
+      for (const p of s.points) {
+        if (p.year < lo) lo = p.year
+        if (p.year > hi) hi = p.year
+      }
+    }
+    if (lo > hi) return dataSpan
+    if (mode === "indexed") lo = Math.max(lo, Math.min(baseYear, hi - 1))
+    return [lo, hi]
+  }, [visible, mode, baseYear, dataSpan])
+  const activeRange = useMemo<[number, number]>(() => {
+    if (!range) return brushSpan
+    const from = Math.min(Math.max(range[0], brushSpan[0]), brushSpan[1] - 1)
+    const to = Math.max(Math.min(range[1], brushSpan[1]), from + 1)
+    return [from, to]
+  }, [range, brushSpan])
+  const [activeFrom, activeTo] = activeRange
 
   const refYear = useMemo(
     () => (cpihPoints.length > 0 ? cpihPoints[cpihPoints.length - 1].year : new Date().getFullYear()),
@@ -515,7 +538,7 @@ function App() {
         )}
         <p className={`text-(--color-muted) max-w-2xl text-lg leading-relaxed ${embedMode ? "mb-4 text-sm" : "mb-8"}`}>
           {mode === "indexed"
-            ? `Every series rebased so ${baseYear} = 100. Lines that climb faster than the others ate more of your paycheque. Hover for exact values; toggle anything on or off below.`
+            ? `Every line starts at 1× in ${baseYear} and shows how many times over it has grown since — a line ending at 5× costs five times what it did. The further a line ends above wages, the more of your paycheque it ate. Hover for exact values; toggle anything on or off below.`
             : "Same series, native units. Pounds with pounds, percent with percent."}
           {realTerms && (
             <span className="block mt-2 text-(--color-accent)">
@@ -543,7 +566,7 @@ function App() {
                 series={palettedVisible}
                 mode={mode}
                 baseYear={baseYear}
-                fromYear={mode === "indexed" ? Math.max(baseYear, activeFrom) : activeFrom}
+                fromYear={activeFrom}
                 toYear={activeTo}
                 annotations={showAnnotations ? HISTORICAL_EVENTS : []}
                 spotlightId={spotlightId}
@@ -554,20 +577,20 @@ function App() {
 
               <div className="mt-4 px-1">
                 <YearRangeBrush
-                  min={dataSpan[0]}
-                  max={dataSpan[1]}
+                  min={brushSpan[0]}
+                  max={brushSpan[1]}
                   value={activeRange}
                   onChange={(next) =>
                     setState((p) => ({
                       ...p,
                       range:
-                        next[0] === dataSpan[0] && next[1] === dataSpan[1] ? null : next,
+                        next[0] === brushSpan[0] && next[1] === brushSpan[1] ? null : next,
                     }))
                   }
                   presets={[
-                    { label: "All", range: dataSpan },
-                    { label: "30y", range: [Math.max(dataSpan[0], dataSpan[1] - 30), dataSpan[1]] },
-                    { label: "2008+", range: [Math.max(dataSpan[0], 2008), dataSpan[1]] },
+                    { label: "All", range: brushSpan },
+                    { label: "30y", range: [Math.max(brushSpan[0], brushSpan[1] - 30), brushSpan[1]] },
+                    { label: "2008+", range: [Math.min(Math.max(brushSpan[0], 2008), brushSpan[1] - 1), brushSpan[1]] },
                   ]}
                 />
               </div>

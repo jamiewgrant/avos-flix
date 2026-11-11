@@ -98,6 +98,8 @@ public/
 
 - Both `Chart.tsx` (indexed + raw modes) and `AffordabilityChart.tsx` use the same `splitAtVerified` helper to render estimated portions dashed. If you add a new chart, do the same (pass `verifiedBoundary(series)` so `estimated` series are handled too).
 - Don't hardcode "the current year" in components — use `latestCommonYear()` so copy and maths follow the data.
+- SVG ids (`clipPath`, `filter`, gradients) are document-global and several charts share the page, so derive them from `useId()`. A fixed id makes one chart clip to another chart's rectangle and its lines vanish.
+- Indexed mode displays growth as multiples (`5.3×`), not index points (`530`); lines are labelled at their ends, by name when there are four or fewer.
 - AnimatePresence wraps each series in `motion.g` keyed by series id. Don't break this — premature key collisions kill the toggle animations.
 
 ### URL state

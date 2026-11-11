@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react"
+import { useId, useMemo, useState, useRef } from "react"
 import { useChartColors } from "../../lib/useChartColors"
 import { motion, AnimatePresence } from "framer-motion"
 import { Group } from "@visx/group"
@@ -81,6 +81,17 @@ function normalize(s: Series, baseYear: number): NormalizedSeries | null {
   return { meta: s, baseYearActual: base.year, baseValue: base.value, points }
 }
 
+/** An index value (base = 100) as a growth multiple: 530 → "5.3×". */
+function formatMultiple(indexValue: number): string {
+  const m = indexValue / 100
+  return `${m >= 10 ? Math.round(m) : m.toFixed(1)}×`
+}
+
+/** "House prices (Nationwide HPI)" → "House prices" — for labels drawn beside a line. */
+function shortName(name: string): string {
+  return name.replace(/\s*\(.*\)\s*$/, "").replace(/\s+—.*$/, "") || name
+}
+
 /** Pixel position of an active annotation popover, relative to the wrapper div. */
 interface ActiveAnnotation {
   annotation: Annotation
@@ -125,6 +136,14 @@ function IndexedView({
   const hovered = pinned ?? hoveredRaw
   const setHovered = setHoveredRaw
   const startYear = fromYear ?? baseYear
+  // SVG ids are document-global. Several charts share the page (the scrolly
+  // intro renders this component too), so every id must be unique per instance
+  // — otherwise this chart's clip-path resolves to another chart's rectangle
+  // and the lines are clipped away.
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "")
+  const clipId = `chart-clip-${uid}`
+  const glowId = `line-glow-${uid}`
+  const gradId = (seriesId: string) => `area-grad-${uid}-${seriesId}`
   const touchDismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const pinchRef = useRef<PinchState | null>(null)
@@ -187,7 +206,14 @@ function IndexedView({
         {({ width }) => {
           if (width === 0) return null
           const height = Math.max(340, Math.min(540, width * 0.55))
-          const margin = { top: 20, right: 92, bottom: 36, left: 56 }
+          // On wide charts with a handful of lines, each line is labelled by
+          // name at its end; otherwise the labels are just the multiple.
+          const namedLabels = width >= 640 && normalized.length <= 4
+          // Past ~8 lines, end labels become an unreadable column of numbers and
+          // the glow turns the plot to mush: drop both and let the legend and
+          // hover tooltip do the work.
+          const crowded = normalized.length > 8
+          const margin = { top: 20, right: namedLabels ? 168 : crowded ? 20 : 64, bottom: 36, left: 48 }
           const innerW = width - margin.left - margin.right
           const innerH = height - margin.top - margin.bottom
 
@@ -203,7 +229,9 @@ function IndexedView({
 
           // Use all years for domain calculation, but clip visible range via clipPath
           const allYears = normalized.flatMap((s) => s.points.map((p) => p.year))
-          const endYear = toYear ?? Math.max(...allYears)
+          // Don't leave an empty strip past the last year any drawn series covers.
+          const lastDataYear = Math.max(...allYears)
+          const endYear = Math.max(startYear + 1, Math.min(toYear ?? lastDataYear, lastDataYear))
           // For y-scale domain, only consider points within the visible range
           const allValues = normalized.flatMap((s) =>
             s.points.filter((p) => p.year >= startYear && p.year <= endYear).map((p) => p.value)
@@ -306,7 +334,7 @@ function IndexedView({
                     id: s.meta.id,
                     name: s.meta.name,
                     color: s.meta.color,
-                    display: `${Math.round(point.value)}`,
+                    display: formatMultiple(point.value),
                     rawDisplay: formatValue(s.baseValue * (point.value / 100), s.meta.unit),
                     cy: yScale(point.value),
                   }
@@ -315,7 +343,7 @@ function IndexedView({
                 .sort((a, b) => a.cy - b.cy)
 
           const chartTitleId = `chart-title-indexed-${baseYear}`
-          const chartTitleText = `Indexed chart, base year ${baseYear}. ${normalized.length} series shown from ${startYear} to ${endYear}. ${normalized.slice(0, 3).map((s) => s.meta.name).join(", ")}${normalized.length > 3 ? ` and ${normalized.length - 3} more` : ""}.`
+          const chartTitleText = `Growth since ${baseYear}, shown as multiples of each series' ${baseYear} value. ${normalized.length} series shown from ${startYear} to ${endYear}. ${normalized.slice(0, 3).map((s) => s.meta.name).join(", ")}${normalized.length > 3 ? ` and ${normalized.length - 3} more` : ""}.`
 
           return (
             <>
@@ -328,19 +356,19 @@ function IndexedView({
                 <title id={chartTitleId}>{chartTitleText}</title>
                 <defs>
                   {normalized.map((s) => (
-                    <linearGradient key={`grad-${s.meta.id}`} id={`area-grad-${s.meta.id}`} x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient key={`grad-${s.meta.id}`} id={gradId(s.meta.id)} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={s.meta.color} stopOpacity={0.13} />
                       <stop offset="100%" stopColor={s.meta.color} stopOpacity={0} />
                     </linearGradient>
                   ))}
-                  <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
                     <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                     <feMerge>
                       <feMergeNode in="coloredBlur" />
                       <feMergeNode in="SourceGraphic" />
                     </feMerge>
                   </filter>
-                  <clipPath id="chart-area-indexed">
+                  <clipPath id={clipId}>
                     <rect x={0} y={0} width={innerW} height={innerH} />
                   </clipPath>
                 </defs>
@@ -369,7 +397,7 @@ function IndexedView({
                         strokeDasharray="2,3"
                       />
                       <text x={xScale(baseYear) + 4} y={14} fill={MUTED} fontSize={11} opacity={0.8}>
-                        {baseYear} = 100
+                        {baseYear} = 1×
                       </text>
                     </>
                   )}
@@ -386,7 +414,7 @@ function IndexedView({
                   <AxisLeft
                     scale={yScale}
                     numTicks={5}
-                    tickFormat={(v) => `${v}`}
+                    tickFormat={(v) => `${Number(v) / 100}×`}
                     stroke={GRID}
                     tickStroke={GRID}
                     tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
@@ -414,16 +442,20 @@ function IndexedView({
                           )
                         }}
                       >
-                        <line
-                          x1={cx}
-                          x2={cx}
-                          y1={0}
-                          y2={innerH}
-                          stroke={MUTED}
-                          strokeOpacity={isActive ? 0.7 : isHovered ? 0.6 : 0.18}
-                          strokeWidth={isActive ? 1.5 : 1}
-                          strokeDasharray="2,3"
-                        />
+                        {/* Guide line only while the marker is hovered/open — at rest
+                            a dozen dotted verticals just compete with the data. */}
+                        {(isActive || isHovered) && (
+                          <line
+                            x1={cx}
+                            x2={cx}
+                            y1={0}
+                            y2={innerH}
+                            stroke={MUTED}
+                            strokeOpacity={isActive ? 0.7 : 0.6}
+                            strokeWidth={isActive ? 1.5 : 1}
+                            strokeDasharray="2,3"
+                          />
+                        )}
                         <circle
                           cx={cx}
                           cy={innerH - 4}
@@ -450,7 +482,7 @@ function IndexedView({
                     )
                   })}
 
-                  <g clipPath="url(#chart-area-indexed)">
+                  <g clipPath={`url(#${clipId})`}>
                     <AnimatePresence>
                       {normalized.map((s) => {
                         const dimmed = spotlightId !== null && spotlightId !== undefined && spotlightId !== s.meta.id
@@ -464,13 +496,13 @@ function IndexedView({
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                           >
-                            {verified.length > 1 && (
+                            {verified.length > 1 && normalized.length <= 3 && (
                               <AreaClosed
                                 data={verified}
                                 x={(p) => xScale(p.year)}
                                 y={(p) => yScale(p.value)}
                                 yScale={yScale}
-                                fill={`url(#area-grad-${s.meta.id})`}
+                                fill={`url(#${gradId(s.meta.id)})`}
                                 curve={curveMonotoneX}
                                 opacity={dimmed ? 0.1 : 1}
                               />
@@ -492,9 +524,9 @@ function IndexedView({
                               <motion.path
                                 d={pathFromPoints(verified, xScale, yScale)}
                                 stroke={s.meta.color}
-                                strokeWidth={dimmed ? 1 : 2.5}
+                                strokeWidth={dimmed ? 1 : crowded ? 1.75 : 2.5}
                                 fill="none"
-                                filter={dimmed ? undefined : "url(#line-glow)"}
+                                filter={dimmed || crowded ? undefined : `url(#${glowId})`}
                                 initial={false}
                                 animate={{ d: pathFromPoints(verified, xScale, yScale) }}
                                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -506,33 +538,69 @@ function IndexedView({
                     </AnimatePresence>
                   </g>
 
-                  {/* Right-hand value labels — de-collided, highest values win */}
-                  {hovered === null && (() => {
+                  {/* End-of-line labels. Nudged apart rather than dropped, so every
+                      line keeps its label; text stays in ink colours and the dot
+                      carries the series colour. */}
+                  {hovered === null && !crowded && (() => {
                     const candidates = normalized
                       .map((s) => {
-                        const inRange = s.points.filter((p) => p.year <= endYear)
+                        const inRange = s.points.filter((p) => p.year >= startYear && p.year <= endYear)
                         const last = inRange[inRange.length - 1]
                         if (!last) return null
-                        return { s, last, y: yScale(last.value) }
+                        const y = yScale(last.value)
+                        return { s, last, y, labelY: y }
                       })
                       .filter((x): x is NonNullable<typeof x> => x !== null)
                       .sort((a, b) => a.y - b.y) // top of chart first (lowest y px)
-                    const MIN_GAP = 13
+                    const GAP = 15
+                    const fits = candidates.length * GAP <= innerH
+                    if (fits) {
+                      // Push overlapping labels down, then pull the stack back up if it overflows.
+                      for (let i = 1; i < candidates.length; i++) {
+                        candidates[i].labelY = Math.max(candidates[i].labelY, candidates[i - 1].labelY + GAP)
+                      }
+                      const overflow = candidates.length ? candidates[candidates.length - 1].labelY - innerH : 0
+                      if (overflow > 0) {
+                        candidates[candidates.length - 1].labelY = innerH
+                        for (let i = candidates.length - 2; i >= 0; i--) {
+                          candidates[i].labelY = Math.min(candidates[i].labelY, candidates[i + 1].labelY - GAP)
+                        }
+                      }
+                    }
                     const placed: number[] = []
-                    return candidates
-                      .filter(({ y }) => {
-                        const conflict = placed.some((py) => Math.abs(py - y) < MIN_GAP)
-                        if (!conflict) placed.push(y)
-                        return !conflict
-                      })
-                      .map(({ s, last, y }) => (
-                        <g key={`${s.meta.id}-label`}>
-                          <circle cx={xScale(last.year)} cy={y} r={3.5} fill={s.meta.color} />
-                          <text x={xScale(last.year) + 8} y={y + 4} fill={s.meta.color} fontSize={12} fontWeight={600}>
-                            {Math.round(last.value)}
+                    const shown = fits
+                      ? candidates
+                      : candidates.filter(({ y }) => {
+                          const conflict = placed.some((py) => Math.abs(py - y) < GAP)
+                          if (!conflict) placed.push(y)
+                          return !conflict
+                        })
+                    const labelX = innerW + 10
+                    return shown.map(({ s, last, y, labelY }) => {
+                      const dimmed = !!spotlightId && spotlightId !== s.meta.id
+                      const endX = xScale(last.year)
+                      return (
+                        <g key={`${s.meta.id}-label`} opacity={dimmed ? 0.3 : 1}>
+                          {/* Leader from the line's end to its (possibly nudged) label */}
+                          {(Math.abs(labelY - y) > 1 || endX < innerW - 1) && (
+                            <path
+                              d={`M${endX + 5},${y} L${labelX - 4},${labelY}`}
+                              stroke={MUTED}
+                              strokeOpacity={0.45}
+                              strokeWidth={1}
+                              fill="none"
+                            />
+                          )}
+                          <circle cx={endX} cy={y} r={4} fill={s.meta.color} stroke={SURFACE} strokeWidth={2} />
+                          <text x={labelX} y={labelY + 4} fontSize={12}>
+                            <tspan fill={TEXT} fontWeight={700}>{formatMultiple(last.value)}</tspan>
+                            {namedLabels && (
+                              <tspan fill={MUTED} dx={6}>{shortName(s.meta.name)}</tspan>
+                            )}
                           </text>
                         </g>
-                      ))
+                      )
+                    })
                   })()}
 
                   {hovered !== null && (
@@ -634,7 +702,7 @@ function IndexedView({
                     id: i.id,
                     name: i.name,
                     color: i.color,
-                    value: `${i.display} (${i.rawDisplay})`,
+                    value: `${i.display} · ${i.rawDisplay}`,
                   }))}
                   x={tooltipPos.x}
                   y={tooltipPos.y}
@@ -1005,7 +1073,7 @@ function HtmlTooltip({
   y: number
   innerW: number
 }) {
-  const tooltipW = 240
+  const tooltipW = Math.min(300, Math.max(200, innerW - 24))
   const flipLeft = x + tooltipW + 16 > innerW
   const left = flipLeft ? x - tooltipW - 8 : x + 8
   return (
@@ -1030,7 +1098,7 @@ function HtmlTooltip({
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
             <span className="text-[11px] text-(--color-muted) truncate">
-              {item.name.length > 24 ? item.name.slice(0, 22) + "…" : item.name}
+              {item.name}
             </span>
           </div>
           <span className="text-[11px] font-semibold text-(--color-text) tabular-nums flex-shrink-0">
