@@ -156,7 +156,7 @@ export function PensionAdequacyView({ defaultSalary = 35000 }: Props) {
           <p className="mt-6 text-sm text-(--color-muted) text-center border-t border-(--color-border) pt-5">
             Your defined-contribution pot pays{" "}
             <span className="text-(--color-text) font-semibold">{fmt(animGap)} less per year</span>{" "}
-            than an equivalent final-salary pension would have. That gap, compounded over 20 years of retirement, is{" "}
+            than an equivalent final-salary pension would have. Over 20 years of retirement that gap adds up to{" "}
             <span className="text-(--color-text) font-semibold">{fmt(animGap20)}</span>.
           </p>
         )}

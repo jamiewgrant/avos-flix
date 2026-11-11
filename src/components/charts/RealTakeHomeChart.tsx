@@ -43,6 +43,17 @@ export function RealTakeHomeChart({ wage, taxBurden, cpih }: Props) {
   if (data.real.length === 0) return null
 
   return (
+    <>
+    <ul className="flex flex-wrap gap-x-4 gap-y-1 mb-2 px-1 text-xs list-none text-(--color-text)" aria-label="Chart legend">
+      <li className="flex items-center gap-1.5">
+        <span aria-hidden="true" className="inline-block w-4" style={{ borderTop: `3px solid ${REAL}` }} />
+        Take-home in today&apos;s money
+      </li>
+      <li className="flex items-center gap-1.5">
+        <span aria-hidden="true" className="inline-block w-4" style={{ borderTop: `2px dotted ${NOMINAL}` }} />
+        Take-home in cash terms (not inflation-adjusted)
+      </li>
+    </ul>
     <ParentSize>
       {({ width }) => {
         if (width === 0) return null
@@ -82,7 +93,7 @@ export function RealTakeHomeChart({ wage, taxBurden, cpih }: Props) {
                 tickLabelProps={{ fill: MUTED, fontSize: 11, dx: -4, dy: 4, textAnchor: "end" }} />
 
               <LinePath data={data.nominal} x={(p) => xScale(p.year)} y={(p) => yScale(p.value)}
-                stroke={NOMINAL} strokeWidth={2} curve={curveMonotoneX} strokeDasharray="4,4" opacity={0.7} />
+                stroke={NOMINAL} strokeWidth={2} curve={curveMonotoneX} strokeDasharray="1,4" strokeLinecap="round" opacity={0.8} />
               <LinePath data={data.real} x={(p) => xScale(p.year)} y={(p) => yScale(p.value)}
                 stroke={REAL} strokeWidth={2.5} curve={curveMonotoneX} />
 
@@ -107,5 +118,6 @@ export function RealTakeHomeChart({ wage, taxBurden, cpih }: Props) {
         )
       }}
     </ParentSize>
+    </>
   )
 }

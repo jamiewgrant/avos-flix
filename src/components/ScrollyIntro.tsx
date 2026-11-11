@@ -64,8 +64,8 @@ const SCENES: Scene[] = [
   {
     id: "total",
     headline: "This is the full picture.",
-    body: "Stack it all together: house prices, rent, energy, childcare, tuition, student debt. Every line outpaced wages. This isn’t a spending problem. It’s a structural cost problem.",
-    visibleIds: ["median-wage", "house-price-nationwide", "rent-index", "energy-cost", "childcare-cost", "tuition-uk"],
+    body: "Stack it together: house prices, rent, energy, childcare — every line outpaced wages, before tuition and student debt are even counted. This isn’t a spending problem. It’s a structural cost problem.",
+    visibleIds: ["median-wage", "house-price-nationwide", "rent-index", "energy-cost", "childcare-cost"],
     baseYear: 1995,
     annotationYears: [2008, 2020, 2022],
   },

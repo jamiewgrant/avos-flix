@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Group } from "@visx/group"
 import { LinePath } from "@visx/shape"
+import { splitAtVerified, verifiedBoundary } from "../../lib/splitAtVerified"
 import { scaleLinear } from "@visx/scale"
 import { AxisBottom, AxisLeft } from "@visx/axis"
 import { GridRows } from "@visx/grid"
@@ -102,14 +103,36 @@ export function RentToIncomeChart({ rentIndex, wage }: Props) {
                 tickLabelProps={{ fill: MUTED, fontSize: 12, dx: -4, dy: 4, textAnchor: "end" }}
               />
 
-              <LinePath
-                data={ratio}
-                x={(p) => xScale(p.year)}
-                y={(p) => yScale(p.value)}
-                stroke={ACCENT}
-                strokeWidth={2.5}
-                curve={curveMonotoneX}
-              />
+              {/* Rent before the index's verifiedFrom year is an estimate — dashed. */}
+              {(() => {
+                const { estimated, verified } = splitAtVerified(ratio, verifiedBoundary(rentIndex))
+                return (
+                  <>
+                    {estimated.length > 1 && (
+                      <LinePath
+                        data={estimated}
+                        x={(p) => xScale(p.year)}
+                        y={(p) => yScale(p.value)}
+                        stroke={ACCENT}
+                        strokeWidth={2}
+                        strokeDasharray="5,4"
+                        opacity={0.6}
+                        curve={curveMonotoneX}
+                      />
+                    )}
+                    {verified.length > 1 && (
+                      <LinePath
+                        data={verified}
+                        x={(p) => xScale(p.year)}
+                        y={(p) => yScale(p.value)}
+                        stroke={ACCENT}
+                        strokeWidth={2.5}
+                        curve={curveMonotoneX}
+                      />
+                    )}
+                  </>
+                )
+              })()}
 
               {point && (
                 <g>

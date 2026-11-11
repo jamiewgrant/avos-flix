@@ -3118,7 +3118,7 @@
       "name": "Full-time nursery (England, under-2, annual)",
       "description": "Annual cost of full-time (50h/week) nursery for a child under 2 in England. Coram Family & Childcare conducts the canonical annual survey; nominal £, sticker price (before any government support). Pre-2003 modelled from CPI-trended estimates of historical part-time rates (dashed).",
       "unit": "GBP",
-      "color": "#fde047",
+      "color": "#f08c2e",
       "source": {
         "name": "Coram Family & Childcare — Childcare Survey",
         "url": "https://www.coram.org.uk/our-impact/childcare-survey/"

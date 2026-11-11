@@ -37,6 +37,17 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
   if (affordability.length === 0) return null
 
   return (
+    <>
+    <ul className="flex flex-wrap gap-x-4 gap-y-1 mb-2 px-1 text-xs list-none text-(--color-text)" aria-label="Chart legend">
+      <li className="flex items-center gap-1.5">
+        <span aria-hidden="true" className="inline-block w-4" style={{ borderTop: `3px solid ${ACCENT}` }} />
+        House price ÷ median salary (left axis)
+      </li>
+      <li className="flex items-center gap-1.5">
+        <span aria-hidden="true" className="inline-block w-4" style={{ borderTop: `2px solid ${RATE_COLOR}` }} />
+        Bank Rate (right axis)
+      </li>
+    </ul>
     <ParentSize>
       {({ width }) => {
         if (width === 0) return null
@@ -101,7 +112,7 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
               <AxisBottom
                 top={innerH}
                 scale={xScale}
-                numTicks={Math.min(8, endYear - startYear)}
+                numTicks={Math.max(2, Math.min(8, Math.floor(innerW / 64), endYear - startYear))}
                 tickFormat={(v) => `${v}`}
                 stroke={GRID}
                 tickStroke={GRID}
@@ -125,16 +136,16 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
                 tickLabelProps={{ fill: RATE_COLOR, fontSize: 12, dx: 4, dy: 4, textAnchor: "start" }}
               />
 
-              {/* BoE rate underneath (visually backgrounded — already dashed by design) */}
+              {/* BoE rate underneath. Solid: it's an observed series, and dashed is
+                  reserved across the site for estimates. Thinner + dimmer to sit back. */}
               <LinePath
                 data={boeInRange}
                 x={(p) => xScale(p.year)}
                 y={(p) => yRight(p.value)}
                 stroke={RATE_COLOR}
-                strokeWidth={1.75}
-                strokeDasharray="4,4"
+                strokeWidth={1.5}
                 curve={curveMonotoneX}
-                opacity={0.85}
+                opacity={0.75}
               />
 
               {/* Affordability ratio on top — split: estimated pre-wage.verifiedFrom */}
@@ -179,7 +190,7 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
                   />
                   <text
                     x={xScale(affordability[affordability.length - 1].year) - 8}
-                    y={yLeft(affordability[affordability.length - 1].value) - 8}
+                    y={yLeft(affordability[affordability.length - 1].value) + 22}
                     fill={ACCENT}
                     fontSize={13}
                     fontWeight={700}
@@ -242,5 +253,6 @@ export function AffordabilityChart({ housePrice, wage, boeRate }: Props) {
         )
       }}
     </ParentSize>
+    </>
   )
 }

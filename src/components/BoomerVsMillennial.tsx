@@ -109,8 +109,8 @@ export function BoomerVsMillennial({ data }: Props) {
       <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
         <div className="hidden md:grid grid-cols-[1fr_auto_auto] text-xs font-mono text-(--color-muted) uppercase tracking-wider px-5 py-3 border-b border-(--color-border) bg-(--color-bg)">
           <span />
-          <span className="w-36 text-right">Born {YEAR_A - 30}, age 30</span>
-          <span className="w-36 text-right" style={{ color: ACCENT }}>Born {YEAR_B - 30}, age 30</span>
+          <span className="w-40 text-right">Born {YEAR_A - 30}, age 30</span>
+          <span className="w-40 text-right" style={{ color: ACCENT }}>Born {YEAR_B - 30}, age 30</span>
         </div>
 
         {rows.map((row, i) => {
@@ -133,13 +133,13 @@ export function BoomerVsMillennial({ data }: Props) {
                 <div className="text-sm text-(--color-text) font-medium">{row.label}</div>
                 <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>{row.hint}</div>
               </div>
-              <div className="md:w-36 text-left md:text-right mb-1 md:mb-0">
+              <div className="md:w-40 text-left md:text-right mb-1 md:mb-0">
                 <span className="text-xs md:hidden font-mono" style={{ color: MUTED }}>{YEAR_A}: </span>
                 <span className="text-sm tabular-nums" style={{ color: MUTED }}>
                   {row.a !== null ? fmt(row.a, row.unit) : "—"}
                 </span>
               </div>
-              <div className="md:w-36 text-left md:text-right">
+              <div className="md:w-40 text-left md:text-right">
                 <span className="text-xs md:hidden font-mono" style={{ color: ACCENT }}>{YEAR_B}: </span>
                 <span
                   className="text-sm font-semibold tabular-nums"

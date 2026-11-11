@@ -12,7 +12,7 @@ export const PRESETS: Preset[] = [
   {
     id: "wages-vs-houses",
     label: "Wages vs Houses",
-    description: "The core thesis: house prices outran wages 5× since 1995",
+    description: "The core thesis: since 1995 house prices grew about twice as fast as wages",
     visibleIds: ["median-wage", "house-price-nationwide", "cpih"],
   },
   {

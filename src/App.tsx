@@ -764,14 +764,16 @@ function App() {
 
       {!embedMode && housePriceNationwide && wage && (
         <section className="mb-20">
-          <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
           <span className="section-num">04 / Counterfactual</span>
-          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mt-12 mb-3">
+          <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             What if houses had grown at wage rate?
           </h2>
           <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
             Take the 1995 house price. Grow it each year by the same percentage wages grew. The dashed line is the parallel universe where buying a house tracked the paycheque. The gap is what you actually owe the bank.
           </p>
+          <div className="mb-6">
+            <WhatIfCallout housePrice={housePriceNationwide} wage={wage} />
+          </div>
           <RevealOnScroll>
             <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
               <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
@@ -906,8 +908,16 @@ function App() {
       )}
 
       {!embedMode && (
-        <footer className="mt-4 mb-8 pt-8 border-t border-(--color-border) flex items-center justify-between text-xs text-(--color-muted) font-mono">
+        <footer className="mt-4 mb-8 pt-8 border-t border-(--color-border) flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-(--color-muted) font-mono">
           <span>avos<span className="text-(--color-accent)">+</span>flix · UK economic data dashboard</span>
+          {data && (
+            <button
+              onClick={() => setMethodologyOpen(true)}
+              className="hover:text-(--color-text) transition underline underline-offset-2"
+            >
+              Sources &amp; methodology ({allSeries.length} series)
+            </button>
+          )}
           <button onClick={toggleTheme} className="hover:text-(--color-text) transition flex items-center gap-1.5">
             {theme === "dark" ? "☀ light" : "◑ dark"}
           </button>
@@ -915,19 +925,11 @@ function App() {
       )}
 
       {!embedMode && data && (
-        <>
-          <button
-            onClick={() => setMethodologyOpen(true)}
-            className="mt-6 text-xs text-(--color-muted) font-mono hover:text-(--color-text) transition underline underline-offset-2"
-          >
-            Sources &amp; methodology ({allSeries.length} series)
-          </button>
-          <MethodologyModal
-            open={methodologyOpen}
-            onClose={() => setMethodologyOpen(false)}
-            series={allSeries}
-          />
-        </>
+        <MethodologyModal
+          open={methodologyOpen}
+          onClose={() => setMethodologyOpen(false)}
+          series={allSeries}
+        />
       )}
     </main>
     </>

@@ -107,7 +107,7 @@ export function MortgageChart({
                     strokeOpacity={0.45}
                     strokeDasharray="4,4"
                   />
-                  <text x={4} y={yScale(30) - 6} fill={DANGER} fontSize={11} opacity={0.7}>
+                  <text x={4} y={yScale(30) + 14} fill={DANGER} fontSize={11} opacity={0.8}>
                     30% — "affordable" threshold
                   </text>
                 </>
@@ -116,7 +116,7 @@ export function MortgageChart({
               <AxisBottom
                 top={innerH}
                 scale={xScale}
-                numTicks={Math.min(8, endYear - startYear)}
+                numTicks={Math.max(2, Math.min(8, Math.floor(innerW / 64), endYear - startYear))}
                 tickFormat={(v) => `${v}`}
                 stroke={GRID}
                 tickStroke={GRID}
@@ -185,7 +185,7 @@ export function MortgageChart({
                   />
                   <text
                     x={xScale(burdenByYear[burdenByYear.length - 1].year) - 8}
-                    y={yScale(burdenByYear[burdenByYear.length - 1].value) - 8}
+                    y={yScale(burdenByYear[burdenByYear.length - 1].value) + 22}
                     fill={ACCENT}
                     fontSize={13}
                     fontWeight={700}

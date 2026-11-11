@@ -23,11 +23,12 @@ interface Props {
   cpihRef?: number
 }
 
-const WAGE = "#ffffff"
 const ACCENT = "#c084fc"
 
 export function CostStackChart({ series, persona, wageData, earners, benchmark, housingMode = "mortgage", mortgageRegion = "national", startYear = 1995, realTerms = false, cpihMap, cpihRef = 1 }: Props) {
   const { muted: MUTED, grid: GRID, surface: SURFACE, border: BORDER, text: TEXT } = useChartColors()
+  // Take-home line uses the theme ink so it reads on both dark and light surfaces.
+  const WAGE = TEXT
   const [hovered, setHovered] = useState<number | null>(null)
   const [pinnedYear, setPinnedYear] = useState<number | null>(null)
 
@@ -201,7 +202,7 @@ export function CostStackChart({ series, persona, wageData, earners, benchmark, 
               <AxisBottom
                 top={innerH}
                 scale={xScale}
-                numTicks={Math.min(8, yearTo - yearFrom)}
+                numTicks={Math.max(2, Math.min(8, Math.floor(innerW / 64), yearTo - yearFrom))}
                 tickFormat={(v) => `${v}`}
                 stroke={GRID}
                 tickStroke={GRID}

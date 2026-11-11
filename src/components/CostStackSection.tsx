@@ -161,8 +161,8 @@ export function CostStackSection({ series, embedMode = false }: Props) {
             The bill, stacked.
           </h2>
           <p className="text-(--color-muted) mb-6 max-w-2xl text-lg leading-relaxed">
-            A typical UK household's annual bill, stacked by category. The white
-            line is household take-home pay after every deduction that hits your
+            A typical UK household's annual bill, stacked by category. The line
+            on top is household take-home pay after every deduction that hits your
             payslip — income tax, NI, student loan, and auto-enrolment pension —
             computed year-by-year using each year's real thresholds and rates.
           </p>

@@ -72,7 +72,7 @@ export function GradDebtCallout({ series }: Props) {
         salary (<span className="text-(--color-muted)">{salaryStr}</span>).
       </p>
       <p className="text-sm text-(--color-muted) mt-2">
-        In 1995 it was 0× — student loans didn&apos;t exist.
+        In 1995 it was close to zero — there were no tuition fees and maintenance loans were small.
       </p>
 
       {/* Sparkline bar chart */}

@@ -135,13 +135,7 @@ export function HomeBuyingCalculator({ series }: Props) {
 
   return (
     <section className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6 md:p-8">
-      <div className="text-xs text-(--color-muted) font-mono uppercase tracking-wide mb-2">
-        Calculator
-      </div>
-      <h3 className="text-2xl md:text-3xl font-semibold text-(--color-text)">
-        What if you'd bought in {purchaseYear}?
-      </h3>
-      <p className="mt-2 text-sm text-(--color-muted) leading-relaxed max-w-prose">
+      <p className="text-sm text-(--color-muted) leading-relaxed max-w-prose">
         Estimates based on Nationwide average house prices, a {depositPct}% deposit, and the
         approximate average UK mortgage rate for that year. Monthly payment assumes a 25-year
         repayment mortgage held unchanged to today (simplified — actual repayments would vary).
@@ -263,14 +257,22 @@ export function HomeBuyingCalculator({ series }: Props) {
             vs. renting at ~<span className="font-semibold text-(--color-text)">£1,800</span>/month
             today — a difference of{" "}
             <span className="font-semibold text-(--color-text)">{fmt(animDiffAbs)}</span>/month
-            {diff > 0 ? " cheaper to own" : " cheaper to rent"},{" "}
-            <span className="font-semibold text-(--color-text)">{fmt(animDiffYear)}</span>/year.
+            {diff > 0 ? " cheaper to own" : " cheaper to rent"} (
+            <span className="font-semibold text-(--color-text)">{fmt(animDiffYear)}</span> a year).
           </p>
 
-          <p className="mt-3 text-xs text-(--color-muted) leading-relaxed">
-            Salary input ({fmt(salaryNow)}/yr) is for context only and does not affect the
-            calculations above — used for your own affordability sense-check.
-          </p>
+          {salaryNow > 0 && (
+            <p className="mt-3 text-sm text-(--color-muted) leading-relaxed">
+              On your salary of {fmt(salaryNow)}, that mortgage would be{" "}
+              <span className="font-semibold text-(--color-text)">
+                {((result.monthlyPaymentThen * 12) / salaryNow * 100).toFixed(1)}%
+              </span>{" "}
+              of gross pay, and today&apos;s typical rent{" "}
+              <span className="font-semibold text-(--color-text)">
+                {((result.rentNow * 12) / salaryNow * 100).toFixed(1)}%
+              </span>.
+            </p>
+          )}
         </>
       ) : (
         <div className="mt-6 text-sm text-(--color-muted)">

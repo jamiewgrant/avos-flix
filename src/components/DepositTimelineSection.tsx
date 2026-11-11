@@ -54,13 +54,16 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
       </h2>
       <p className="text-(--color-muted) mb-8 max-w-2xl text-lg leading-relaxed">
         Saving a fixed share of median full-time take-home pay — how many years
-        does it take to accumulate a deposit, in each year since 1995? The 1990s
-        baseline was around 3 years. It has never recovered.
+        does it take to accumulate a deposit, in each year since 1995?
+        {firstPoint && lastPoint && (
+          <> It took {firstPoint.yearsToSave.toFixed(1)} years in {firstPoint.year}; it takes{" "}
+          {lastPoint.yearsToSave.toFixed(1)} now.</>
+        )}
       </p>
 
       <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-4 md:p-6">
         <div className="mb-4 flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-mono text-(--color-muted) w-28 shrink-0">saving rate:</span>
             {SAVING_RATES.map((r) => (
               <button
@@ -68,7 +71,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                 type="button"
                 onClick={() => setSavingRate(r)}
                 aria-pressed={savingRate === r}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   savingRate === r
                     ? "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
                     : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-(--color-text)"
@@ -86,7 +89,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                 type="button"
                 onClick={() => setDepositPct(d)}
                 aria-pressed={depositPct === d}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   depositPct === d
                     ? "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
                     : "border-(--color-border) bg-(--color-bg) text-(--color-muted) hover:text-(--color-text)"
@@ -136,7 +139,8 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
             const xScale = scaleLinear<number>({ domain: [xMin, xMax], range: [0, innerW] })
             const yScale = scaleLinear<number>({ domain: [0, yMax], range: [innerH, 0], nice: true })
 
-            const refY = 3
+            // Reference line = the first year's value for the chosen settings.
+            const refY = firstPoint?.yearsToSave ?? 0
 
             return (
               <svg width={width} height={height} role="img" aria-label="Years to save a deposit over time">
@@ -157,8 +161,8 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                     </>
                   )}
 
-                  {/* 3-year reference line */}
-                  {refY <= yMax && (
+                  {/* Starting-year reference line */}
+                  {refY > 0 && refY <= yMax && (
                     <>
                       <line
                         x1={0} x2={innerW}
@@ -169,7 +173,7 @@ export function DepositTimelineSection({ housePrice, wage }: Props) {
                         opacity={0.5}
                       />
                       <text x={innerW - 4} y={yScale(refY) - 4} fill={MUTED} fontSize={9} textAnchor="end" opacity={0.7}>
-                        1990s baseline (~3y)
+                        {firstPoint?.year} level ({refY.toFixed(1)}y)
                       </text>
                     </>
                   )}
