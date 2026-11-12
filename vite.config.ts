@@ -3,8 +3,12 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react(), tailwindcss()],
+  // The pre-render bundle (vite build --ssr) inlines its dependencies so it
+  // runs under plain Node without CJS/ESM interop surprises. Build only:
+  // vitest reads this config too, and inlining everything there breaks it.
+  ssr: command === "build" ? { noExternal: true } : {},
   build: {
     rollupOptions: {
       output: {
@@ -22,4 +26,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

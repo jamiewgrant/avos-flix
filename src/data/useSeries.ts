@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import type { SeriesData } from "../types/series"
 
-export function useSeries() {
-  const [data, setData] = useState<SeriesData | null>(null)
+// `initial` is supplied when the data is already in hand — by the pre-render
+// script at build time, and by main.tsx which fetches before first render.
+export function useSeries(initial?: SeriesData | null) {
+  const [data, setData] = useState<SeriesData | null>(initial ?? null)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
+    if (initial) return
     let cancelled = false
     fetch("/data/series.json")
       .then((r) => {
@@ -21,7 +24,7 @@ export function useSeries() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [initial])
 
   return { data, error, loading: !data && !error }
 }

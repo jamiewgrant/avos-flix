@@ -5,6 +5,8 @@ const STORAGE_KEY = "avos-flix.onboarding.seen.v1"
 
 export function OnboardingBanner() {
   const [visible, setVisible] = useState(() => {
+    // Never in pre-rendered HTML — it's a first-visit hint, not page content.
+    if (typeof window === "undefined") return false
     try {
       return !window.localStorage.getItem(STORAGE_KEY)
     } catch {

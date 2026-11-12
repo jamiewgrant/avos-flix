@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react"
+import { SITE_URL } from "../lib/pages"
 
 type Preset = "standard" | "compact"
 
@@ -9,7 +10,7 @@ const PRESETS: Record<Preset, { width: number; height: number; label: string }> 
 
 function buildSnippet(width: number, height: number): string {
   // Use whichever origin the dashboard is being served from (prod, preview, local).
-  return `<iframe\n  src="${window.location.origin}/?embed=1"\n  width="${width}"\n  height="${height}"\n  frameborder="0"\n  style="border-radius:12px"\n></iframe>`
+  return `<iframe\n  src="${typeof window === "undefined" ? SITE_URL : window.location.origin}/?embed=1"\n  width="${width}"\n  height="${height}"\n  frameborder="0"\n  style="border-radius:12px"\n></iframe>`
 }
 
 export function EmbedCodeButton() {

@@ -16,6 +16,9 @@
           else if (window.matchMedia("(prefers-color-scheme: light)").matches) theme = "light";
         } catch (e) {}
         document.documentElement.setAttribute("data-theme", theme);
+        if (/[?&](embed|boomer)=(1|true)(&|$)/.test(location.search)) {
+          document.documentElement.classList.add("no-prerender");
+        }
       })();
     </script>
 
@@ -24,48 +27,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-    <title>avos+flix — the numbers behind the avocado-toast argument</title>
-    <meta
-      name="description"
-      content="A UK economic dashboard: in 2025, a young graduate household's basket of costs takes 96% of combined take-home pay — up from 70% in 1995. Since 1995 house prices grew 5.3×; wages 2.6×. The numbers behind the avocado-toast argument."
-    />
+    <!--seo:start-->
+    <!-- Dev-server defaults. The build (scripts/prerender.mjs) replaces this
+         block per page with the title, description, canonical URL, social tags
+         and structured data from src/lib/pages.ts. -->
+    <title>avos+flix — UK wages vs house prices and the cost of living, charted</title>
+    <meta name="description" content="A UK economic dashboard: wages, house prices and the real cost of living, charted from official data." />
+    <!--seo:end-->
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://avos-flix.vercel.app/" />
-    <meta property="og:title" content="avos+flix — the numbers behind the avocado-toast argument" />
-    <meta
-      property="og:description"
-      content="A UK economic dashboard: in 2025, a young graduate household's basket of costs takes 96% of their combined take-home pay — up from 70% in 1995. Since 1995 wages grew 2.6×; house prices grew 5.3×. The numbers behind the avocado-toast argument."
-    />
-    <meta property="og:image" content="https://avos-flix.vercel.app/og.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@avosflix" />
-    <meta name="twitter:title" content="avos+flix — the numbers behind the avocado-toast argument" />
-    <meta
-      name="twitter:description"
-      content="Since 1995 UK house prices grew 5.3×; wages 2.6×. If wages had kept pace with house prices, the median salary would be about £80,000 today. The numbers, charted honestly."
-    />
-    <meta name="twitter:image" content="https://avos-flix.vercel.app/og.png" />
-    <meta name="twitter:image:alt" content="Chart showing UK house prices growing 5.3× since 1995 while median wages grew 2.6×" />
-
-    <!-- Structured data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "avos+flix",
-      "description": "UK economic dashboard: wages, house prices, and the real cost of living — indexed, honest, undeniable.",
-      "url": "https://avos-flix.vercel.app/",
-      "applicationCategory": "DataVisualization",
-      "operatingSystem": "Web"
-    }
-    </script>
+    <!-- The build writes static HTML into #root. Embed and boomer modes are
+         different layouts, so hide that markup until the app takes over. -->
+    <style>html.no-prerender #root[data-prerendered] { visibility: hidden; }</style>
   </head>
   <body>
     <div id="root"></div>

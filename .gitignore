@@ -26,3 +26,4 @@ scripts/raw/
 *.sln
 *.sw?
 .claude/
+dist-ssr

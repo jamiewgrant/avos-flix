@@ -32,6 +32,8 @@ import SectionShare from "./components/SectionShare"
 import { StoryPresets } from "./components/StoryPresets"
 import { SeriesLegend } from "./components/SeriesLegend"
 import { PRESETS } from "./lib/presets"
+import { HOME, PAGES, SITE_URL, pagePath } from "./lib/pages"
+import type { PageDef, SectionKey } from "./lib/pages"
 import type { Preset } from "./lib/presets"
 import { deflateSeries } from "./lib/deflate"
 import { basePoint } from "./lib/indexing"
@@ -40,7 +42,7 @@ import { HISTORICAL_EVENTS } from "./lib/annotations"
 import { applyPalette } from "./lib/palette"
 import type { PaletteMode } from "./lib/palette"
 import { seriesToCsv, downloadCsv } from "./lib/csv"
-import type { Series } from "./types/series"
+import type { Series, SeriesData } from "./types/series"
 
 const RentToIncomeChart = lazy(() =>
   import("./components/charts/RentToIncomeChart").then((m) => ({ default: m.RentToIncomeChart })),
@@ -118,11 +120,30 @@ function flagParam(name: string): boolean {
   return v === "1" || v === "true"
 }
 
-function App() {
+interface AppProps {
+  /** Series data already in hand (pre-render, or fetched before first render). */
+  initialData?: SeriesData | null
+  /** Which page to render; defaults to the full dashboard. */
+  page?: PageDef
+}
+
+const HOME_NAV = [
+  { href: "#explore", label: "Explore" },
+  { href: "#costs", label: "Costs" },
+  { href: "#housing", label: "Housing" },
+  { href: "#your-snapshot", label: "Snapshot" },
+  { href: "#pension", label: "Pension" },
+  { href: "#faq", label: "FAQ" },
+]
+const PAGE_NAV = PAGES.map((p) => ({ href: pagePath(p), label: p.nav }))
+
+function App({ initialData, page = HOME }: AppProps) {
+  const isHome = page.slug === ""
+  const navLinks = isHome ? HOME_NAV : PAGE_NAV
   const { theme, toggle: toggleTheme } = useTheme()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [methodologyOpen, setMethodologyOpen] = useState(false)
-  const { data, loading, error } = useSeries()
+  const { data, loading, error } = useSeries(initialData)
   const allSeries = useMemo<Series[]>(
     () => (data ? Object.values(data.series) : []),
     [data],
@@ -365,6 +386,18 @@ function App() {
   const embedMode = useMemo(() => flagParam("embed"), [])
   const boomerMode = useMemo(() => flagParam("boomer"), [])
 
+  /** Whether a section belongs on this page (never in embed mode). */
+  const has = (key: SectionKey) =>
+    !embedMode && (page.sections === "all" || page.sections.includes(key))
+
+  // Keep the tab title right when the page is served by the SPA fallback (dev).
+  useEffect(() => {
+    document.title = page.title
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute("href", `${SITE_URL}${pagePath(page)}`)
+  }, [page])
+
   // Handle keyboard shortcuts dispatched by KeyboardShortcuts component
   useEffect(() => {
     function onShortcut(e: Event) {
@@ -405,18 +438,22 @@ function App() {
         >
           <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
             <a
-              href="#"
+              href={isHome ? "#" : "/"}
               className="text-base font-semibold tracking-tight text-(--color-text) hover:text-(--color-accent) transition-colors"
             >
               avos<span className="text-(--color-accent)">+</span>flix
             </a>
-            <nav className="hidden md:flex items-center gap-1 text-xs text-(--color-muted)">
-              <a href="#explore" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Explore</a>
-              <a href="#costs" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Costs</a>
-              <a href="#housing" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Housing</a>
-              <a href="#your-snapshot" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Snapshot</a>
-              <a href="#pension" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">Pension</a>
-              <a href="#faq" className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition">FAQ</a>
+            <nav aria-label="Main" className="hidden md:flex items-center gap-1 text-xs text-(--color-muted)">
+              {navLinks.map(({ href, label }) => (
+                <a
+                  key={href}
+                  href={href}
+                  aria-current={!isHome && href === pagePath(page) ? "page" : undefined}
+                  className="px-2.5 py-1.5 rounded-md hover:text-(--color-text) hover:bg-(--color-surface) transition aria-[current=page]:text-(--color-text)"
+                >
+                  {label}
+                </a>
+              ))}
             </nav>
             <div className="flex items-center gap-2">
             <button
@@ -465,14 +502,7 @@ function App() {
           {/* Mobile nav dropdown */}
           {mobileNavOpen && (
             <nav className="md:hidden border-t border-(--color-border) bg-(--color-bg)/95 px-4 py-3 flex flex-col gap-1 text-sm text-(--color-muted)">
-              {[
-                { href: "#explore", label: "Explore" },
-                { href: "#costs", label: "Costs" },
-                { href: "#housing", label: "Housing" },
-                { href: "#your-snapshot", label: "Snapshot" },
-                { href: "#pension", label: "Pension" },
-                { href: "#faq", label: "FAQ" },
-              ].map(({ href, label }) => (
+              {navLinks.map(({ href, label }) => (
                 <a
                   key={href}
                   href={href}
@@ -487,8 +517,20 @@ function App() {
         </header>
       )}
 
-    <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto`}>
-      {!embedMode && (
+    <main className={`min-h-screen px-4 md:px-6 ${embedMode ? "py-4" : "py-10 md:py-16"} max-w-5xl mx-auto ${isHome ? "" : "topic-page"}`}>
+      {!embedMode && !isHome && (
+        <section className="relative pt-8 pb-14">
+          <a href="/" className="text-xs font-mono text-(--color-muted) hover:text-(--color-text) transition">
+            ← avos+flix dashboard
+          </a>
+          <h1 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight text-(--color-text)" style={{ letterSpacing: "-0.03em" }}>
+            {page.h1}
+          </h1>
+          <p className="mt-5 text-lg md:text-xl text-(--color-muted) max-w-2xl leading-relaxed">{page.lede}</p>
+        </section>
+      )}
+
+      {!embedMode && isHome && (
         <section className="relative text-center pt-12 pb-24 overflow-hidden">
           <div className="hero-glow" />
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-(--color-border) bg-(--color-surface) text-xs text-(--color-muted) mb-8 relative">
@@ -523,8 +565,9 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data && <ScrollyIntro data={data} />}
+      {has("intro") && data && <ScrollyIntro data={data} />}
 
+      {(embedMode || has("explore")) && (
       <section className={embedMode ? "" : "mb-20"} id="explore" style={{ scrollMarginTop: "4rem" }}>
         {!embedMode && <OnboardingBanner />}
 
@@ -673,6 +716,7 @@ function App() {
           </div>
         )}
       </section>
+      )}
 
       {embedMode && (
         <div className="mt-3 text-[10px] text-(--color-muted) font-mono text-center opacity-70">
@@ -680,15 +724,15 @@ function App() {
         </div>
       )}
 
-      {!embedMode && <SectionDivider />}
+      {has("costs") && <SectionDivider />}
 
-      {!embedMode && data && wage && (
+      {has("costs") && data && wage && (
         <div id="costs" style={{ scrollMarginTop: "4rem" }}>
           <CostStackSection series={data.series} wage={wage} />
         </div>
       )}
 
-      {!embedMode && data && wage && housePriceNationwide && (
+      {has("cohort") && data && wage && housePriceNationwide && (
         <section className="mb-20">
           <CohortWindow
             series={[wage, housePriceNationwide]}
@@ -699,9 +743,9 @@ function App() {
         </section>
       )}
 
-      {!embedMode && <SectionDivider />}
+      {has("affordability") && <SectionDivider />}
 
-      {!embedMode && canShowAffordability && (
+      {has("affordability") && canShowAffordability && (
         <section className="mb-20" id="housing" style={{ scrollMarginTop: "4rem" }}>
           <div className="flex items-center justify-between mb-1">
             <span className="section-num">02 / Housing</span>
@@ -723,7 +767,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && canShowAffordability && (
+      {has("mortgage") && canShowAffordability && (
         <section className="mb-20">
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
             What the mortgage actually costs.
@@ -737,7 +781,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data?.series["rent-index"] && wage && (
+      {has("renting") && data?.series["rent-index"] && wage && (
         <section className="mb-20">
           <span className="section-num">03 / Renting</span>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
@@ -754,7 +798,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data && (
+      {has("international") && data && (
         <section className="mb-20">
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <InternationalComparisonLazy series={allSeries} />
@@ -762,7 +806,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && housePriceNationwide && wage && (
+      {has("counterfactual") && housePriceNationwide && wage && (
         <section className="mb-20">
           <span className="section-num">04 / Counterfactual</span>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
@@ -784,7 +828,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data && (
+      {has("calculator") && data && (
         <section className="mb-20">
           <span className="section-num">05 / Calculator</span>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
@@ -799,13 +843,13 @@ function App() {
         </section>
       )}
 
-      {!embedMode && housePriceNationwide && wage && (
+      {has("deposit") && housePriceNationwide && wage && (
         <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <DepositTimelineSectionLazy housePrice={housePriceNationwide} wage={wage} />
         </Suspense></ErrorBoundary>
       )}
 
-      {!embedMode && data && (
+      {has("wealth") && data && (
         <section className="mb-20">
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <WealthGapSectionLazy series={allSeries} />
@@ -813,7 +857,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && wage && data?.series["tax-burden-median"] && cpihSeries && (
+      {has("takehome") && wage && data?.series["tax-burden-median"] && cpihSeries && (
         <section className="mb-20">
           <span className="section-num">06 / Take-home</span>
           <h2 className="section-h2 text-3xl md:text-4xl text-(--color-text) mb-3">
@@ -832,19 +876,19 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data && (
+      {has("generation") && data && (
         <section className="mb-20">
           <GenerationView data={data} />
         </section>
       )}
 
-      {!embedMode && data && (
+      {has("boomer") && data && (
         <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <BoomerVsMillennialLazy data={data} />
         </Suspense></ErrorBoundary>
       )}
 
-      {!embedMode && data && (
+      {has("graddebt") && data && (
         <section className="mb-20">
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <GradDebtCalloutLazy series={allSeries} />
@@ -852,17 +896,17 @@ function App() {
         </section>
       )}
 
-      {!embedMode && housePriceNationwide && (
-        <section className="mb-20">
+      {has("toast") && housePriceNationwide && (
+        <section className="mb-20" id="calculators" style={{ scrollMarginTop: "4rem" }}>
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <AvosToastCalculatorLazy housePrice={housePriceNationwide} />
           </Suspense></ErrorBoundary>
         </section>
       )}
 
-      {!embedMode && <SectionDivider />}
+      {has("snapshot") && <SectionDivider />}
 
-      {!embedMode && data && (
+      {has("snapshot") && data && (
         <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <PersonalSnapshotLazy
             series={data.series}
@@ -872,13 +916,13 @@ function App() {
         </Suspense></ErrorBoundary>
       )}
 
-      {!embedMode && data && (
+      {has("pension") && data && (
         <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
           <PensionAdequacyLazy defaultSalary={snap.grossSalary ?? 35000} />
         </Suspense></ErrorBoundary>
       )}
 
-      {!embedMode && data && cpihSeries && (
+      {has("money") && data && cpihSeries && (
         <section className="mb-20 grid gap-6 md:grid-cols-2">
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <TodaysMoneyLazy cpih={cpihSeries} />
@@ -889,7 +933,7 @@ function App() {
         </section>
       )}
 
-      {!embedMode && data && (
+      {has("policy") && data && (
         <section className="mb-6">
           <ErrorBoundary fallback={<SectionError />}><Suspense fallback={<ChartFallback />}>
             <PolicyDifferencesNoteLazy />
@@ -897,18 +941,29 @@ function App() {
         </section>
       )}
 
-      {!embedMode && <div id="faq" style={{ scrollMarginTop: "4rem" }}><Faq /></div>}
+      {has("faq") && <div id="faq" style={{ scrollMarginTop: "4rem" }}><Faq /></div>}
 
-      {!embedMode && <About />}
+      {has("about") && <About />}
 
-      {!embedMode && (
+      {has("changelog") && (
         <section className="mb-12 mt-4">
           <Changelog />
         </section>
       )}
 
       {!embedMode && (
-        <footer className="mt-4 mb-8 pt-8 border-t border-(--color-border) flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-(--color-muted) font-mono">
+        <nav aria-label="Topics" className="mt-10 pt-8 border-t border-(--color-border) flex flex-wrap gap-x-5 gap-y-2 text-sm text-(--color-muted)">
+          <span className="text-xs font-mono uppercase tracking-wide self-center">Topics</span>
+          {PAGE_NAV.map(({ href, label }) => (
+            <a key={href} href={href} className="hover:text-(--color-text) transition underline underline-offset-4 decoration-(--color-border)">
+              {label}
+            </a>
+          ))}
+        </nav>
+      )}
+
+      {!embedMode && (
+        <footer className="mt-6 mb-8 pt-6 border-t border-(--color-border) flex flex-wrap items-center justify-between gap-x-6 gap-y-3 text-xs text-(--color-muted) font-mono">
           <span>avos<span className="text-(--color-accent)">+</span>flix · UK economic data dashboard</span>
           {data && (
             <button

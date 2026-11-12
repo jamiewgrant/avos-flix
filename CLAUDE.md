@@ -25,7 +25,7 @@ Live: https://avos-flix.vercel.app/
 
 ```bash
 npm run dev        # vite dev server, http://localhost:5173
-npm run build      # tsc -b && vite build — verifies type errors and prod build
+npm run build      # type-check, client build, then pre-render every page to static HTML
 npm run etl        # tsx scripts/etl.ts — fetches all sources, writes public/data/series.json
 npm run og         # regenerate public/og.svg + og.png from the committed series.json
 npm run lint       # eslint
@@ -47,10 +47,13 @@ asking first; Vercel deploys from `main`. Run `npm run lint`, `npm test` and
 scripts/
   etl.ts                    # entry; runs all sources in parallel, writes series.json
   og.ts                     # social preview image (og.svg + og.png), run by the ETL
+  prerender.mjs             # post-build: static HTML + <head> metadata per page, sitemap.xml
   sources/<name>.ts         # one file per data series, each exports fetchSeries()
   seed/<name>.csv           # offline fallback data, committed
 src/
-  App.tsx                   # main page assembly
+  App.tsx                   # main page assembly; renders the sections of the current page
+  main.tsx                  # browser entry: fetches data, then replaces the pre-rendered HTML
+  entry-server.tsx          # build-time entry used by scripts/prerender.mjs
   types/series.ts           # Series, SeriesData types, Unit-aware formatters
   data/
     useSeries.ts            # fetches public/data/series.json
@@ -61,6 +64,8 @@ src/
     indexing.ts             # basePoint(): the point a series is rebased against
     latestYear.ts           # latestCommonYear(): "now" derived from the data
     presets.ts              # story presets + base-year options
+    pages.ts                # the site's pages (home + topic pages): slug, title, description, sections
+    faq.ts                  # FAQ content (also emitted as FAQPage structured data)
   components/
     ChartToolbar.tsx        # view/base/region/inflation controls + export actions
     ErrorBoundary.tsx       # wraps the app and each lazy section
@@ -112,6 +117,24 @@ parsed for existing links. Params the hook doesn't own (`embed`, `boomer`,
 `utm_*`) are passed through untouched. To add a new piece of state, extend
 the `UrlState` interface, `OWNED_PARAMS`, `parseUrl`, and `stringify` together.
 
+### Pages and SEO
+
+- Pages are defined in `src/lib/pages.ts`. Home shows every section; a topic
+  page (`/house-prices-vs-wages`, `/cost-of-living`, …) shows a subset with its
+  own title, description and `<h1>`. To add one, add an entry there — the
+  pre-render step, sitemap and navigation all read that list. New sections in
+  `App.tsx` need a `SectionKey` and a `has("key") &&` gate.
+- `npm run build` pre-renders each page into `dist/` (`index.html`,
+  `<slug>.html`) so crawlers get real content without running JavaScript.
+  Anything rendered at build time must not touch `window`/`document`/
+  `localStorage` during render — guard with `typeof window` or use an effect.
+- The pre-rendered HTML has no charts (they need a measured width) and is
+  replaced, not hydrated, once the data has loaded.
+- Per-page `<title>`, description, canonical URL, social tags and JSON-LD are
+  generated in `scripts/prerender.mjs`; the block between the `seo:start` /
+  `seo:end` comments in `index.html` is only the dev-server default.
+- `sitemap.xml` is generated at build time — don't add one to `public/`.
+
 ## Known quirks
 
 - **ONS XLSX URLs** sometimes 404 on `cdn.ons.gov.uk` even when WebFetch
@@ -132,7 +155,9 @@ the `UrlState` interface, `OWNED_PARAMS`, `parseUrl`, and `stringify` together.
   at ETL time and never ships to the browser.
 - **og:image must be a PNG** — social platforms don't render SVG previews.
   `scripts/og.ts` rasterises `og.svg` to `og.png` with `sharp`.
-- **Building for Vercel**: `vercel.json` isn't needed; Vite auto-detects.
+- **Building for Vercel**: `vercel.json` pins the build command to
+  `npm run build` (so the pre-render step runs) and turns on `cleanUrls`, which
+  is what serves `dist/<slug>.html` at `/<slug>`.
   `.npmrc` with `legacy-peer-deps=true` is required (Visx peer conflict).
 
 ## What's done vs deferred
