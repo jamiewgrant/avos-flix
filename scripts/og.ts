@@ -105,7 +105,7 @@ export async function regenerateOg(series: Record<string, Series>): Promise<void
   <rect width="1200" height="630" fill="#0a0a0a"/>
 
   <text x="72" y="120" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="96" font-weight="700" fill="#f5f4f0" letter-spacing="-3">avos<tspan fill="#c084fc">+</tspan>flix</text>
-  <text x="1128" y="115" font-family="ui-monospace, 'JetBrains Mono', Consolas, monospace" font-size="22" fill="#9ca3af" text-anchor="end">avos-flix.vercel.app</text>
+  <text x="1128" y="115" font-family="ui-monospace, 'JetBrains Mono', Consolas, monospace" font-size="22" fill="#9ca3af" text-anchor="end">avosflix.app</text>
 
   <!-- Chart panel -->
   <g transform="translate(${CHART_X}, ${CHART_Y})">

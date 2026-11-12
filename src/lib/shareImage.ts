@@ -38,7 +38,7 @@ export async function generateShareCard(
   ctx.font = "400 20px system-ui, -apple-system, sans-serif"
   ctx.textBaseline = "top"
   ctx.textAlign = "right"
-  ctx.fillText("avos-flix.vercel.app", W - 60, 60)
+  ctx.fillText("avosflix.app", W - 60, 60)
 
   // ── Centre: title ───────────────────────────────────────────────────────
   ctx.textAlign = "center"

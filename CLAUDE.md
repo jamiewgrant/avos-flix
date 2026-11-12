@@ -10,7 +10,7 @@ and asset prices on one chart, indexed to a chosen base year, with the
 boomer rebuttals ("but interest rates were 15%", "but it's just inflation",
 "skip the avocado toast") each pre-empted by a feature.
 
-Live: https://avos-flix.vercel.app/
+Live: https://www.avosflix.app/
 
 ## Stack
 

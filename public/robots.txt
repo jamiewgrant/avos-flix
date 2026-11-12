@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://avos-flix.vercel.app/sitemap.xml
+Sitemap: https://www.avosflix.app/sitemap.xml

@@ -3,7 +3,7 @@
 // linked to) on its own. scripts/prerender.ts writes one static HTML file per
 // entry, and the sitemap is generated from this list.
 
-export const SITE_URL = "https://avos-flix.vercel.app"
+export const SITE_URL = "https://www.avosflix.app"
 
 export type SectionKey =
   | "intro" | "explore" | "costs" | "cohort" | "affordability" | "mortgage"

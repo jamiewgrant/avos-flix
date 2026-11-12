@@ -720,7 +720,7 @@ function App({ initialData, page = HOME }: AppProps) {
 
       {embedMode && (
         <div className="mt-3 text-[10px] text-(--color-muted) font-mono text-center opacity-70">
-          via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-(--color-text)">avos-flix.vercel.app</a>
+          via <a href={window.location.origin} target="_blank" rel="noreferrer" className="underline hover:text-(--color-text)">avosflix.app</a>
         </div>
       )}
 

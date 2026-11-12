@@ -9,7 +9,7 @@ export const config = { runtime: "edge" };
  *
  * Example embed code:
  *   <iframe
- *     src="https://avos-flix.vercel.app/?embed=1"
+ *     src="https://www.avosflix.app/?embed=1"
  *     width="100%"
  *     height="600"
  *     style="border:none;"

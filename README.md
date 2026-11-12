@@ -2,7 +2,7 @@
 
 **The numbers behind the avocado-toast argument.**
 
-→ **Live: [avos-flix.vercel.app](https://avos-flix.vercel.app/)**
+→ **Live: [avosflix.app](https://www.avosflix.app/)**
 
 > _"You'd own a house if you didn't waste your money on avocado toast and Netflix."_
 

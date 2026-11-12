@@ -32,7 +32,7 @@ function fmtMultiple(x: number): string {
 
 function buildShareText(stat: Stat): string {
   const hint = stat.hint ? ` (${stat.hint})` : ""
-  return `${stat.caption}: ${stat.headline}${hint} — avos-flix.vercel.app`
+  return `${stat.caption}: ${stat.headline}${hint} — avosflix.app`
 }
 
 function CopyButton({ text }: { text: string }) {

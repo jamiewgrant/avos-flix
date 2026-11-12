@@ -109,10 +109,10 @@ export function BoomerModeView({ series }: Props) {
         <p className="text-base text-(--color-muted)">
           Share:{" "}
           <a
-            href="https://avos-flix.vercel.app"
+            href="https://www.avosflix.app"
             className="underline underline-offset-2 text-(--color-accent) hover:opacity-80 transition-opacity"
           >
-            avos-flix.vercel.app
+            avosflix.app
           </a>
         </p>
       </div>
